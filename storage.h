@@ -780,10 +780,39 @@ operator==(T const& x, T const& y)
 
 template<typename T>
 inline typename enable_if<generate_introspected_comparisons<T>, bool>::type
+operator!=(T const& x, T const& y)
+{
+    return !(x == y);
+}
+
+template<typename T>
+inline typename enable_if<generate_introspected_comparisons<T>, bool>::type
 operator<(T const& x, T const& y)
 {
     return impl::less<impl::GetOperatorLessThan>(impl::get_storage(x), impl::get_storage(y));
 }
+
+template<typename T>
+inline typename enable_if<generate_introspected_comparisons<T>, bool>::type
+operator<=(T const& x, T const& y)
+{
+    return !(y < x);
+}
+
+template<typename T>
+inline typename enable_if<generate_introspected_comparisons<T>, bool>::type
+operator>(T const& x, T const& y)
+{
+    return y < x;
+}
+
+template<typename T>
+inline typename enable_if<generate_introspected_comparisons<T>, bool>::type
+operator>=(T const& x, T const& y)
+{
+    return !(x < y);
+}
+
 
 template<typename T, typename enable=void>
 struct generate_introspected_underlying_type : IntrospectionEnabled<T> {};
@@ -795,7 +824,7 @@ struct underlying_type<T,
     typedef typename ArrayTransform<typename GenerateIntrospectionItems<T>::type, GetUnderlyingType>::type TransformedTypes;
 
     typedef typename impl::GenerateStorage::GenerateStorageFromArray<TransformedTypes,
-        typename IntrospectionStorageTag<T>::type> type;
+        typename IntrospectionStorageTag<T>::type>::type type;
 };
 
 template<typename Arr, typename Tag>

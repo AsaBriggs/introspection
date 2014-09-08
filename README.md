@@ -2,6 +2,8 @@ C++ introspection mechanism
 
 The idea is to allow the generation of simple container types that allow introspection, and so allows for programmatic generation of more complex behaviour (operator==, operator<, underlying_type in the Stepanov/EoP sense).
 
+Note that the coding convention follows Boost MPL fairly closely, but without actually pulling in this library. Metafunctions have a nested typedef "type", metafunction classes have template class called apply nested within it. Note that metafunction forwarding (i.e. inheriting off other metafunctions) is used extensively.
+
 To enable introspection
 
 1) include storage.h
