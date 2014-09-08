@@ -4,37 +4,74 @@
 
 #define TEST(x) assert((x))
 
-typedef pair<int, float> P;
+const char EXPECTED_VALUE = 'a';
+const char UNEXPECTED_VALUE = 'b';
 
-P x0 = P::make(1, 13.0f);
-P x1 = P::make(1, 14.0f);
-P x2 = P::make(2, 11.0f);
+template<typename T>
+typename enable_if<is_same<T, identity_type<int> >, char>::type enable_if_test() { return EXPECTED_VALUE; }
 
-struct a_type
+template<typename T>
+typename enable_if<not_<is_same<T, identity_type<int> > >, char>::type enable_if_test() { return UNEXPECTED_VALUE; }
+
+template<typename T>
+typename disable_if<is_same<T, identity_type<int> >, char>::type disable_if_test() { return UNEXPECTED_VALUE; }
+
+template<typename T>
+typename disable_if<not_<is_same<T, identity_type<int> > >, char>::type disable_if_test() { return EXPECTED_VALUE; }
+
+void test_metaprogramming()
 {
-    typedef a_type type;
+  TEST(true_type());
+  TEST(!false_type());
 
-    typedef true_type IntrospectionEnabled;
-    typedef true_type IntrospectionIndirectStorage;
-    typedef float IntrospectionItem0;
-    typedef long long IntrospectionItem1;
-    typedef double IntrospectionItem2;
-    typedef bool IntrospectionItem3;
-    typedef char IntrospectionItem4;
-    typedef pair<int, long long, DefaultTag> IntrospectionItem5;
-    typedef GenerateStorage<type>::type Storage;
+  TEST( Integer<1>() == Successor<Integer<0> >::type());
+  TEST( Integer<3>() == Successor<Integer<2> >::type());
 
-    Storage m0;
-};
+  TEST( Integer<0>() == Predecessor<Integer<1> >::type());
+  TEST( Integer<-2>() == Predecessor<Integer<-1> >::type());
 
-struct Identity
-{
-    template<typename T>
-    struct apply
-    {
-        typedef T type;
-    };
-};
+  TEST((Integer<-1>() == Subtract<Integer<0>, Integer<1> >::type()));
+  TEST((Integer<6>() == Subtract<Integer<1>, Integer<-5> >::type()));
+
+  TEST((Integer<5>() == Add<Integer<3>, Integer<2> >::type()));
+  TEST((Integer<10>() == Add<Integer<3>, Integer<7> >::type()));
+
+  TEST(!not_<true_type>::type());
+  TEST(not_<false_type>::type());
+
+  TEST(!(or_<false_type, false_type>::type()));
+  TEST((or_<false_type, true_type>::type()));
+  TEST((or_<true_type, false_type>::type()));
+  TEST((or_<true_type, true_type>::type()));
+  TEST(!(or_<false_type, false_type, false_type>::type()));
+  TEST((or_<false_type, true_type, true_type>::type()));
+  TEST((or_<true_type, false_type, true_type>::type()));
+  TEST((or_<true_type, true_type, false_type>::type()));
+  TEST((or_<true_type, true_type, true_type>::type()));
+
+  TEST(!(and_<false_type, false_type>::type()));
+  TEST(!(and_<false_type, true_type>::type()));
+  TEST(!(and_<true_type, false_type>::type()));
+  TEST((and_<true_type, true_type>::type()));
+  TEST(!(and_<false_type, false_type, false_type>::type()));
+  TEST(!(and_<false_type, false_type, true_type>::type()));
+  TEST(!(and_<false_type, true_type, false_type>::type()));
+  TEST(!(and_<true_type, false_type, false_type>::type()));
+  TEST(!(and_<false_type, true_type, true_type>::type()));
+  TEST(!(and_<true_type, false_type, true_type>::type()));
+  TEST(!(and_<true_type, true_type, false_type>::type()));
+  TEST((and_<true_type, true_type, true_type>::type()));
+
+  char test = enable_if_test<identity_type<int> >();
+  TEST(EXPECTED_VALUE == test);
+
+  char test2 = disable_if_test<identity_type<int> >();
+  TEST(EXPECTED_VALUE == test2);
+
+  int x = 0;
+  Ref<int, DefaultTag> y = make_ref(x);
+  TEST(y.m0 == &x);
+}
 
 void test_empty()
 {
@@ -217,7 +254,7 @@ void test_quintuple()
 
 void test_sextuple()
 {
-    typedef  sextuple<int, float, char, bool, unsigned, long long, DefaultTag> type;
+    typedef sextuple<int, float, char, bool, unsigned, long long, DefaultTag> type;
     // Differed in the m0 value
     type x = {1, 3.5f, 'a', false, 3U, 99LL};
     type y = {2, 3.5f, 'a', false, 3U, 99LL};
@@ -442,6 +479,7 @@ void test_decuple()
 
 int main()
 {
+    test_metaprogramming();
     test_empty();
     test_singleton();
     test_pair();
@@ -454,4 +492,3 @@ int main()
     test_nonuple();
     test_decuple();
 }
-
