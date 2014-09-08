@@ -9,10 +9,10 @@ INCLUDES=metaprogramming.h detect_traits.h storage.h
 
 all:$(TARGETS)
 
-eop: meta.o
+meta: meta.o
 	$(CC) $(LDFLAGS) $^ -o $@ 
 
-eop.o: meta.cpp $(INCLUDES)
+meta.o: meta.cpp $(INCLUDES)
 	$(CC) $(CXXFLAGS) -c $< -o $@
 
 .PHONY: clean 

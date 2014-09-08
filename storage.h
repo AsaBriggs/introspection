@@ -4,6 +4,10 @@
 #include "detect_traits.h"
 #include "metaprogramming.h"
 
+template<typename T, typename Tag>
+struct tagged_type;
+
+
 template<typename Tag=DefaultTag>
 struct empty_type
 {
@@ -417,7 +421,7 @@ struct GenerateIntrospectionItems_Loop<T, Arity, Arity, CurrentArray> : CurrentA
 template<typename T, typename ArityMinusOne, typename Index, typename CurrentArray>
 struct GenerateIntrospectionItems_Loop : 
     GenerateIntrospectionItems_Loop<T, ArityMinusOne, typename Successor<Index>::type,
-        typename ArrayConcat<CurrentArray, typename GetItem::GetNumberedIntrospectionItem<T, Index>::type>::type>
+        typename ArrayConcat<CurrentArray, Array< typename GetItem::GetNumberedIntrospectionItem<T, Index>::type> >::type>
 {};
 
 template<typename T>
@@ -722,6 +726,15 @@ inline bool equal(T const& x, T const& y)
 {
     return Equal<T, Integer<0>, typename IntrospectionArity<T>::type, GetComparator>()(x, y);
 }
+
+struct ForEach
+{
+  template<typename T, typename Index, typename Arity>
+  struct apply
+  {
+
+  };
+};
 
 } // namespace impl
 

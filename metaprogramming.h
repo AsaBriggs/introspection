@@ -3,6 +3,8 @@
 
 #include "detect_traits.h"
 
+struct Empty { typedef Empty type; };
+
 struct true_type
 {
     typedef true_type type;
@@ -381,9 +383,6 @@ struct DecayRef
     {};
 };
 
-
-struct Empty {};
-
 template<typename T0=Empty, typename T1=Empty, typename T2=Empty, typename T3=Empty, typename T4=Empty, typename T5=Empty, typename T6=Empty, typename T7=Empty, typename T8=Empty, typename T9=Empty>
 struct Array
 {
@@ -503,13 +502,7 @@ struct ArraySize<Array<> > : Integer<0> {};
 
 
 template<typename T, typename U>
-struct ArrayConcat : ArrayConcat<Array<T>, Array<U> > {};
-
-template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9, typename U>
-struct ArrayConcat<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, U> : ArrayConcat<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Array<U> > {};
-
-template<typename T, typename U0, typename U1, typename U2, typename U3, typename U4, typename U5, typename U6, typename U7, typename U8, typename U9>
-struct ArrayConcat<T, Array<U0, U1, U2, U3, U4, U5, U6, U7, U8, U9> > : ArrayConcat<Array<T>, Array<U0, U1, U2, U3, U4, U5, U6, U7, U8, U9> > {};
+struct ArrayConcat ;
 
 template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9, typename U0, typename U1, typename U2, typename U3, typename U4, typename U5, typename U6, typename U7, typename U8, typename U9>
 struct ArrayConcat<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Array<U0, U1, U2, U3, U4, U5, U6, U7, U8, U9> > : Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {};
@@ -693,6 +686,7 @@ struct ArrayRotate : impl::ArrayRotate<T, F, M, L> {};
 template<typename T, typename M>
 struct ArrayRotateDefault : impl::ArrayRotate<T, Integer<0>, M, typename ArraySize<T>::type > {};
 
+// Note that applying Fun to Empty should return Empty
 template<typename T, typename Fun>
 struct ArrayTransform : impl::ArrayTransform<T, Fun> {};
 
