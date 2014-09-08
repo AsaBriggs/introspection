@@ -374,10 +374,9 @@ struct GetArrayIntrospectionItem :
 } // namespace GetItem
 
 template<typename T, typename Index>
-struct GetIntrospectionItem_Impl :
-    eval_if<HasMemberType_IntrospectionItems<T>,
-            GetItem::GetArrayIntrospectionItem<T, Index>,
-            GetItem::GetNumberedIntrospectionItem<T, Index> >
+struct GetIntrospectionItem_Impl : eval_if<HasMemberType_IntrospectionItems<T>,
+                                           GetItem::GetArrayIntrospectionItem<T, Index>,
+                                           GetItem::GetNumberedIntrospectionItem<T, Index> >
 {};
 
 namespace Arity {
@@ -394,8 +393,7 @@ struct IntrospectionArityLoop : eval_if<HasIntrospectionItem_Impl<T, CurrentArit
 {};
 
 template<typename T>
-struct IntrospectionArityArray :
-    ArraySize<typename GetMemberType_IntrospectionItems<T>::type>
+struct IntrospectionArityArray : ArraySize<typename GetMemberType_IntrospectionItems<T>::type>
 {};
 
 } // namespace Arity
@@ -410,132 +408,28 @@ struct IntrospectionArity_Impl : eval_if<IntrospectionEnabled<T>,
 
 namespace GetItems {
 
-// OK for these metafunctions to use the GetMemberType_IntrospectionItemsN
-// at this point (efficiency?)
-template<typename T, typename Arity>
-struct GenerateIntrospectionItems_DispatchOnArity;
+template<typename T, typename Arity, typename Index, typename CurrentArray>
+struct GenerateIntrospectionItems_Loop;
+
+template<typename T, typename Arity, typename CurrentArray>
+struct GenerateIntrospectionItems_Loop<T, Arity, Arity, CurrentArray> : CurrentArray {};
+
+template<typename T, typename ArityMinusOne, typename Index, typename CurrentArray>
+struct GenerateIntrospectionItems_Loop : 
+    GenerateIntrospectionItems_Loop<T, ArityMinusOne, typename Successor<Index>::type,
+        typename ArrayConcat<CurrentArray, typename GetItem::GetNumberedIntrospectionItem<T, Index>::type>::type>
+{};
 
 template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<0> >
-{
-    typedef Array<> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<1> >
-{
-    typedef Array<typename GetMemberType_IntrospectionItem0<T>::type> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<2> >
-{
-    typedef Array<typename GetMemberType_IntrospectionItem0<T>::type,
-                  typename GetMemberType_IntrospectionItem1<T>::type> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<3> >
-{
-    typedef Array<typename GetMemberType_IntrospectionItem0<T>::type,
-                  typename GetMemberType_IntrospectionItem1<T>::type,
-                  typename GetMemberType_IntrospectionItem2<T>::type> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<4> >
-{
-    typedef Array<typename GetMemberType_IntrospectionItem0<T>::type,
-                  typename GetMemberType_IntrospectionItem1<T>::type,
-                  typename GetMemberType_IntrospectionItem2<T>::type,
-                  typename GetMemberType_IntrospectionItem3<T>::type> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<5> >
-{
-    typedef Array<typename GetMemberType_IntrospectionItem0<T>::type,
-                  typename GetMemberType_IntrospectionItem1<T>::type,
-                  typename GetMemberType_IntrospectionItem2<T>::type,
-                  typename GetMemberType_IntrospectionItem3<T>::type,
-                  typename GetMemberType_IntrospectionItem4<T>::type> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<6> >
-{
-    typedef Array<typename GetMemberType_IntrospectionItem0<T>::type,
-                  typename GetMemberType_IntrospectionItem1<T>::type,
-                  typename GetMemberType_IntrospectionItem2<T>::type,
-                  typename GetMemberType_IntrospectionItem3<T>::type,
-                  typename GetMemberType_IntrospectionItem4<T>::type,
-                  typename GetMemberType_IntrospectionItem5<T>::type> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<7> >
-{
-    typedef Array<typename GetMemberType_IntrospectionItem0<T>::type,
-                  typename GetMemberType_IntrospectionItem1<T>::type,
-                  typename GetMemberType_IntrospectionItem2<T>::type,
-                  typename GetMemberType_IntrospectionItem3<T>::type,
-                  typename GetMemberType_IntrospectionItem4<T>::type,
-                  typename GetMemberType_IntrospectionItem5<T>::type,
-                  typename GetMemberType_IntrospectionItem6<T>::type> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<8> >
-{
-    typedef Array<typename GetMemberType_IntrospectionItem0<T>::type,
-                  typename GetMemberType_IntrospectionItem1<T>::type,
-                  typename GetMemberType_IntrospectionItem2<T>::type,
-                  typename GetMemberType_IntrospectionItem3<T>::type,
-                  typename GetMemberType_IntrospectionItem4<T>::type,
-                  typename GetMemberType_IntrospectionItem5<T>::type,
-                  typename GetMemberType_IntrospectionItem6<T>::type,
-                  typename GetMemberType_IntrospectionItem7<T>::type> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<9> >
-{
-    typedef Array<typename GetMemberType_IntrospectionItem0<T>::type,
-                  typename GetMemberType_IntrospectionItem1<T>::type,
-                  typename GetMemberType_IntrospectionItem2<T>::type,
-                  typename GetMemberType_IntrospectionItem3<T>::type,
-                  typename GetMemberType_IntrospectionItem4<T>::type,
-                  typename GetMemberType_IntrospectionItem5<T>::type,
-                  typename GetMemberType_IntrospectionItem6<T>::type,
-                  typename GetMemberType_IntrospectionItem7<T>::type,
-                  typename GetMemberType_IntrospectionItem8<T>::type> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DispatchOnArity<T, Integer<10> >
-{
-    typedef Array<typename GetMemberType_IntrospectionItem0<T>::type,
-                  typename GetMemberType_IntrospectionItem1<T>::type,
-                  typename GetMemberType_IntrospectionItem2<T>::type,
-                  typename GetMemberType_IntrospectionItem3<T>::type,
-                  typename GetMemberType_IntrospectionItem4<T>::type,
-                  typename GetMemberType_IntrospectionItem5<T>::type,
-                  typename GetMemberType_IntrospectionItem6<T>::type,
-                  typename GetMemberType_IntrospectionItem7<T>::type,
-                  typename GetMemberType_IntrospectionItem8<T>::type,
-                  typename GetMemberType_IntrospectionItem9<T>::type> type;
-};
-
-template<typename T>
-struct GenerateIntrospectionItems_DeduceArity : GenerateIntrospectionItems_DispatchOnArity<T, typename IntrospectionArity_Impl<T>::type > {};
+struct GenerateIntrospectionItems_DeduceArity :
+    GenerateIntrospectionItems_Loop<T, typename IntrospectionArity_Impl<T>::type, Integer<0>, Array<> > {};
 
 } // namespace GetItems
 
 template<typename T>
-struct GenerateIntrospectionItems_Impl :
-    eval_if<HasMemberType_IntrospectionItems<T>,
-            GetMemberType_IntrospectionItems<T>,
-            GetItems::GenerateIntrospectionItems_DeduceArity<T> >
+struct GenerateIntrospectionItems_Impl : eval_if<HasMemberType_IntrospectionItems<T>,
+                                                 GetMemberType_IntrospectionItems<T>,
+                                                 GetItems::GenerateIntrospectionItems_DeduceArity<T> >
 {};
 
 } // namespace impl
