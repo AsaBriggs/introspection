@@ -24,8 +24,6 @@ GENERATE_HAS_AND_GET_MEMBER_TYPE(input_type_3)
 GENERATE_HAS_AND_GET_MEMBER_TYPE(input_type_4)
 GENERATE_HAS_AND_GET_MEMBER_TYPE(codomain_type)
 
-// T const & versus T, convertible to T versus T?
-
 
 template<typename T>
 struct GetCodomainType : GetMemberType_codomain_type<T> {};
@@ -87,7 +85,7 @@ struct GetInputType : impl::GetInputType_Impl<T, Index> {};
 namespace impl {
 
 // Count upwards; higher Arity is less likely.
-// Note that Indexing is zero based, and that CurrentArity suggests 0..CurrentArity are available
+// Note that Indexing is zero based, and that CurrentArity suggests 0..CurrentArity-1(inclusive) are available
 template<typename T, typename CurrentArity>
 struct GetFunctionArityLoop : eval_if<HasInputType<T, CurrentArity>,
                                       GetFunctionArityLoop<T, typename Successor<CurrentArity>::type>,
@@ -110,15 +108,19 @@ struct GetInputTypeArrayLoop<T, AccumulatedArray, Arity, Arity> : AccumulatedArr
 
 template<typename T, typename AccumulatedArray, typename CurrentIndex, typename Arity>
 struct GetInputTypeArrayLoop :
-    GetInputTypeArrayLoop<T, typename ArrayConcat<AccumulatedArray, typename GetInputType_Impl<T, CurrentIndex>::type>::type, typename Successor<CurrentIndex>::type, Arity> {};
+    GetInputTypeArrayLoop<T, typename ArrayConcat<AccumulatedArray, Array<typename GetInputType<T, CurrentIndex>::type> >::type, typename Successor<CurrentIndex>::type, Arity> {};
 
 
 template<typename T>
 struct GetInputTypeArray_Impl :
     GetInputTypeArrayLoop<T, Array<>, Integer<0>, typename GetFunctionArity<T>::type > {};
 
+}
 
+template<typename T>
+struct GetInputTypeArray : impl::GetInputTypeArray_Impl<T> {};
 
+namespace impl {
 
 template<typename InputType, typename ParamArrayItem>
 struct UseTemplateParamWhereNeeded;
@@ -198,7 +200,7 @@ struct ApplyCodomainDeduction_Impl<MFC, TypesToApply, Integer<5> > :
 template<typename T, typename CodomainMFC, typename ParamArray, typename Arity>
 struct ApplyCodomainDeduction
 {
-    typedef typename ArrayZip<typename GetInputTypeArray_Impl<T>::type, ParamArray, UseTemplateParam>::type TypesToApply;
+    typedef typename ArrayZip<typename GetInputTypeArray<T>::type, ParamArray, UseTemplateParam>::type TypesToApply;
     typedef typename ApplyCodomainDeduction_Impl<CodomainMFC, TypesToApply, Arity>::type type;
 };
 
@@ -210,9 +212,6 @@ struct GetCodomainType_Impl<T, CodomainDeduction<U>, ParamArray> : ApplyCodomain
 {};
 
 } // namespace impl
-
-template<typename T>
-struct GetInputTypeArray : impl::GetInputTypeArray_Impl<T> {};
 
 template<typename T, typename I0=no_argument, typename I1=no_argument, typename I2=no_argument, typename I3=no_argument, typename I4=no_argument>
 struct DeduceCodomainType : impl::GetCodomainType_Impl<T, typename GetCodomainType<T>::type, Array<I0, I1, I2, I3, I4> > {};
@@ -233,6 +232,9 @@ struct FunctionSignatureEnabled<T(*)()> : true_type {};
 
 template<typename T, typename Index>
 struct HasInputType<T(*)(), Index> : false_type {};
+
+template<typename T, typename Index>
+struct GetInputType<T(*)(), Index> ;
 
 template<typename T>
 struct GetFunctionArity<T(*)()> : Integer<0> {};

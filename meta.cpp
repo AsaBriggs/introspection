@@ -783,9 +783,126 @@ void test_visit()
   TEST(v.visit2);
 }
 
+struct MyFunctionObject
+{
+    typedef long input_type_0;
+    typedef int codomain_type;
+    int operator()(long){ return 1; }
+};
+
+struct ReturnFirstValue
+{
+    template<typename T>
+    struct apply
+    {
+        typedef T type;
+    };
+};
+
+struct MyGenericFunctionObject
+{
+    typedef template_param input_type_0;
+    typedef CodomainDeduction<ReturnFirstValue> codomain_type;
+
+    template<typename T>
+    T operator()(T x){ return x; }
+};
+
 void test_function_signatures()
 {
+  TEST((is_same<GetCodomainType<int(*)()>::type,int>::type()));
+  TEST((is_same<DeduceCodomainType<int(*)()>::type,int>::type()));
+  TEST((FunctionSignatureEnabled<int(*)()>::type()));
+  TEST(!(HasInputType<int(*)(), Integer<0> >::type()));
+  TEST((0 == GetFunctionArity<int(*)()>::type()));
+  TEST((is_same<Array<>, GetInputTypeArray<int(*)()>::type>::type()));
 
+
+  TEST((is_same<GetCodomainType<int(*)(long)>::type,int>::type()));
+  TEST((is_same<DeduceCodomainType<int(*)(long)>::type,int>::type()));
+  TEST((FunctionSignatureEnabled<int(*)(long)>::type()));
+  TEST((HasInputType<int(*)(long), Integer<0> >::type()));
+  TEST(!(HasInputType<int(*)(long), Integer<1> >::type()));
+  TEST((is_same<long, GetInputType<int(*)(long), Integer<0> >::type>::type()));
+  TEST((1 == GetFunctionArity<int(*)(long)>::type()));
+  TEST((is_same<Array<long>, GetInputTypeArray<int(*)(long)>::type>::type()));
+
+
+  TEST((is_same<GetCodomainType<int(*)(long, float)>::type,int>::type()));
+  TEST((is_same<DeduceCodomainType<int(*)(long, float)>::type,int>::type()));
+  TEST((FunctionSignatureEnabled<int(*)(long, float)>::type()));
+  TEST((HasInputType<int(*)(long, float), Integer<0> >::type()));
+  TEST((HasInputType<int(*)(long, float), Integer<1> >::type()));
+  TEST(!(HasInputType<int(*)(long, float), Integer<2> >::type()));
+  TEST((is_same<long, GetInputType<int(*)(long, float), Integer<0> >::type>::type()));
+  TEST((is_same<float, GetInputType<int(*)(long, float), Integer<1> >::type>::type()));
+  TEST((2 == GetFunctionArity<int(*)(long, float)>::type()));
+  TEST((is_same<Array<long, float>, GetInputTypeArray<int(*)(long, float)>::type>::type()));
+
+  TEST((is_same<GetCodomainType<int(*)(long, float, short&)>::type,int>::type()));
+  TEST((is_same<DeduceCodomainType<int(*)(long, float, short&)>::type,int>::type()));
+  TEST((FunctionSignatureEnabled<int(*)(long, float, short&)>::type()));
+  TEST((HasInputType<int(*)(long, float, short&), Integer<0> >::type()));
+  TEST((HasInputType<int(*)(long, float, short&), Integer<1> >::type()));
+  TEST((HasInputType<int(*)(long, float, short&), Integer<2> >::type()));
+  TEST(!(HasInputType<int(*)(long, float, short&), Integer<3> >::type()));
+  TEST((is_same<long, GetInputType<int(*)(long, float, short&), Integer<0> >::type>::type()));
+  TEST((is_same<float, GetInputType<int(*)(long, float, short&), Integer<1> >::type>::type()));
+  TEST((is_same<short&, GetInputType<int(*)(long, float, short&), Integer<2> >::type>::type()));
+  TEST((3 == GetFunctionArity<int(*)(long, float, short&)>::type()));
+  TEST((is_same<Array<long, float, short&>, GetInputTypeArray<int(*)(long, float, short&)>::type>::type()));
+
+  TEST((is_same<GetCodomainType<int(*)(long, float, short&, int const&)>::type,int>::type()));
+  TEST((is_same<DeduceCodomainType<int(*)(long, float, short&, int const&)>::type,int>::type()));
+  TEST((FunctionSignatureEnabled<int(*)(long, float, short&, int const&)>::type()));
+  TEST((HasInputType<int(*)(long, float, short&, int const&), Integer<0> >::type()));
+  TEST((HasInputType<int(*)(long, float, short&, int const&), Integer<1> >::type()));
+  TEST((HasInputType<int(*)(long, float, short&, int const&), Integer<2> >::type()));
+  TEST((HasInputType<int(*)(long, float, short&, int const&), Integer<3> >::type()));
+  TEST(!(HasInputType<int(*)(long, float, short&, int const&), Integer<4> >::type()));
+  TEST((is_same<long, GetInputType<int(*)(long, float, short&, int const&), Integer<0> >::type>::type()));
+  TEST((is_same<float, GetInputType<int(*)(long, float, short&, int const&), Integer<1> >::type>::type()));
+  TEST((is_same<short&, GetInputType<int(*)(long, float, short&, int const&), Integer<2> >::type>::type()));
+  TEST((is_same<int, GetInputType<int(*)(long, float, short&, int const&), Integer<3> >::type>::type()));
+  TEST((4 == GetFunctionArity<int(*)(long, float, short&, int const&)>::type()));
+  TEST((is_same<Array<long, float, short&, int>, GetInputTypeArray<int(*)(long, float, short&, int const&)>::type>::type()));
+
+
+  TEST((is_same<GetCodomainType<int(*)(long, float, short&, int const&, bool)>::type,int>::type()));
+  TEST((is_same<DeduceCodomainType<int(*)(long, float, short&, int const&, bool)>::type,int>::type()));
+  TEST((FunctionSignatureEnabled<int(*)(long, float, short&, int const&, bool)>::type()));
+  TEST((HasInputType<int(*)(long, float, short&, int const&, bool), Integer<0> >::type()));
+  TEST((HasInputType<int(*)(long, float, short&, int const&, bool), Integer<1> >::type()));
+  TEST((HasInputType<int(*)(long, float, short&, int const&, bool), Integer<2> >::type()));
+  TEST((HasInputType<int(*)(long, float, short&, int const&, bool), Integer<3> >::type()));
+  TEST((HasInputType<int(*)(long, float, short&, int const&, bool), Integer<4> >::type()));
+  TEST(!(HasInputType<int(*)(long, float, short&, int const&, bool), Integer<5> >::type()));
+  TEST((is_same<long, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<0> >::type>::type()));
+  TEST((is_same<float, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<1> >::type>::type()));
+  TEST((is_same<short&, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<2> >::type>::type()));
+  TEST((is_same<int, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<3> >::type>::type()));
+  TEST((is_same<bool, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<4> >::type>::type()));
+  TEST((5 == GetFunctionArity<int(*)(long, float, short&, int const&, bool)>::type()));
+  TEST((is_same<Array<long, float, short&, int, bool>, GetInputTypeArray<int(*)(long, float, short&, int const&, bool)>::type>::type()));
+
+  TEST((is_same<GetCodomainType<MyFunctionObject>::type,int>::type()));
+  TEST((is_same<DeduceCodomainType<MyFunctionObject>::type,int>::type()));
+  TEST((FunctionSignatureEnabled<MyFunctionObject>::type()));
+  TEST((HasInputType<MyFunctionObject, Integer<0> >::type()));
+  TEST(!(HasInputType<MyFunctionObject, Integer<1> >::type()));
+  TEST((is_same<long, GetInputType<MyFunctionObject, Integer<0> >::type>::type()));
+  TEST((1 == GetFunctionArity<MyFunctionObject>::type()));
+  TEST((is_same<Array<long>, GetInputTypeArray<MyFunctionObject>::type>::type()));
+
+  // OK, test out the generic codomain deduction mechanism
+  TEST((is_same<GetCodomainType<MyGenericFunctionObject>::type,CodomainDeduction<ReturnFirstValue> >::type()));
+  TEST((is_same<DeduceCodomainType<MyGenericFunctionObject, int>::type,int>::type()));
+  TEST((FunctionSignatureEnabled<MyGenericFunctionObject>::type()));
+  TEST((HasInputType<MyGenericFunctionObject, Integer<0> >::type()));
+  TEST(!(HasInputType<MyGenericFunctionObject, Integer<1> >::type()));
+  TEST((is_same<template_param, GetInputType<MyGenericFunctionObject, Integer<0> >::type>::type()));
+  TEST((1 == GetFunctionArity<MyGenericFunctionObject>::type()));
+  TEST((is_same<Array<template_param>, GetInputTypeArray<MyGenericFunctionObject>::type>::type()));
 }
 
 } // unnamed namespace

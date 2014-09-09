@@ -398,7 +398,7 @@ template<typename T, typename CurrentArity>
 struct IntrospectionArityLoop;
 
 // Count upwards; higher Arity is less likely.
-// Note that Indexing is zero based, and that CurrentArity suggests 0..CurrentArity are available
+// Note that Indexing is zero based, and that CurrentArity suggests 0..CurrentArity-1 (inclusive) are available
 template<typename T, typename CurrentArity>
 struct IntrospectionArityLoop : eval_if<HasIntrospectionItem_Impl<T, CurrentArity>,
                                         IntrospectionArityLoop<T, typename Successor<CurrentArity>::type>,
