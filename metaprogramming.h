@@ -407,16 +407,6 @@ template<typename T0=Empty, typename T1=Empty, typename T2=Empty, typename T3=Em
 struct Array
 {
     typedef Array type;
-    typedef T0 M0;
-    typedef T1 M1;
-    typedef T2 M2;
-    typedef T3 M3;
-    typedef T4 M4;
-    typedef T5 M5;
-    typedef T6 M6;
-    typedef T7 M7;
-    typedef T8 M8;
-    typedef T9 M9;
 };
 
 namespace impl {

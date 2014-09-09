@@ -18,6 +18,10 @@ typename disable_if<is_same<T, int>, char>::type disable_if_test() { return UNEX
 template<typename T>
 typename disable_if<not_<is_same<T, int> >, char>::type disable_if_test() { return EXPECTED_VALUE; }
 
+// All distinct types
+typedef Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, long, unsigned long> TestArray;
+typedef Array<unsigned long, long, unsigned int, int, unsigned short, short, char, signed char, unsigned char, bool> ReversedTestArray;
+
 typedef Array<> Bool0;
 typedef Array<bool> Bool1;
 typedef Array<bool, bool> Bool2;
@@ -57,6 +61,85 @@ void test_array_concat()
   test_array_concat2<LHSIndex, Integer<8> >();
   test_array_concat2<LHSIndex, Integer<9> >();
 }
+
+void test_array_split()
+{
+  // Use TestArray as at all indices have different types
+  TEST((is_same<Array<Array<>,
+                      TestArray>,
+        ArraySplit<TestArray, Integer<0> >::type>()));
+
+  TEST((is_same<Array<Array<bool>,
+                      Array<unsigned char, signed char, char, short, unsigned short, int, unsigned int, long, unsigned long> >,
+        ArraySplit<TestArray, Integer<1> >::type>()));
+
+  TEST((is_same<Array<Array<bool, unsigned char>,
+                Array<signed char, char, short, unsigned short, int, unsigned int, long, unsigned long> >,
+        ArraySplit<TestArray, Integer<2> >::type>()));
+
+  TEST((is_same<Array<Array<bool, unsigned char, signed char>,
+                      Array<char, short, unsigned short, int, unsigned int, long, unsigned long> >,
+        ArraySplit<TestArray, Integer<3> >::type>()));
+
+  TEST((is_same<Array<Array<bool, unsigned char, signed char, char>,
+                      Array<short, unsigned short, int, unsigned int, long, unsigned long> >,
+        ArraySplit<TestArray, Integer<4> >::type>()));
+
+  TEST((is_same<Array<Array<bool, unsigned char, signed char, char,short>,
+                      Array<unsigned short, int, unsigned int, long, unsigned long> >,
+        ArraySplit<TestArray, Integer<5> >::type>()));
+
+  TEST((is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short>,
+                      Array<int, unsigned int, long, unsigned long> >,
+        ArraySplit<TestArray, Integer<6> >::type>()));
+
+  TEST((is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int>,
+                      Array<unsigned int, long, unsigned long> >,
+        ArraySplit<TestArray, Integer<7> >::type>()));
+
+  TEST((is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int>,
+                      Array<long, unsigned long> >,
+        ArraySplit<TestArray, Integer<8> >::type>()));
+
+  TEST((is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, long>,
+                      Array<unsigned long> >,
+        ArraySplit<TestArray, Integer<9> >::type>()));
+
+  TEST((is_same<Array<TestArray,
+                      Array<> >,
+        ArraySplit<TestArray, Integer<10> >::type>()));
+}
+
+template<typename Length>
+void test_array_reverse2()
+{
+  typedef typename ArraySplit<TestArray, Length>::type SplitArray;
+  typedef typename ArrayReverse<typename ArrayIndex<SplitArray, Integer<0> >::type>::type ReversedFirst;
+  typedef typename ArrayReverse<typename ArrayIndex<SplitArray, Integer<1> >::type>::type ReversedSecond;
+  typedef typename ArrayConcat<ReversedSecond, ReversedFirst>::type Result;
+  TEST((is_same<ReversedTestArray, Result>()));
+}
+
+void test_array_reverse()
+{
+  test_array_reverse2<Integer<0> >();
+  test_array_reverse2<Integer<1> >();
+  test_array_reverse2<Integer<2> >();
+  test_array_reverse2<Integer<3> >();
+  test_array_reverse2<Integer<4> >();
+  test_array_reverse2<Integer<5> >();
+  test_array_reverse2<Integer<6> >();
+  test_array_reverse2<Integer<7> >();
+  test_array_reverse2<Integer<8> >();
+  test_array_reverse2<Integer<9> >();
+  test_array_reverse2<Integer<10> >();
+}
+
+void test_array_rotate()
+{}
+
+void test_array_transform()
+{}
 
 void test_metaprogramming()
 {
@@ -181,8 +264,6 @@ void test_metaprogramming()
   TEST((is_same<decay_ref<Ref<int, DefaultTag> >::type, int&>::type()));
   TEST((is_same<decay_ref<Ref<int const, DefaultTag> >::type, int const&>::type()));
 
-  typedef Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, long, unsigned long> TestArray;
-
   TEST((is_same<TestArray, TestArray::type>::type()));
 
 #define ARRAY_INDEX_TEST(n, X) TEST((is_same<ArrayIndex<TestArray, Integer<n> >::type, X>::type()))
@@ -196,6 +277,7 @@ void test_metaprogramming()
   ARRAY_INDEX_TEST(7, unsigned int);
   ARRAY_INDEX_TEST(8, long);
   ARRAY_INDEX_TEST(9, unsigned long);
+#undef ARRAY_INDEX_TEST
 
   TEST((0 == ArraySize<Bool0>::type()));
   TEST((1 == ArraySize<Bool1>::type()));
@@ -219,6 +301,11 @@ void test_metaprogramming()
   test_array_concat<Integer<7> >();
   test_array_concat<Integer<8> >();
   test_array_concat<Integer<9> >();
+
+  test_array_split();
+  test_array_reverse();
+  test_array_rotate();
+  test_array_transform();
 }
 
 void test_empty()
