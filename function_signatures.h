@@ -26,6 +26,14 @@ GENERATE_HAS_AND_GET_MEMBER_TYPE(codomain_type)
 
 // T const & versus T, convertible to T versus T?
 
+
+template<typename T>
+struct GetCodomainType : GetMemberType_codomain_type<T> {};
+
+template<typename T>
+struct FunctionSignatureEnabled : HasMemberType_codomain_type<T> {};
+
+
 namespace impl {
 
 template<typename T, typename Index>
@@ -68,14 +76,31 @@ struct GetInputType_Impl<T, Integer<3> > : GetMemberType_input_type_3<T> {};
 template<typename T>
 struct GetInputType_Impl<T, Integer<4> > : GetMemberType_input_type_4<T> {};
 
+} // namespace impl
+
+template<typename T, typename Index>
+struct HasInputType : impl::HasInputType_Impl<T, Index> {};
+
+template<typename T, typename Index>
+struct GetInputType : impl::GetInputType_Impl<T, Index> {};
+
+namespace impl {
 
 // Count upwards; higher Arity is less likely.
 // Note that Indexing is zero based, and that CurrentArity suggests 0..CurrentArity are available
 template<typename T, typename CurrentArity>
-struct GetFunctionArityLoop : eval_if<HasInputType_Impl<T, CurrentArity>,
+struct GetFunctionArityLoop : eval_if<HasInputType<T, CurrentArity>,
                                       GetFunctionArityLoop<T, typename Successor<CurrentArity>::type>,
                                       CurrentArity>
 {};
+
+} // namespace impl
+
+template<typename T>
+struct GetFunctionArity : impl::GetFunctionArityLoop<T, Integer<0> > {};
+
+
+namespace impl {
 
 template<typename T, typename AccumulatedArray, typename CurrentIndex, typename Arity>
 struct GetInputTypeArrayLoop;
@@ -90,7 +115,7 @@ struct GetInputTypeArrayLoop :
 
 template<typename T>
 struct GetInputTypeArray_Impl :
-    GetInputTypeArrayLoop<T, Array<>, Integer<0>, typename GetFunctionArityLoop<T, Integer<0> >::type > {};
+    GetInputTypeArrayLoop<T, Array<>, Integer<0>, typename GetFunctionArity<T>::type > {};
 
 
 
@@ -181,44 +206,218 @@ template<typename T, typename CodomainType, typename ParamArray>
 struct GetCodomainType_Impl : identity_type<CodomainType> {};
 
 template<typename T, typename U, typename ParamArray>
-struct GetCodomainType_Impl<T, CodomainDeduction<U>, ParamArray> : ApplyCodomainDeduction<T, U, ParamArray, typename GetFunctionArityLoop<T, Integer<0> >::type>
+struct GetCodomainType_Impl<T, CodomainDeduction<U>, ParamArray> : ApplyCodomainDeduction<T, U, ParamArray, typename GetFunctionArity<T>::type>
 {};
 
 } // namespace impl
 
-// Only need a codomain before the fun can start
-template<typename T>
-struct FunctionSignatureEnabled : HasMemberType_codomain_type<T> {};
-
-template<typename T, typename Index>
-struct HasInputType : impl::HasInputType_Impl<T, Index> {};
-
-template<typename T, typename Index>
-struct GetInputType : impl::GetInputType_Impl<T, Index> {};
-
 template<typename T>
 struct GetInputTypeArray : impl::GetInputTypeArray_Impl<T> {};
 
-template<typename T>
-struct GetFunctionArity : impl::GetFunctionArityLoop<T, Integer<0> > {};
-
 template<typename T, typename I0=no_argument, typename I1=no_argument, typename I2=no_argument, typename I3=no_argument, typename I4=no_argument>
-struct GetCodomainType : impl::GetCodomainType_Impl<T, typename GetMemberType_codomain_type<T>::type, Array<I0, I1, I2, I3, I4> > {};
+struct DeduceCodomainType : impl::GetCodomainType_Impl<T, typename GetCodomainType<T>::type, Array<I0, I1, I2, I3, I4> > {};
 
-/*
+
+
+
+
 //Specialisations for function pointers
 template<typename T>
-struct GetCodomainType<T(*)>
+struct GetCodomainType<T(*)()>
 {
-  typedef T type;
+    typedef T type;
 };
 
 template<typename T>
-struct FunctionSignatureEnabled<T(*)> : true_type {};
+struct FunctionSignatureEnabled<T(*)()> : true_type {};
 
 template<typename T, typename Index>
-struct HasInputType<T(*), Index> : false_type {};
-*/
+struct HasInputType<T(*)(), Index> : false_type {};
+
+template<typename T>
+struct GetFunctionArity<T(*)()> : Integer<0> {};
+
+
+
+template<typename T, typename U>
+struct GetCodomainType<T(*)(U)>
+{
+    typedef T type;
+};
+
+template<typename T, typename U>
+struct FunctionSignatureEnabled<T(*)(U)> : true_type {};
+
+template<typename T, typename U>
+struct HasInputType<T(*)(U), Integer<0> > : true_type {};
+
+template<typename T, typename U, typename Index>
+struct HasInputType<T(*)(U), Index> : false_type {};
+
+template<typename T, typename U>
+struct GetInputType<T(*)(U), Integer<0> > : deduce_input_type<U> {};
+
+template<typename T, typename U>
+struct GetFunctionArity<T(*)(U)> : Integer<1> {};
+
+
+
+
+template<typename T, typename U, typename V>
+struct GetCodomainType<T(*)(U, V)>
+{
+    typedef T type;
+};
+
+template<typename T, typename U, typename V>
+struct FunctionSignatureEnabled<T(*)(U, V)> : true_type {};
+
+template<typename T, typename U, typename V>
+struct HasInputType<T(*)(U, V), Integer<0> > : true_type {};
+
+template<typename T, typename U, typename V>
+struct HasInputType<T(*)(U, V), Integer<1> > : true_type {};
+
+template<typename T, typename U, typename V, typename Index>
+struct HasInputType<T(*)(U, V), Index> : false_type {};
+
+template<typename T, typename U, typename V>
+struct GetInputType<T(*)(U, V), Integer<0> > : deduce_input_type<U> {};
+
+template<typename T, typename U, typename V>
+struct GetInputType<T(*)(U, V), Integer<1> > : deduce_input_type<V> {};
+
+template<typename T, typename U, typename V>
+struct GetFunctionArity<T(*)(U, V)> : Integer<2> {};
+
+
+
+
+
+template<typename T, typename U, typename V, typename W>
+struct GetCodomainType<T(*)(U, V, W)>
+{
+    typedef T type;
+};
+
+template<typename T, typename U, typename V, typename W>
+struct FunctionSignatureEnabled<T(*)(U, V, W)> : true_type {};
+
+template<typename T, typename U, typename V, typename W>
+struct HasInputType<T(*)(U, V, W), Integer<0> > : true_type {};
+
+template<typename T, typename U, typename V, typename W>
+struct HasInputType<T(*)(U, V, W), Integer<1> > : true_type {};
+
+template<typename T, typename U, typename V, typename W>
+struct HasInputType<T(*)(U, V, W), Integer<2> > : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename Index>
+struct HasInputType<T(*)(U, V, W), Index> : false_type {};
+
+template<typename T, typename U, typename V, typename W>
+struct GetInputType<T(*)(U, V, W), Integer<0> > : deduce_input_type<U> {};
+
+template<typename T, typename U, typename V, typename W>
+struct GetInputType<T(*)(U, V, W), Integer<1> > : deduce_input_type<V> {};
+
+template<typename T, typename U, typename V, typename W>
+struct GetInputType<T(*)(U, V, W), Integer<2> > : deduce_input_type<W> {};
+
+template<typename T, typename U, typename V, typename W>
+struct GetFunctionArity<T(*)(U, V, W)> : Integer<3> {};
+
+
+
+
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct GetCodomainType<T(*)(U, V, W, X)>
+{
+    typedef T type;
+};
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct FunctionSignatureEnabled<T(*)(U, V, W, X)> : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct HasInputType<T(*)(U, V, W, X), Integer<0> > : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct HasInputType<T(*)(U, V, W, X), Integer<1> > : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct HasInputType<T(*)(U, V, W, X), Integer<2> > : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct HasInputType<T(*)(U, V, W, X), Integer<3> > : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Index>
+struct HasInputType<T(*)(U, V, W, X), Index> : false_type {};
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct GetInputType<T(*)(U, V, W, X), Integer<0> > : deduce_input_type<U> {};
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct GetInputType<T(*)(U, V, W, X), Integer<1> > : deduce_input_type<V> {};
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct GetInputType<T(*)(U, V, W, X), Integer<2> > : deduce_input_type<W> {};
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct GetInputType<T(*)(U, V, W, X), Integer<3> > : deduce_input_type<X> {};
+
+template<typename T, typename U, typename V, typename W, typename X>
+struct GetFunctionArity<T(*)(U, V, W, X)> : Integer<4> {};
+
+
+
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct GetCodomainType<T(*)(U, V, W, X, Y)>
+{
+    typedef T type;
+};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct FunctionSignatureEnabled<T(*)(U, V, W, X, Y)> : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct HasInputType<T(*)(U, V, W, X, Y), Integer<0> > : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct HasInputType<T(*)(U, V, W, X, Y), Integer<1> > : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct HasInputType<T(*)(U, V, W, X, Y), Integer<2> > : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct HasInputType<T(*)(U, V, W, X, Y), Integer<3> > : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct HasInputType<T(*)(U, V, W, X, Y), Integer<4> > : true_type {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y, typename Index>
+struct HasInputType<T(*)(U, V, W, X, Y), Index> : false_type {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct GetInputType<T(*)(U, V, W, X, Y), Integer<0> > : deduce_input_type<U> {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct GetInputType<T(*)(U, V, W, X, Y), Integer<1> > : deduce_input_type<V> {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct GetInputType<T(*)(U, V, W, X, Y), Integer<2> > : deduce_input_type<W> {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct GetInputType<T(*)(U, V, W, X, Y), Integer<3> > : deduce_input_type<X> {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct GetInputType<T(*)(U, V, W, X, Y), Integer<4> > : deduce_input_type<Y> {};
+
+template<typename T, typename U, typename V, typename W, typename X, typename Y>
+struct GetFunctionArity<T(*)(U, V, W, X, Y)> : Integer<5> {};
+
 } // namespace intro
 
 #endif
