@@ -753,13 +753,11 @@ struct TestVisitor
 
 };
 
-struct testVisitor2
-{
-
-};
-
 void test_visit()
 {
+  // Visitor mechanism uses looping so testing a short
+  // container exercises no different (meta)code to a
+  // longer container.
   TestVisitor v = {false, false, false};
   VisitorTestType t = {3, 9L, 'a'};
   v = visit(t, v);
