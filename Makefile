@@ -18,5 +18,5 @@ meta.o: meta.cpp $(INCLUDES)
 .PHONY: clean 
 
 clean :
-	rm -rf 
+	rm -rf meta
 	rm -rf *.o
