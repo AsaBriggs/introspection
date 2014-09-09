@@ -136,10 +136,32 @@ void test_array_reverse()
 }
 
 void test_array_rotate()
-{}
+{
+  typedef Array<bool, char, short, unsigned short, unsigned char, signed char, int, unsigned int, long, unsigned long> Expected;
+  // F = 1
+  // M = 3
+  // L = 6
+  TEST((is_same<Expected, ArrayRotate<TestArray, Integer<1>, Integer<3>, Integer<6> >::type >()));
+
+  typedef Array<unsigned short, int, unsigned int, long, unsigned long, bool, unsigned char, signed char, char, short> Expected2;
+  // rotate test array about index 5, i.e. from bool up to but not including unsigned short is rotated
+  TEST((is_same<Expected2, ArrayRotateDefault<TestArray, Integer<5> >::type >()));
+}
+
+struct AddOne
+{
+  template<typename T>
+  struct apply : Add<T, Integer<1> > {};
+};
 
 void test_array_transform()
-{}
+{
+  typedef Array<Integer<0>, Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9> > Integers;
+
+  typedef Array<Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9>, Integer<10> > Expected;
+
+  TEST((is_same<ArrayTransform<Integers, AddOne>::type, Expected>()));
+}
 
 void test_metaprogramming()
 {

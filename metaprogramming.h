@@ -648,12 +648,12 @@ struct ArrayRotate
   // 0..F, F..M, M..L, L..End
   //
   typedef typename ArraySplit<T, F>::type SplitAtFirst; // T0 = 0..F
-  typedef typename ArraySplit<typename SplitAtFirst::T1, typename Subtract<M, F>::type>::type SplitAtM; // T0 = F..M
-  typedef typename ArraySplit<typename SplitAtM::T1, typename Subtract<L, M>::type>::type SplitAtL; // T0 = M..L, T1 = L..end
+  typedef typename ArraySplit<typename ArrayIndex<SplitAtFirst, Integer<1> >::type, typename Subtract<M, F>::type>::type SplitAtM; // T0 = F..M
+  typedef typename ArraySplit<typename ArrayIndex<SplitAtM, Integer<1> >::type, typename Subtract<L, M>::type>::type SplitAtL; // T0 = M..L, T1 = L..end
 
-  typedef typename ArrayConcat<typename SplitAtFirst::T0, typename SplitAtL::T0>::type A; // 0..F & M..L
-  typedef typename ArrayConcat<A, typename SplitAtM::T0>::type B; // 0..F & M..L & F..M
-  typedef typename ArrayConcat<B, typename SplitAtL::T1>::type type; // 0..F & M..L & F..M & L..End
+  typedef typename ArrayConcat<typename ArrayIndex<SplitAtFirst, Integer<0> >::type, typename ArrayIndex<SplitAtL, Integer<0> >::type>::type A; // 0..F & M..L
+  typedef typename ArrayConcat<A, typename ArrayIndex<SplitAtM, Integer<0> >::type>::type B; // 0..F & M..L & F..M
+  typedef typename ArrayConcat<B, typename ArrayIndex<SplitAtL, Integer<1> >::type>::type type; // 0..F & M..L & F..M & L..End
 };
 
 template<typename T, typename Fun>
