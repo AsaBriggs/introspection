@@ -580,6 +580,8 @@ MAKE_DEFAULT_GET_N(7)
 MAKE_DEFAULT_GET_N(8)
 MAKE_DEFAULT_GET_N(9)
 
+#undef MAKE_DEFAULT_GET_N
+
 } // namespace impl
 
 template<typename T, typename Index>
