@@ -1,7 +1,7 @@
-#ifndef METAPROGRAMMING
-#define METAPROGRAMMING
+#ifndef INCLUDED_METAPROGRAMMING
+#define INCLUDED_METAPROGRAMMING
 
-#include "detect_traits.h"
+namespace intro {
 
 struct Empty { typedef Empty type; };
 
@@ -699,5 +699,7 @@ struct ArrayRotateDefault : impl::ArrayRotate<T, Integer<0>, M, typename ArraySi
 // Note that applying Fun to Empty should return Empty
 template<typename T, typename Fun>
 struct ArrayTransform : impl::ArrayTransform<T, Fun> {};
+
+} // namespace intro
 
 #endif

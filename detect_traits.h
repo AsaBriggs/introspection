@@ -1,5 +1,7 @@
-#ifndef DETECT_TRAITS
-#define DETECT_TRAITS
+#ifndef INCLUDED_DETECT_TRAITS
+#define INCLUDED_DETECT_TRAITS
+
+namespace intro {
 
 struct true_type;
 
@@ -45,5 +47,7 @@ struct GetMemberType_##Type             \
 #define GENERATE_HAS_AND_GET_MEMBER_TYPE(Type) \
 GENERATE_HAS_MEMBER_TYPE(Type) \
 GENERATE_GET_MEMBER_TYPE(Type)
+
+} // namespace intro
 
 #endif

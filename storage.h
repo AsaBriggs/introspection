@@ -1,12 +1,15 @@
-#ifndef TYPE_LAYOUT
-#define TYPE_LAYOUT
+#ifndef INCLUDED_STORAGE
+#define INCLUDED_STORAGE
 
+#ifndef INCLUDED_DETECT_TRAITS
 #include "detect_traits.h"
+#endif
+
+#ifndef INCLUDED_METAPROGRAMMING
 #include "metaprogramming.h"
+#endif
 
-template<typename T, typename Tag>
-struct tagged_type;
-
+namespace intro {
 
 template<typename Tag=DefaultTag>
 struct empty_type
@@ -452,7 +455,7 @@ struct GenerateIntrospectionItems : impl::GenerateIntrospectionItems_Impl<T> {};
 
 namespace impl {
 
-namespace GenerateStorage {
+namespace GenerateStorageNS {
 
 template<typename Array, typename Tag>
 struct GenerateStorageFromArray;
@@ -523,7 +526,7 @@ struct GenerateStorageFromArray<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, T
     typedef decuple<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, Tag> type;
 };
 
-} // namespace GenerateStorage
+} // namespace GenerateStorageNS
 
 template<typename T, typename Enabled>
 struct GenerateStorage_Impl;
@@ -533,7 +536,7 @@ struct GenerateStorage_Impl<T, false_type> {};
 
 template<typename T>
 struct GenerateStorage_Impl<T, true_type> :
-    GenerateStorage::GenerateStorageFromArray<typename GenerateIntrospectionItems_Impl<T>::type,
+    GenerateStorageNS::GenerateStorageFromArray<typename GenerateIntrospectionItems_Impl<T>::type,
                                               typename IntrospectionStorageTag<T>::type>
 {};
 
@@ -703,7 +706,7 @@ struct Equal
 
 template<typename T>
 inline
-typename enable_if<IntrospectionIndirectStorage<T>, typename ::GenerateStorage<T>::type>::type const& get_storage(T const& x)
+typename enable_if<IntrospectionIndirectStorage<T>, typename GenerateStorage<T>::type>::type const& get_storage(T const& x)
 {
     return x.m0;
 }
@@ -726,15 +729,6 @@ inline bool equal(T const& x, T const& y)
 {
     return Equal<T, Integer<0>, typename IntrospectionArity<T>::type, GetComparator>()(x, y);
 }
-
-struct ForEach
-{
-  template<typename T, typename Index, typename Arity>
-  struct apply
-  {
-
-  };
-};
 
 } // namespace impl
 
@@ -817,22 +811,35 @@ operator>=(T const& x, T const& y)
 template<typename T, typename enable=void>
 struct generate_introspected_underlying_type : IntrospectionEnabled<T> {};
 
+template<typename Tag>
+struct generate_introspected_underlying_type<empty_type<Tag> > : false_type {};
+
+template<typename T, typename Tag>
+struct generate_introspected_underlying_type<singleton<T, Tag> > : false_type {};
+
 template<typename T>
 struct underlying_type<T,
     typename enable_if<generate_introspected_underlying_type<T>, void>::type>
 {
     typedef typename ArrayTransform<typename GenerateIntrospectionItems<T>::type, GetUnderlyingType>::type TransformedTypes;
 
-    typedef typename impl::GenerateStorage::GenerateStorageFromArray<TransformedTypes,
+    typedef typename impl::GenerateStorageNS::GenerateStorageFromArray<TransformedTypes,
         typename IntrospectionStorageTag<T>::type>::type type;
 };
+
+// Empty type and singleton can be reduced to simpler cases, unwrapping the struct in singelton's case
+template<typename Tag>
+struct underlying_type<empty_type<Tag> > : Empty {};
+
+template<typename T, typename Tag>
+struct underlying_type<singleton<T, Tag> > : get_underlying_type<T> {};
 
 template<typename Arr, typename Tag>
 struct deduce_type
 {
     typedef typename ArrayTransform<Arr, DecayRef>::type TransformedTypes;
 
-    typedef typename impl::GenerateStorage::GenerateStorageFromArray<TransformedTypes,
+    typedef typename impl::GenerateStorageNS::GenerateStorageFromArray<TransformedTypes,
         Tag>::type type;
 };
 
@@ -912,5 +919,7 @@ inline typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Tag>:
     typedef typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Tag>::type T;
     return T::make(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9);
 }
+
+} // namespace intro
 
 #endif

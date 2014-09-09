@@ -1,6 +1,9 @@
 #include <cassert>
 #include "storage.h"
 
+namespace intro {
+namespace {
+
 #define TEST(x) assert((x))
 
 const char EXPECTED_VALUE = 'a';
@@ -733,6 +736,11 @@ void test_decuple()
     type h = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, true, 89};
     test_generated_operations(x, h);
 }
+
+} // unnamed namespace
+} // namespace intro
+
+using namespace intro;
 
 int main()
 {
