@@ -244,6 +244,10 @@ void test_metaprogramming()
   TEST((is_same<make_const_ref<int volatile const&>::type, int volatile const&>::type()));
   TEST((is_same<make_const_ref<int volatile &>::type, int volatile const&>::type()));
 
+  TEST((is_same<int&, deduce_input_type<int&>::type >::type()));
+  TEST((is_same<int, deduce_input_type<int const&>::type >::type()));
+  TEST((is_same<int, deduce_input_type<int>::type >::type()));
+
   TEST((is_same<parameter_type<int>::type, int const&>::type()));
   TEST((is_same<parameter_type<int&>::type, int&>::type()));
 
@@ -736,6 +740,33 @@ void test_decuple()
     type h = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, true, 89};
     test_generated_operations(x, h);
 }
+typedef triple<int, long, char> VisitorTestType;
+
+struct TestVisitor
+{
+  bool visit0;
+  bool visit1;
+  bool visit2;
+  void operator()(int const&, Integer<0>) { visit0 = true; }
+  void operator()(long const&, Integer<1>) { visit1 = true; }
+  void operator()(char const&, Integer<2>) { visit2 = true; }
+
+};
+
+struct testVisitor2
+{
+
+};
+
+void test_visit()
+{
+  TestVisitor v = {false, false, false};
+  VisitorTestType t = {3, 9L, 'a'};
+  v = visit(t, v);
+  TEST(v.visit0);
+  TEST(v.visit1);
+  TEST(v.visit2);
+}
 
 } // unnamed namespace
 } // namespace intro
@@ -756,4 +787,5 @@ int main()
     test_octuple();
     test_nonuple();
     test_decuple();
+    test_visit();
 }

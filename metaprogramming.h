@@ -233,6 +233,20 @@ struct parameter_type_impl<T&>
     typedef T& type;
 };
 
+
+template<typename T>
+struct deduce_input_type_impl
+{
+    typedef T type;
+};
+
+template<typename T>
+struct deduce_input_type_impl<T const&>
+{
+    typedef T type;
+};
+
+
 template<typename T>
 struct decay_ref_impl
 {
@@ -307,6 +321,9 @@ struct is_reference : impl::is_reference_impl<T> {};
 
 template<typename T>
 struct make_const_ref : impl::make_const_ref_impl<T> {};
+
+template<typename T>
+struct deduce_input_type : impl::deduce_input_type_impl<T> {};
 
 template<typename T>
 struct parameter_type : impl::parameter_type_impl<T> {};

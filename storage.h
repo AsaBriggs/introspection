@@ -589,123 +589,6 @@ struct Get : impl::DefaultGet<T, Index> {};
 
 namespace impl {
 
-// OK, we are coming to the essence of visit...
-// From index 0 .. Arity-1 apply the function
-// val= apply( Get<T, Index>()(x), Get<T, Index>()(y), val);
-//
-//  template<typename Index>
-//  codomain_type operator()(T const& x, T const& y)
-//
-// default x < y || !(y < x) && DEFAULT
-//
-// struct Operator
-// {
-//     template<typename Index>
-//     struct apply;
-// };
-// foldl/foldr
-
-struct GetLess
-{
-    template<typename T>
-    struct apply
-    {
-        typedef less<T> type;
-    };
-};
-
-struct GetOperatorLessThan
-{
-    template<typename T>
-    struct apply : OperatorLessThan<T> {};
-};
-
-struct GetEqual
-{
-    template<typename T>
-    struct apply
-    {
-        typedef equal<T> type;
-    };
-};
-
-struct GetOperatorEquals
-{
-    template<typename T>
-    struct apply : OperatorEquals<T> {};
-};
-
-
-template<typename T, typename CurrentIndex, typename Arity, typename GetComparator>
-struct Less;
-
-template<typename T, typename Arity, typename GetComparator>
-struct Less<T, Arity, Arity, GetComparator>
-{
-    typedef Less type;
-    typedef true_type IntrospectionEnabled;
-    typedef T input_type_0;
-    typedef T input_type_1;
-    typedef bool codomain_type;
-
-    inline codomain_type operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
-    {
-        return false;
-    }
-};
-
-template<typename T, typename Index, typename Arity, typename GetComparator>
-struct Less
-{
-    typedef Less type;
-    typedef true_type IntrospectionEnabled;
-    typedef T input_type_0;
-    typedef T input_type_1;
-    typedef bool codomain_type;
-
-    inline codomain_type operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
-    {
-        typedef typename GetComparator::template apply<typename GetIntrospectionItem<T, Index>::type>::type Cmp;
-        typedef typename Get<T, Index>::type Getter;
-        return Cmp()(Getter()(x), Getter()(y)) || (!Cmp()(Getter()(y), Getter()(x)) && Less<T, typename Successor<Index>::type, Arity, GetComparator>()(x, y));
-    }
-};
-
-template<typename T, typename CurrentIndex, typename Arity, typename GetComparator>
-struct Equal;
-
-template<typename T, typename Arity, typename GetComparator>
-struct Equal<T, Arity, Arity, GetComparator>
-{
-    typedef Equal type;
-    typedef true_type IntrospectionEnabled;
-    typedef T input_type_0;
-    typedef T input_type_1;
-    typedef bool codomain_type;
-
-    inline codomain_type operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
-    {
-        return true;
-    }
-};
-
-template<typename T, typename Index, typename Arity, typename GetComparator>
-struct Equal
-{
-    typedef Equal type;
-    typedef true_type IntrospectionEnabled;
-    typedef T input_type_0;
-    typedef T input_type_1;
-    typedef bool codomain_type;
-
-    inline codomain_type operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
-    {
-        typedef typename GetComparator::template apply<typename GetIntrospectionItem<T, Index>::type>::type Cmp;
-        typedef typename Get<T, Index>::type Getter;
-        return Cmp()(Getter()(x), Getter()(y)) && Equal<T, typename Successor<Index>::type, Arity, GetComparator>()(x, y);
-    }
-};
-
 template<typename T>
 inline
 typename enable_if<IntrospectionIndirectStorage<T>, typename GenerateStorage<T>::type>::type const& get_storage(T const& x)
@@ -720,17 +603,168 @@ typename disable_if<IntrospectionIndirectStorage<T>, T>::type const& get_storage
     return x;
 }
 
-template<typename GetComparator, typename T>
-inline bool less(T const& x, T const& y)
+template<typename T, typename Proc, typename Index, typename Arity>
+struct Visit1;
+
+template<typename T, typename Proc, typename Arity>
+struct Visit1<T, Proc, Arity, Arity>
 {
-    return Less<T, Integer<0>, typename IntrospectionArity<T>::type, GetComparator>()(x, y);
+    typedef Visit1 type;
+    typedef true_type IntrospectionEnabled;
+    typedef typename deduce_input_type<T&>::type input_type_0;
+    typedef Proc input_type_1;
+    typedef Proc codomain_type;
+
+    inline Proc operator()(T& x, Proc p)
+    {
+        return p;
+    }
+};
+
+template<typename T, typename Proc, typename Index, typename Arity>
+struct Visit1
+{
+    typedef Visit1 type;
+    typedef true_type IntrospectionEnabled;
+    typedef typename deduce_input_type<T&>::type input_type_0;
+    typedef Proc input_type_1;
+    typedef Proc codomain_type;
+
+    inline Proc operator()(T& x, Proc p)
+    {
+        typedef typename Get<T, Index>::type Getter;
+        p(Getter()(x), Index());
+        return Visit1<T, Proc, typename Successor<Index>::type, Arity>()(x, p);
+    }
+};
+
+template<typename T, typename Proc, typename Index, typename Arity>
+struct Visit2;
+
+template<typename T, typename Proc, typename Arity>
+struct Visit2<T, Proc, Arity, Arity>
+{
+    typedef Visit2 type;
+    typedef true_type IntrospectionEnabled;
+    typedef typename deduce_input_type<T&>::type input_type_0;
+    typedef typename deduce_input_type<T&>::type input_type_1;
+    typedef Proc input_type_2;
+    typedef Proc codomain_type;
+
+    inline Proc operator()(T& x, T& y, Proc p)
+    {
+        return p;
+    }
+};
+
+template<typename T, typename Proc, typename Index, typename Arity>
+struct Visit2
+{
+    typedef Visit2 type;
+    typedef true_type IntrospectionEnabled;
+    typedef typename deduce_input_type<T&>::type input_type_0;
+    typedef typename deduce_input_type<T&>::type input_type_1;
+    typedef Proc input_type_2;
+    typedef Proc codomain_type;
+
+    inline Proc operator()(T& x, T& y, Proc p)
+    {
+        typedef typename Get<T, Index>::type Getter;
+        p(Getter()(x), Getter()(y), Index());
+        return Visit2<T, Proc, typename Successor<Index>::type, Arity>()(x, y, p);
+    }
+};
+
+template<typename T, typename Proc>
+inline Proc visit_impl(T& x, Proc p)
+{
+    return Visit1<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, p);
+}
+
+template<typename T, typename Proc>
+inline Proc visit_impl(T& x, T& y, Proc p)
+{
+    return Visit2<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, y, p);
+}
+
+template<typename GetComparator>
+struct Equal_Visitor
+{
+    bool value; // Should be initialised to true, but want to keep POD-ness of the type
+
+    typedef Equal_Visitor type;
+    typedef true_type IntrospectionEnabled;
+    typedef bool IntrospectionItem0;
+
+    template<typename T, typename Index>
+    inline void operator() (T const& x, T const& y, Index)
+    {
+        value = value ? typename GetComparator::template apply<T>::type()(x, y) : false ;
+    }
+};
+
+template<typename GetComparator>
+struct Less_Visitor
+{
+    bool value; // Should be initialised to false, but want to keep POD-ness of the type
+
+    typedef Less_Visitor type;
+    typedef true_type IntrospectionEnabled;
+    typedef bool IntrospectionItem0;
+
+    template<typename T, typename Index>
+    inline void operator() (T const& x, T const& y, Index)
+    {
+        value = value ? true : typename GetComparator::template apply<T>::type()(x, y);
+    }
+};
+
+template<typename GetComparator, typename T>
+inline bool equal_impl(T const& x, T const& y)
+{
+    Equal_Visitor<GetComparator> tmp = {true};
+    return visit_impl(x, y, tmp).value;
 }
 
 template<typename GetComparator, typename T>
-inline bool equal(T const& x, T const& y)
+inline bool less_impl(T const& x, T const& y)
 {
-    return Equal<T, Integer<0>, typename IntrospectionArity<T>::type, GetComparator>()(x, y);
+    Less_Visitor<GetComparator> tmp = {false};
+    return visit_impl(x, y, tmp).value;
 }
+
+// Metafunction classes to be passed into functiosn equal and less
+struct GetEqual
+{
+    template<typename T>
+    struct apply
+    {
+        // Chose not to inherit as implementors might not follow metafunction protocol
+        typedef equal<T> type;
+    };
+};
+
+struct GetOperatorEquals
+{
+    template<typename T>
+    struct apply : OperatorEquals<T> {};
+};
+
+struct GetLess
+{
+    template<typename T>
+    struct apply
+    {
+        // Chose not to inherit as implementors might not follow metafunction protocol
+        typedef less<T> type;
+    };
+};
+
+struct GetOperatorLessThan
+{
+    template<typename T>
+    struct apply : OperatorLessThan<T> {};
+};
 
 } // namespace impl
 
@@ -748,7 +782,7 @@ struct less<T, typename enable_if<generate_introspected_comparisons<T>, void>::t
 
     inline codomain_type operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
     {
-        return impl::less<impl::GetLess>(impl::get_storage(x), impl::get_storage(y));
+        return impl::less_impl<impl::GetLess>(impl::get_storage(x), impl::get_storage(y));
     }
 };
 
@@ -763,7 +797,7 @@ struct equal<T, typename enable_if<generate_introspected_comparisons<T>, void>::
 
     inline codomain_type operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
     {
-        return impl::equal<impl::GetEqual>(impl::get_storage(x), impl::get_storage(y));
+        return impl::equal_impl<impl::GetEqual>(impl::get_storage(x), impl::get_storage(y));
     }
 };
 
@@ -771,7 +805,7 @@ template<typename T>
 inline typename enable_if<generate_introspected_comparisons<T>, bool>::type
 operator==(T const& x, T const& y)
 {
-    return impl::equal<impl::GetOperatorEquals>(impl::get_storage(x), impl::get_storage(y));
+    return impl::equal_impl<impl::GetOperatorEquals>(impl::get_storage(x), impl::get_storage(y));
 }
 
 template<typename T>
@@ -785,7 +819,7 @@ template<typename T>
 inline typename enable_if<generate_introspected_comparisons<T>, bool>::type
 operator<(T const& x, T const& y)
 {
-    return impl::less<impl::GetOperatorLessThan>(impl::get_storage(x), impl::get_storage(y));
+    return impl::less_impl<impl::GetOperatorLessThan>(impl::get_storage(x), impl::get_storage(y));
 }
 
 template<typename T>
@@ -835,6 +869,7 @@ struct underlying_type<empty_type<Tag> > : Empty {};
 
 template<typename T, typename Tag>
 struct underlying_type<singleton<T, Tag> > : get_underlying_type<T> {};
+
 
 template<typename Arr, typename Tag>
 struct deduce_type
@@ -920,6 +955,18 @@ inline typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Tag>:
 {
     typedef typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Tag>::type T;
     return T::make(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9);
+}
+
+template<typename T, typename Proc>
+Proc visit(T& x, Proc p)
+{
+    return impl::visit_impl(impl::get_storage(x), p);
+}
+
+template<typename T, typename U, typename Proc>
+Proc visit(T& x, U& y, Proc p)
+{
+    return impl::visit_impl(impl::get_storage(x), impl::get_storage(y), p);
 }
 
 } // namespace intro
