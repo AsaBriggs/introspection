@@ -1,5 +1,6 @@
 #include <cassert>
 #include "storage.h"
+#include "function_signatures.h"
 
 namespace intro {
 namespace {
@@ -166,13 +167,28 @@ void test_array_transform()
   TEST((is_same<ArrayTransform<Integers, AddOne>::type, Expected>()));
 }
 
+struct AddTogether
+{
+  template<typename T, typename U>
+  struct apply : Add<T, U> {};
+};
+
+void test_array_zip()
+{
+  typedef Array<Integer<0>, Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9> > Integers;
+  typedef Array<Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9>, Integer<10> > MoreIntegers;
+  typedef Array<Integer<1>, Integer<3>, Integer<5>, Integer<7>, Integer<9>, Integer<11>, Integer<13>, Integer<15>, Integer<17>, Integer<19> > Expected;
+
+  TEST((is_same<ArrayZip<Integers, MoreIntegers, AddTogether>::type, Expected>()));
+}
+
 void test_metaprogramming()
 {
   TEST(true_type());
   TEST(!false_type());
 
   int x = 0;
-  Ref<int, DefaultTag> y = make_ref(x);
+  Ref<int> y = make_ref(x);
   TEST(y.m0 == &x);
 
   TEST( Integer<1>() == Successor<Integer<0> >::type());
@@ -290,8 +306,8 @@ void test_metaprogramming()
   TEST((is_same<decay_ref<int>::type, int>::type()));
   TEST((is_same<decay_ref<int&>::type, int&>::type()));
   TEST((is_same<decay_ref<int const&>::type, int const&>::type()));
-  TEST((is_same<decay_ref<Ref<int, DefaultTag> >::type, int&>::type()));
-  TEST((is_same<decay_ref<Ref<int const, DefaultTag> >::type, int const&>::type()));
+  TEST((is_same<decay_ref<Ref<int> >::type, int&>::type()));
+  TEST((is_same<decay_ref<Ref<int const> >::type, int const&>::type()));
 
   TEST((is_same<TestArray, TestArray::type>::type()));
 
@@ -335,6 +351,7 @@ void test_metaprogramming()
   test_array_reverse();
   test_array_rotate();
   test_array_transform();
+  test_array_zip();
 }
 
 void test_empty()
@@ -766,6 +783,11 @@ void test_visit()
   TEST(v.visit2);
 }
 
+void test_function_signatures()
+{
+
+}
+
 } // unnamed namespace
 } // namespace intro
 
@@ -786,4 +808,6 @@ int main()
     test_nonuple();
     test_decuple();
     test_visit();
+
+    test_function_signatures();
 }

@@ -5,7 +5,7 @@ CXXFLAGS = $(CFLAGS)
 LDFLAGS	 = -g
 
 TARGETS=meta
-INCLUDES=metaprogramming.h detect_traits.h storage.h
+INCLUDES=metaprogramming.h detect_traits.h storage.h function_signatures.h
 
 all:$(TARGETS)
 

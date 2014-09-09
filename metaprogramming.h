@@ -33,7 +33,7 @@ struct DefaultTag
     typedef true_type IntrospectionEnabled;
 };
 
-template<typename T, typename Tag>
+template<typename T>
 struct Ref
 {
     typedef Ref type;
@@ -57,16 +57,10 @@ struct Ref
 
 // Caller of make_ref must ensure the lifetime of the referenced object is greater
 // than the lifetime of the Ref.
-template<typename T, typename Tag>
-inline Ref<T, Tag> make_ref(T& x)
-{
-    return Ref<T, Tag>::make(x);
-}
-
 template<typename T>
-inline Ref<T, DefaultTag> make_ref(T& x)
+inline Ref<T> make_ref(T& x)
 {
-    return Ref<T, DefaultTag>::make(x);
+    return Ref<T>::make(x);
 }
 
 namespace impl {
@@ -259,8 +253,8 @@ struct decay_ref_impl<T[N]>
     typedef T const* type;
 };
 
-template<typename T, typename Tag>
-struct decay_ref_impl<Ref<T, Tag> >
+template<typename T>
+struct decay_ref_impl<Ref<T> >
 {
     typedef T& type;
 };
@@ -674,7 +668,7 @@ struct ArrayRotate
 };
 
 template<typename T, typename Fun>
-struct ArrayTransform
+struct ArrayTransform_Impl
 {
     typedef Array<typename Fun::template apply<typename ArrayIndex<T, Integer<0> >::type>::type,
                   typename Fun::template apply<typename ArrayIndex<T, Integer<1> >::type>::type,
@@ -688,6 +682,31 @@ struct ArrayTransform
                   typename Fun::template apply<typename ArrayIndex<T, Integer<9> >::type>::type> type;
 
 
+};
+
+template<typename T, typename U, typename Fun>
+struct ArrayZip_Impl
+{
+    typedef Array<typename Fun::template apply<typename ArrayIndex<T, Integer<0> >::type,
+                                               typename ArrayIndex<U, Integer<0> >::type>::type,
+                  typename Fun::template apply<typename ArrayIndex<T, Integer<1> >::type,
+                                               typename ArrayIndex<U, Integer<1> >::type>::type,
+                  typename Fun::template apply<typename ArrayIndex<T, Integer<2> >::type,
+                                               typename ArrayIndex<U, Integer<2> >::type>::type,
+                  typename Fun::template apply<typename ArrayIndex<T, Integer<3> >::type,
+                                               typename ArrayIndex<U, Integer<3> >::type>::type,
+                  typename Fun::template apply<typename ArrayIndex<T, Integer<4> >::type,
+                                               typename ArrayIndex<U, Integer<4> >::type>::type,
+                  typename Fun::template apply<typename ArrayIndex<T, Integer<5> >::type,
+                                               typename ArrayIndex<U, Integer<5> >::type>::type,
+                  typename Fun::template apply<typename ArrayIndex<T, Integer<6> >::type,
+                                               typename ArrayIndex<U, Integer<6> >::type>::type,
+                  typename Fun::template apply<typename ArrayIndex<T, Integer<7> >::type,
+                                               typename ArrayIndex<U, Integer<7> >::type>::type,
+                  typename Fun::template apply<typename ArrayIndex<T, Integer<8> >::type,
+                                               typename ArrayIndex<U, Integer<8> >::type>::type,
+                  typename Fun::template apply<typename ArrayIndex<T, Integer<9> >::type,
+                                               typename ArrayIndex<U, Integer<9> >::type>::type> type;
 };
 
 } // namespace impl
@@ -715,7 +734,10 @@ struct ArrayRotateDefault : impl::ArrayRotate<T, Integer<0>, M, typename ArraySi
 
 // Note that applying Fun to Empty should return Empty
 template<typename T, typename Fun>
-struct ArrayTransform : impl::ArrayTransform<T, Fun> {};
+struct ArrayTransform : impl::ArrayTransform_Impl<T, Fun> {};
+
+template<typename T, typename U, typename Fun>
+struct ArrayZip : impl::ArrayZip_Impl<T, U, Fun> {};
 
 } // namespace intro
 

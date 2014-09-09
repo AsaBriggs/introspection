@@ -11,6 +11,12 @@
 
 namespace intro {
 
+// Each storage struct is an aggregate, with a nested typedef type to itself
+// as well as having introspection enabled and a static function make that
+// allows uniform construction of an instance. Note that make takes parameters
+// that must be convertible to the underlying values, thus allowing the Ref to decay to
+// the correct value
+
 template<typename Tag=DefaultTag>
 struct empty_type
 {
@@ -880,6 +886,8 @@ struct deduce_type
         Tag>::type type;
 };
 
+// The make_storage functions deduce a storage type based on the parameters passed in,
+// taking into account "decaying" Ref objects.
 template<typename Tag>
 inline typename deduce_type<Array<>, Tag>::type make_storage()
 {
