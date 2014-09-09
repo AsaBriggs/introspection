@@ -84,6 +84,20 @@ struct Predecessor_impl;
 template<int num>
 struct Predecessor_impl<Integer<num> > : Integer<num-1> {};
 
+template<int num0, int num1, bool num0LessEq>
+struct Min_Impl2;
+
+template<int num0, int num1>
+struct Min_Impl2<num0, num1, false> : Integer<num1> {};
+
+template<int num0, int num1>
+struct Min_Impl2<num0, num1, true> : Integer<num0> {};
+
+template<typename T, typename U>
+struct Min_Impl;
+
+template<int num0, int num1>
+struct Min_Impl<Integer<num0>, Integer<num1> > : Min_Impl2<num0, num1, !(num1 < num0)> {};
 
 template<typename T0, typename T1>
 struct Subtract_impl;
@@ -246,6 +260,9 @@ struct Successor : impl::Successor_impl<T> {};
 template<typename T>
 struct Predecessor : impl::Predecessor_impl<T> {};
 
+template<typename T, typename U>
+struct Min : impl::Min_Impl<T, U> {};
+
 template<typename T0, typename T1>
 struct Subtract : impl::Subtract_impl<T0, T1> {};
 
@@ -273,6 +290,9 @@ struct identity_type
   typedef T type;
 };
 
+template<typename T>
+struct identity_type<identity_type<T> > : identity_type<T> {};
+
 template<typename Test, typename T, typename F>
 struct if_ : impl::if_impl<typename Test::type, T, F> {};
 
@@ -280,7 +300,7 @@ template<typename Test, typename T, typename F>
 struct eval_if : impl::eval_if_impl<typename Test::type, T, F> {};
 
 template<typename T, typename U>
-struct is_same : impl::is_same_impl<typename T::type, typename U::type> {};
+struct is_same : impl::is_same_impl<T, U> {};
 
 template<typename T>
 struct is_reference : impl::is_reference_impl<T> {};

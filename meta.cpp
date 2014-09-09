@@ -1,5 +1,4 @@
 #include <cassert>
-#include <iostream>
 #include "storage.h"
 
 #define TEST(x) assert((x))
@@ -8,27 +7,74 @@ const char EXPECTED_VALUE = 'a';
 const char UNEXPECTED_VALUE = 'b';
 
 template<typename T>
-typename enable_if<is_same<T, identity_type<int> >, char>::type enable_if_test() { return EXPECTED_VALUE; }
+typename enable_if<is_same<T, int>, char>::type enable_if_test() { return EXPECTED_VALUE; }
 
 template<typename T>
-typename enable_if<not_<is_same<T, identity_type<int> > >, char>::type enable_if_test() { return UNEXPECTED_VALUE; }
+typename enable_if<not_<is_same<T, int> >, char>::type enable_if_test() { return UNEXPECTED_VALUE; }
 
 template<typename T>
-typename disable_if<is_same<T, identity_type<int> >, char>::type disable_if_test() { return UNEXPECTED_VALUE; }
+typename disable_if<is_same<T, int>, char>::type disable_if_test() { return UNEXPECTED_VALUE; }
 
 template<typename T>
-typename disable_if<not_<is_same<T, identity_type<int> > >, char>::type disable_if_test() { return EXPECTED_VALUE; }
+typename disable_if<not_<is_same<T, int> >, char>::type disable_if_test() { return EXPECTED_VALUE; }
+
+typedef Array<> Bool0;
+typedef Array<bool> Bool1;
+typedef Array<bool, bool> Bool2;
+typedef Array<bool, bool, bool> Bool3;
+typedef Array<bool, bool, bool, bool> Bool4;
+typedef Array<bool, bool, bool, bool, bool> Bool5;
+typedef Array<bool, bool, bool, bool, bool, bool> Bool6;
+typedef Array<bool, bool, bool, bool, bool, bool, bool> Bool7;
+typedef Array<bool, bool, bool, bool, bool, bool, bool, bool> Bool8;
+typedef Array<bool, bool, bool, bool, bool, bool, bool, bool, bool> Bool9;
+typedef Array<bool, bool, bool, bool, bool, bool, bool, bool, bool, bool> Bool10;
+typedef Array<Bool0, Bool1, Bool2, Bool3, Bool4, Bool5, Bool6, Bool7, Bool8, Bool9> BoolArray;
+
+template<typename LHSIndex, typename RHSIndex>
+void test_array_concat2()
+{
+  // Awkward as we need 1 more array than an array can contain
+  typedef typename Min<Integer<10>, typename Add<LHSIndex, RHSIndex>::type>::type ConcatArrayLength;
+  typedef typename eval_if<is_same<Integer<10>, ConcatArrayLength>, Bool10, ArrayIndex<BoolArray, ConcatArrayLength> >::type ExpectedArray;
+
+  TEST((typename is_same< ExpectedArray,
+            typename ArrayConcat<typename ArrayIndex<BoolArray, LHSIndex>::type,
+                                 typename ArrayIndex<BoolArray, RHSIndex>::type>::type>::type()));
+}
+
+template<typename LHSIndex>
+void test_array_concat()
+{
+  test_array_concat2<LHSIndex, Integer<0> >();
+  test_array_concat2<LHSIndex, Integer<1> >();
+  test_array_concat2<LHSIndex, Integer<2> >();
+  test_array_concat2<LHSIndex, Integer<3> >();
+  test_array_concat2<LHSIndex, Integer<4> >();
+  test_array_concat2<LHSIndex, Integer<5> >();
+  test_array_concat2<LHSIndex, Integer<6> >();
+  test_array_concat2<LHSIndex, Integer<7> >();
+  test_array_concat2<LHSIndex, Integer<8> >();
+  test_array_concat2<LHSIndex, Integer<9> >();
+}
 
 void test_metaprogramming()
 {
   TEST(true_type());
   TEST(!false_type());
 
+  int x = 0;
+  Ref<int, DefaultTag> y = make_ref(x);
+  TEST(y.m0 == &x);
+
   TEST( Integer<1>() == Successor<Integer<0> >::type());
   TEST( Integer<3>() == Successor<Integer<2> >::type());
 
   TEST( Integer<0>() == Predecessor<Integer<1> >::type());
   TEST( Integer<-2>() == Predecessor<Integer<-1> >::type());
+
+  TEST((Integer<0>() == Min<Integer<0>, Integer<1> >::type()));
+  TEST((Integer<0>() == Min<Integer<1>, Integer<0> >::type()));
 
   TEST((Integer<-1>() == Subtract<Integer<0>, Integer<1> >::type()));
   TEST((Integer<6>() == Subtract<Integer<1>, Integer<-5> >::type()));
@@ -62,15 +108,117 @@ void test_metaprogramming()
   TEST(!(and_<true_type, true_type, false_type>::type()));
   TEST((and_<true_type, true_type, true_type>::type()));
 
-  char test = enable_if_test<identity_type<int> >();
+  char test = enable_if_test<int>();
   TEST(EXPECTED_VALUE == test);
 
-  char test2 = disable_if_test<identity_type<int> >();
+  char test2 = disable_if_test<int>();
   TEST(EXPECTED_VALUE == test2);
 
-  int x = 0;
-  Ref<int, DefaultTag> y = make_ref(x);
-  TEST(y.m0 == &x);
+  TEST((is_same<int, identity_type<identity_type<int> >::type >::type()));
+
+  TEST((is_same<if_<true_type, int, void>::type, int>()));
+  TEST((is_same<if_<false_type, void, int>::type, int>()));
+
+  TEST((is_same<eval_if<true_type, identity_type<int>, void>::type, int>()));
+  TEST((is_same<eval_if<false_type, void, identity_type<int> >::type, int>()));
+
+  TEST((!is_reference<int>::type()));
+  TEST((is_reference<int&>::type()));
+  TEST((is_reference<int(&)[2]>::type()));
+
+  TEST((is_same<make_const_ref<int>::type, int const&>::type()));
+  TEST((is_same<make_const_ref<int const>::type, int const&>::type()));
+  TEST((is_same<make_const_ref<int const&>::type, int const&>::type()));
+  TEST((is_same<make_const_ref<int &>::type, int const&>::type()));
+
+  TEST((is_same<make_const_ref<int volatile >::type, int volatile const&>::type()));
+  TEST((is_same<make_const_ref<int volatile const>::type, int volatile const&>::type()));
+  TEST((is_same<make_const_ref<int volatile const&>::type, int volatile const&>::type()));
+  TEST((is_same<make_const_ref<int volatile &>::type, int volatile const&>::type()));
+
+  TEST((is_same<parameter_type<int>::type, int const&>::type()));
+  TEST((is_same<parameter_type<int&>::type, int&>::type()));
+
+  TEST((is_same<underlying_type<int>::type, int>::type()));
+
+  TEST((is_same<get_underlying_type<int>::type, int>::type()));
+
+  {
+    int a = 0 ;
+    TEST(&a == &get_underlying_ref(a));
+  }
+
+  {
+    int a = 1;
+    int b = 2;
+
+    swap_basic(a, b);
+    TEST(1 == b);
+    TEST(2 == a);
+
+    swap(a, b);
+    TEST(1 == a);
+    TEST(2 == b);
+  }
+
+  TEST((OperatorEquals<int>()(1, 1)));
+  TEST(!(OperatorEquals<int>()(1, 2)));
+
+  TEST(!(OperatorLessThan<int>()(1, 1)));
+  TEST((OperatorLessThan<int>()(1, 2)));
+  TEST(!(OperatorLessThan<int>()(2, 1)));
+
+  TEST((equal<int>()(1, 1)));
+  TEST(!(equal<int>()(1, 2)));
+
+  TEST(!(less<int>()(1, 1)));
+  TEST((less<int>()(1, 2)));
+  TEST(!(less<int>()(2, 1)));
+
+  TEST((is_same<decay_ref<int>::type, int>::type()));
+  TEST((is_same<decay_ref<int&>::type, int&>::type()));
+  TEST((is_same<decay_ref<int const&>::type, int const&>::type()));
+  TEST((is_same<decay_ref<Ref<int, DefaultTag> >::type, int&>::type()));
+  TEST((is_same<decay_ref<Ref<int const, DefaultTag> >::type, int const&>::type()));
+
+  typedef Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, long, unsigned long> TestArray;
+
+  TEST((is_same<TestArray, TestArray::type>::type()));
+
+#define ARRAY_INDEX_TEST(n, X) TEST((is_same<ArrayIndex<TestArray, Integer<n> >::type, X>::type()))
+  ARRAY_INDEX_TEST(0, bool);
+  ARRAY_INDEX_TEST(1, unsigned char);
+  ARRAY_INDEX_TEST(2, signed char);
+  ARRAY_INDEX_TEST(3, char);
+  ARRAY_INDEX_TEST(4, short);
+  ARRAY_INDEX_TEST(5, unsigned short);
+  ARRAY_INDEX_TEST(6, int);
+  ARRAY_INDEX_TEST(7, unsigned int);
+  ARRAY_INDEX_TEST(8, long);
+  ARRAY_INDEX_TEST(9, unsigned long);
+
+  TEST((0 == ArraySize<Bool0>::type()));
+  TEST((1 == ArraySize<Bool1>::type()));
+  TEST((2 == ArraySize<Bool2>::type()));
+  TEST((3 == ArraySize<Bool3>::type()));
+  TEST((4 == ArraySize<Bool4>::type()));
+  TEST((5 == ArraySize<Bool5>::type()));
+  TEST((6 == ArraySize<Bool6>::type()));
+  TEST((7 == ArraySize<Bool7>::type()));
+  TEST((8 == ArraySize<Bool8>::type()));
+  TEST((9 == ArraySize<Bool9>::type()));
+  TEST((10 == ArraySize<Bool10>::type()));
+
+  test_array_concat<Integer<0> >();
+  test_array_concat<Integer<1> >();
+  test_array_concat<Integer<2> >();
+  test_array_concat<Integer<3> >();
+  test_array_concat<Integer<4> >();
+  test_array_concat<Integer<5> >();
+  test_array_concat<Integer<6> >();
+  test_array_concat<Integer<7> >();
+  test_array_concat<Integer<8> >();
+  test_array_concat<Integer<9> >();
 }
 
 void test_empty()
