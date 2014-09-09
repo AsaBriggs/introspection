@@ -799,13 +799,40 @@ struct ReturnFirstValue
     };
 };
 
+
+struct ReturnThirdValue
+{
+    template<typename T, typename U, typename V, typename W, typename X>
+    struct apply
+    {
+        typedef V type;
+    };
+};
+
 struct MyGenericFunctionObject
 {
+    typedef MyGenericFunctionObject type;
     typedef template_param input_type_0;
     typedef CodomainDeduction<ReturnFirstValue> codomain_type;
 
     template<typename T>
-    T operator()(T x){ return x; }
+    typename DeduceCodomainType<type, T>::type
+    operator()(T x){ return x; }
+};
+
+struct MyGenericFunctionObject2
+{
+    typedef MyGenericFunctionObject2 type;
+    typedef template_param input_type_0;
+    typedef template_param input_type_1;
+    typedef template_param input_type_2;
+    typedef template_param input_type_3;
+    typedef template_param input_type_4;
+    typedef CodomainDeduction<ReturnThirdValue> codomain_type;
+
+    template<typename T, typename U, typename V, typename W, typename X>
+    typename DeduceCodomainType<type, T, U, V, W, X>::type
+    operator()(T, U, V v, W, X){ return v; }
 };
 
 void test_function_signatures()
@@ -903,6 +930,26 @@ void test_function_signatures()
   TEST((is_same<template_param, GetInputType<MyGenericFunctionObject, Integer<0> >::type>::type()));
   TEST((1 == GetFunctionArity<MyGenericFunctionObject>::type()));
   TEST((is_same<Array<template_param>, GetInputTypeArray<MyGenericFunctionObject>::type>::type()));
+
+
+
+  // OK, test out the generic codomain deduction mechanism
+  TEST((is_same<GetCodomainType<MyGenericFunctionObject2>::type,CodomainDeduction<ReturnThirdValue> >::type()));
+  TEST((is_same<DeduceCodomainType<MyGenericFunctionObject2, char, short, int, float, void*>::type,int>::type()));
+  TEST((FunctionSignatureEnabled<MyGenericFunctionObject2>::type()));
+  TEST((HasInputType<MyGenericFunctionObject2, Integer<0> >::type()));
+  TEST((HasInputType<MyGenericFunctionObject2, Integer<1> >::type()));
+  TEST((HasInputType<MyGenericFunctionObject2, Integer<2> >::type()));
+  TEST((HasInputType<MyGenericFunctionObject2, Integer<3> >::type()));
+  TEST((HasInputType<MyGenericFunctionObject2, Integer<4> >::type()));
+  TEST(!(HasInputType<MyGenericFunctionObject2, Integer<5> >::type()));
+  TEST((is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<0> >::type>::type()));
+  TEST((is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<1> >::type>::type()));
+  TEST((is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<2> >::type>::type()));
+  TEST((is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<3> >::type>::type()));
+  TEST((is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<4> >::type>::type()));
+  TEST((5 == GetFunctionArity<MyGenericFunctionObject2>::type()));
+  TEST((is_same<Array<template_param, template_param, template_param, template_param, template_param>, GetInputTypeArray<MyGenericFunctionObject2>::type>::type()));
 }
 
 } // unnamed namespace
