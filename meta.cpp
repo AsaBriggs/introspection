@@ -873,13 +873,13 @@ struct MemberFunctionTest
   void voidFun0() const {}
   int intFun0() { return 0; }
 
-  void voidFun1(int) const{}
+  void voidFun1(int) const {}
   int intFun1(int) { return 0; }
 
-  void voidFun2(int, char&) const{}
+  void voidFun2(int, char&) const {}
   int intFun2(int, char&) { return 0; }
 
-  void voidFun3(int, char&, double (&)[]) const{}
+  void voidFun3(int, char&, double (&)[]) const {}
   int intFun3(int, char&, double (&)[]) { return 0; }
 
   void voidFun4(int, char&, double (&)[], int const volatile (&)[10]) const {}

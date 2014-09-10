@@ -27,8 +27,6 @@ struct box_ref<Ref<T> >
     typedef T& type;
 };
 
-namespace impl {
-
 // This is the metafunction by which function pointers become associated with a metafunction
 // describing it. For standard functors it is trivial to add typedefs with the appropriate information
 // but nesting typedefs is impossible in pointers.
@@ -39,6 +37,8 @@ struct ResolveFunctionSignatureType
 {
     typedef T type;
 };
+
+namespace impl {
 
 template<typename T>
 struct unbox_ref
@@ -72,8 +72,8 @@ struct CodomainDeduction { typedef CodomainDeduction type; };
 namespace impl{\
 GENERATE_HAS_AND_GET_MEMBER_TYPE(x)\
 }\
-template<typename T> struct Get_##x : impl::unbox_ref< typename impl::GetMemberType_##x<typename impl::ResolveFunctionSignatureType<T>::type>::type > {}; \
-template<typename T> struct Has_##x : impl::HasMemberType_##x<typename impl::ResolveFunctionSignatureType<T>::type> {};\
+template<typename T> struct Get_##x : impl::unbox_ref< typename impl::GetMemberType_##x<typename ResolveFunctionSignatureType<T>::type>::type > {}; \
+template<typename T> struct Has_##x : impl::HasMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {};\
 
 GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_0)
 GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_1)
@@ -135,10 +135,10 @@ struct GetInputType_Impl<T, Integer<4> > : Get_input_type_4<T> {};
 } // namespace impl
 
 template<typename T, typename Index>
-struct HasInputType : impl::HasInputType_Impl<typename impl::ResolveFunctionSignatureType<T>::type, Index> {};
+struct HasInputType : impl::HasInputType_Impl<typename ResolveFunctionSignatureType<T>::type, Index> {};
 
 template<typename T, typename Index>
-struct GetInputType : impl::GetInputType_Impl<typename impl::ResolveFunctionSignatureType<T>::type, Index> {};
+struct GetInputType : impl::GetInputType_Impl<typename ResolveFunctionSignatureType<T>::type, Index> {};
 
 namespace impl {
 
@@ -153,7 +153,7 @@ struct GetFunctionArityLoop : eval_if<HasInputType<T, CurrentArity>,
 } // namespace impl
 
 template<typename T>
-struct GetFunctionArity : impl::GetFunctionArityLoop<typename impl::ResolveFunctionSignatureType<T>::type, Integer<0> > {};
+struct GetFunctionArity : impl::GetFunctionArityLoop<typename ResolveFunctionSignatureType<T>::type, Integer<0> > {};
 
 
 namespace impl {
@@ -226,11 +226,8 @@ struct GetCodomainType_Impl<T, CodomainDeduction<U>, ParamArray> : ApplyCodomain
 } // namespace impl
 
 template<typename T, typename I0=no_template_argument, typename I1=no_template_argument, typename I2=no_template_argument, typename I3=no_template_argument, typename I4=no_template_argument>
-struct DeduceCodomainType : impl::GetCodomainType_Impl<typename impl::ResolveFunctionSignatureType<T>::type,
-  typename GetCodomainType<typename impl::ResolveFunctionSignatureType<T>::type>::type, Array<I0, I1, I2, I3, I4> > {};
-
-
-
+struct DeduceCodomainType : impl::GetCodomainType_Impl<typename ResolveFunctionSignatureType<T>::type,
+  typename GetCodomainType<typename ResolveFunctionSignatureType<T>::type>::type, Array<I0, I1, I2, I3, I4> > {};
 
 
 //Specialisations for function pointers
@@ -243,12 +240,25 @@ struct nullary_function
     typedef nullary_function type;
     typedef true_type introspection_enabled;
     typedef R codomain_type;
+
+    codomain_type operator()(codomain_type(*x)()) const
+    {
+        return (*x)();
+    }
 };
 
-template<typename R>
-struct ResolveFunctionSignatureType<R(*)()> :
-    nullary_function<box_ref<R> >
-{};
+template<>
+struct nullary_function<void>
+{
+    typedef nullary_function type;
+    typedef true_type introspection_enabled;
+    typedef void codomain_type;
+
+    codomain_type operator()(codomain_type(*x)()) const
+    {
+        (*x)();
+    }
+};
 
 template<typename R, typename U>
 struct unary_function
@@ -257,13 +267,26 @@ struct unary_function
     typedef true_type introspection_enabled;
     typedef U input_type_0;
     typedef R codomain_type;
+
+    codomain_type operator()(codomain_type(*x)(U), U a) const
+    {
+        return (*x)(a);
+    }
 };
 
-template<typename R, typename U>
-struct ResolveFunctionSignatureType<R(*)(U)> :
-    unary_function<box_ref<R>,
-                   box_ref<U> >
-{};
+template<typename U>
+struct unary_function<void, U>
+{
+    typedef unary_function type;
+    typedef true_type introspection_enabled;
+    typedef U input_type_0;
+    typedef void codomain_type;
+
+    codomain_type operator()(codomain_type(*x)(U), U a) const
+    {
+        (*x)(a);
+    }
+};
 
 template<typename R, typename U, typename V>
 struct binary_function
@@ -273,14 +296,27 @@ struct binary_function
     typedef U input_type_0;
     typedef V input_type_1;
     typedef R codomain_type;
+
+    codomain_type operator()(codomain_type(*x)(U, V), U a, V b) const
+    {
+        return (*x)(a, b);
+    }
 };
 
-template<typename R, typename U, typename V>
-struct ResolveFunctionSignatureType<R(*)(U, V)> :
-    binary_function<box_ref<R>,
-                    box_ref<U>,
-                    box_ref<V> >
-{};
+template<typename U, typename V>
+struct binary_function<void, U, V>
+{
+    typedef binary_function type;
+    typedef true_type introspection_enabled;
+    typedef U input_type_0;
+    typedef V input_type_1;
+    typedef void codomain_type;
+
+    codomain_type operator()(codomain_type(*x)(U, V), U a, V b) const
+    {
+        (*x)(a, b);
+    }
+};
 
 
 template<typename R, typename U, typename V, typename W>
@@ -292,16 +328,28 @@ struct trinary_function
     typedef V input_type_1;
     typedef W input_type_2;
     typedef R codomain_type;
+
+    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c) const
+    {
+        return (*x)(a, b, c);
+    }
 };
 
-template<typename R, typename U, typename V, typename W>
-struct ResolveFunctionSignatureType<R(*)(U, V, W)> :
-    trinary_function<box_ref<R>,
-                     box_ref<U>,
-                     box_ref<V> ,
-                     box_ref<W> >
-{};
+template<typename U, typename V, typename W>
+struct trinary_function<void, U, V, W>
+{
+    typedef trinary_function type;
+    typedef true_type introspection_enabled;
+    typedef U input_type_0;
+    typedef V input_type_1;
+    typedef W input_type_2;
+    typedef void codomain_type;
 
+    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c) const
+    {
+        (*x)(a, b, c);
+    }
+};
 
 template<typename R, typename U, typename V, typename W, typename X>
 struct quaternary_function
@@ -313,16 +361,29 @@ struct quaternary_function
     typedef W input_type_2;
     typedef X input_type_3;
     typedef R codomain_type;
+
+    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c, X d) const
+    {
+        return (*x)(a, b, c, d);
+    }
 };
 
-template<typename R, typename U, typename V, typename W, typename X>
-struct ResolveFunctionSignatureType<R(*)(U, V, W, X)> :
-    quaternary_function<box_ref<R>,
-                        box_ref<U>,
-                        box_ref<V>,
-                        box_ref<W>,
-                        box_ref<X> >
-{};
+template<typename U, typename V, typename W, typename X>
+struct quaternary_function<void, U, V, W, X>
+{
+    typedef quaternary_function type;
+    typedef true_type introspection_enabled;
+    typedef U input_type_0;
+    typedef V input_type_1;
+    typedef W input_type_2;
+    typedef X input_type_3;
+    typedef void codomain_type;
+
+    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c, X d) const
+    {
+        (*x)(a, b, c, d);
+    }
+};
 
 
 template<typename R, typename U, typename V, typename W, typename X, typename Y>
@@ -336,17 +397,30 @@ struct quinternary_function
     typedef X input_type_3;
     typedef Y input_type_4;
     typedef R codomain_type;
+
+    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c, X d, Y e) const
+    {
+        return (*x)(a, b, c, d, e);
+    }
 };
 
-template<typename R, typename U, typename V, typename W, typename X, typename Y>
-  struct ResolveFunctionSignatureType<R(*)(U, V, W, X, Y)> :
-    quinternary_function<box_ref<R>,
-                         box_ref<U>,
-                         box_ref<V>,
-                         box_ref<W>,
-                         box_ref<X>,
-                         box_ref<Y> >
-{};
+template<typename U, typename V, typename W, typename X, typename Y>
+struct quinternary_function<void, U, V, W, X, Y>
+{
+    typedef quinternary_function type;
+    typedef true_type introspection_enabled;
+    typedef U input_type_0;
+    typedef V input_type_1;
+    typedef W input_type_2;
+    typedef X input_type_3;
+    typedef Y input_type_4;
+    typedef void codomain_type;
+
+    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c, X d, Y e) const
+    {
+        (*x)(a, b, c, d, e);
+    }
+};
 
 
 template<typename R, typename C>
@@ -357,16 +431,6 @@ struct nullary_member_function
     typedef C input_type_0;
     typedef R codomain_type;
 };
-
-template<typename R, typename C>
-struct ResolveFunctionSignatureType<R(C::*)()> :
-    nullary_member_function<box_ref<R>, box_ref<C&> >
-{};
-
-template<typename R, typename C>
-struct ResolveFunctionSignatureType<R(C::*)() const> :
-    nullary_member_function<box_ref<R>, box_ref<C const&> >
-{};
 
 
 template<typename R, typename C, typename U>
@@ -379,17 +443,6 @@ struct unary_member_function
     typedef R codomain_type;
 };
 
-template<typename R, typename C, typename U>
-struct ResolveFunctionSignatureType<R(C::*)(U)> :
-   unary_member_function<box_ref<R>, box_ref<C&>, box_ref<U> >
-{};
-
-template<typename R, typename C, typename U>
-struct ResolveFunctionSignatureType<R(C::*)(U) const> :
-   unary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U> >
-{};
-
-
 template<typename R, typename C, typename U, typename V>
 struct binary_member_function
 {
@@ -400,16 +453,6 @@ struct binary_member_function
     typedef V input_type_2;
     typedef R codomain_type;
 };
-
-template<typename R, typename C, typename U, typename V>
-struct ResolveFunctionSignatureType<R(C::*)(U, V)> :
-    binary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V> >
-{};
-
-template<typename R, typename C, typename U, typename V>
-struct ResolveFunctionSignatureType<R(C::*)(U, V) const> :
-    binary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V> >
-{};
 
 
 template<typename R, typename C, typename U, typename V, typename W>
@@ -424,17 +467,6 @@ struct ternary_member_function
     typedef R codomain_type;
 };
 
-template<typename R, typename C, typename U, typename V, typename W>
-struct ResolveFunctionSignatureType<R(C::*)(U, V, W)> :
-    ternary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V>, box_ref<W> >
-{};
-
-template<typename R, typename C, typename U, typename V, typename W>
-struct ResolveFunctionSignatureType<R(C::*)(U, V, W) const> :
-    ternary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V>, box_ref<W> >
-{};
-
-
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct quaternary_member_function
 {
@@ -448,17 +480,92 @@ struct quaternary_member_function
     typedef R codomain_type;
 };
 
+} // namespace impl
+ 
+template<typename R>
+struct ResolveFunctionSignatureType<R(*)()> :
+    impl::nullary_function<box_ref<R> >
+{};
+
+template<typename R, typename U>
+struct ResolveFunctionSignatureType<R(*)(U)> :
+    impl::unary_function<box_ref<R>, box_ref<U> >
+{};
+
+template<typename R, typename U, typename V>
+struct ResolveFunctionSignatureType<R(*)(U, V)> :
+    impl::binary_function<box_ref<R>, box_ref<U>, box_ref<V> >
+{};
+
+template<typename R, typename U, typename V, typename W>
+struct ResolveFunctionSignatureType<R(*)(U, V, W)> :
+    impl::trinary_function<box_ref<R>, box_ref<U>, box_ref<V>, box_ref<W> >
+{};
+
+template<typename R, typename U, typename V, typename W, typename X>
+struct ResolveFunctionSignatureType<R(*)(U, V, W, X)> :
+    impl::quaternary_function<box_ref<R>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
+{};
+
+template<typename R, typename U, typename V, typename W, typename X, typename Y>
+struct ResolveFunctionSignatureType<R(*)(U, V, W, X, Y)> :
+    impl::quinternary_function<box_ref<R>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X>, box_ref<Y> >
+{};
+
+
+template<typename R, typename C>
+struct ResolveFunctionSignatureType<R(C::*)()> :
+    impl::nullary_member_function<box_ref<R>, box_ref<C&> >
+{};
+
+template<typename R, typename C>
+struct ResolveFunctionSignatureType<R(C::*)() const> :
+    impl::nullary_member_function<box_ref<R>, box_ref<C const&> >
+{};
+
+
+template<typename R, typename C, typename U>
+struct ResolveFunctionSignatureType<R(C::*)(U)> :
+   impl::unary_member_function<box_ref<R>, box_ref<C&>, box_ref<U> >
+{};
+
+template<typename R, typename C, typename U>
+struct ResolveFunctionSignatureType<R(C::*)(U) const> :
+   impl::unary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U> >
+{};
+
+
+template<typename R, typename C, typename U, typename V>
+struct ResolveFunctionSignatureType<R(C::*)(U, V)> :
+    impl::binary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V> >
+{};
+
+template<typename R, typename C, typename U, typename V>
+struct ResolveFunctionSignatureType<R(C::*)(U, V) const> :
+    impl::binary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V> >
+{};
+
+
+template<typename R, typename C, typename U, typename V, typename W>
+struct ResolveFunctionSignatureType<R(C::*)(U, V, W)> :
+    impl::ternary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V>, box_ref<W> >
+{};
+
+template<typename R, typename C, typename U, typename V, typename W>
+struct ResolveFunctionSignatureType<R(C::*)(U, V, W) const> :
+    impl::ternary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V>, box_ref<W> >
+{};
+
+
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X)> :
-    quaternary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
+    impl::quaternary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
 {};
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X) const> :
-    quaternary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
+    impl::quaternary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
 {};
-
-}
 
 } // namespace intro
 
