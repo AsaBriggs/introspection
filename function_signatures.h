@@ -360,12 +360,12 @@ struct nullary_member_function
 
 template<typename R, typename C>
 struct ResolveFunctionSignatureType<R(C::*)()> :
-    nullary_member_function<box_ref<R>, box_ref<C> >
+    nullary_member_function<box_ref<R>, box_ref<C&> >
 {};
 
 template<typename R, typename C>
 struct ResolveFunctionSignatureType<R(C::*)() const> :
-    nullary_member_function<box_ref<R>, box_ref<C const> >
+    nullary_member_function<box_ref<R>, box_ref<C const&> >
 {};
 
 
@@ -381,12 +381,12 @@ struct unary_member_function
 
 template<typename R, typename C, typename U>
 struct ResolveFunctionSignatureType<R(C::*)(U)> :
-   unary_member_function<box_ref<R>, box_ref<C>, box_ref<U> >
+   unary_member_function<box_ref<R>, box_ref<C&>, box_ref<U> >
 {};
 
 template<typename R, typename C, typename U>
 struct ResolveFunctionSignatureType<R(C::*)(U) const> :
-   unary_member_function<box_ref<R>, box_ref<C const>, box_ref<U> >
+   unary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U> >
 {};
 
 
@@ -403,12 +403,12 @@ struct binary_member_function
 
 template<typename R, typename C, typename U, typename V>
 struct ResolveFunctionSignatureType<R(C::*)(U, V)> :
-    binary_member_function<box_ref<R>, box_ref<C>, box_ref<U>, box_ref<V> >
+    binary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V> >
 {};
 
 template<typename R, typename C, typename U, typename V>
 struct ResolveFunctionSignatureType<R(C::*)(U, V) const> :
-    binary_member_function<box_ref<R>, box_ref<C const>, box_ref<U>, box_ref<V> >
+    binary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V> >
 {};
 
 
@@ -426,12 +426,12 @@ struct ternary_member_function
 
 template<typename R, typename C, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W)> :
-    ternary_member_function<box_ref<R>, box_ref<C>, box_ref<U>, box_ref<V>, box_ref<W> >
+    ternary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V>, box_ref<W> >
 {};
 
 template<typename R, typename C, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W) const> :
-    ternary_member_function<box_ref<R>, box_ref<C const>, box_ref<U>, box_ref<V>, box_ref<W> >
+    ternary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V>, box_ref<W> >
 {};
 
 
@@ -450,12 +450,12 @@ struct quaternary_member_function
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X)> :
-    quaternary_member_function<box_ref<R>, box_ref<C>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
+    quaternary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
 {};
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X) const> :
-    quaternary_member_function<box_ref<R>, box_ref<C const>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
+    quaternary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
 {};
 
 }
