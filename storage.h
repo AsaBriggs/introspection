@@ -705,7 +705,7 @@ struct Equal_Visitor
     template<typename T, typename Index>
     inline void operator() (T const& x, T const& y, Index)
     {
-        value = value ? typename GetComparator::template apply<T>::type()(x, y) : false ;
+      value = value ? typename Apply<GetComparator, T>::type()(x, y) : false ;
     }
 };
 
@@ -721,7 +721,7 @@ struct Less_Visitor
     template<typename T, typename Index>
     inline void operator() (T const& x, T const& y, Index)
     {
-        value = value ? true : typename GetComparator::template apply<T>::type()(x, y);
+      value = value ? true : typename Apply<GetComparator, T>::type()(x, y);
     }
 };
 
