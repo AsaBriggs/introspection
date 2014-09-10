@@ -609,6 +609,7 @@ typename disable_if<IntrospectionIndirectStorage<T>, T>::type const& get_storage
     return x;
 }
 
+// Note that T may be const-qualified
 template<typename T, typename Proc, typename Index, typename Arity>
 struct Visit1;
 
@@ -621,7 +622,7 @@ struct Visit1<T, Proc, Arity, Arity>
     typedef Proc input_type_1;
     typedef Proc codomain_type;
 
-    inline Proc operator()(T& x, Proc p)
+    inline Proc operator()(input_type_0 x, Proc p)
     {
         return p;
     }
@@ -636,7 +637,7 @@ struct Visit1
     typedef Proc input_type_1;
     typedef Proc codomain_type;
 
-    inline Proc operator()(T& x, Proc p)
+    inline Proc operator()(input_type_0 x, Proc p)
     {
         typedef typename Get<T, Index>::type Getter;
         p(Getter()(x), Index());
@@ -644,6 +645,7 @@ struct Visit1
     }
 };
 
+// Note that T may be const-qualified
 template<typename T, typename Proc, typename Index, typename Arity>
 struct Visit2;
 
@@ -657,7 +659,7 @@ struct Visit2<T, Proc, Arity, Arity>
     typedef Proc input_type_2;
     typedef Proc codomain_type;
 
-    inline Proc operator()(T& x, T& y, Proc p)
+    inline Proc operator()(input_type_0 x, input_type_1 y, Proc p)
     {
         return p;
     }
@@ -673,7 +675,7 @@ struct Visit2
     typedef Proc input_type_2;
     typedef Proc codomain_type;
 
-    inline Proc operator()(T& x, T& y, Proc p)
+    inline Proc operator()(input_type_0 x, input_type_1 y, Proc p)
     {
         typedef typename Get<T, Index>::type Getter;
         p(Getter()(x), Getter()(y), Index());
