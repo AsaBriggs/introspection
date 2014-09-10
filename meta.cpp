@@ -868,6 +868,109 @@ struct MyGenericFunctionObject2
     operator()(T, U, V v, W, X){ return v; }
 };
 
+struct MemberFunctionTest
+{
+  void voidFun0() const {}
+  int intFun0() { return 0; }
+
+  void voidFun1(int) const{}
+  int intFun1(int) { return 0; }
+
+  void voidFun2(int, char&) const{}
+  int intFun2(int, char&) { return 0; }
+
+  void voidFun3(int, char&, double const&) const{}
+  int intFun3(int, char&, double const&) { return 0; }
+
+  void voidFun4(int, char&, double const&, int*&) const{}
+  int intFun4(int, char&, double const&, int*&) { return 0; }
+};
+
+template<typename ReturnType, typename Input0, typename T>
+void testFun0(T)
+{
+  TEST((typename is_same<typename GetCodomainType<T>::type,ReturnType>::type()));
+  TEST((typename is_same<typename DeduceCodomainType<T>::type,ReturnType>::type()));
+  TEST((typename FunctionSignatureEnabled<T>::type()));
+  TEST((typename HasInputType<T, Integer<0> >::type()));
+  TEST(!(typename HasInputType<T, Integer<1> >::type()));
+  TEST((typename is_same<Input0, typename GetInputType<T, Integer<0> >::type>::type()));
+  TEST((1 == typename GetFunctionArity<T>::type()));
+  TEST((typename is_same<Array<Input0>, typename GetInputTypeArray<T>::type>::type()));
+}
+
+template<typename ReturnType, typename Input0, typename T>
+void testFun1(T)
+{
+  TEST((typename is_same<typename GetCodomainType<T>::type,ReturnType>::type()));
+  TEST((typename is_same<typename DeduceCodomainType<T>::type,ReturnType>::type()));
+  TEST((typename FunctionSignatureEnabled<T>::type()));
+  TEST((typename HasInputType<T, Integer<0> >::type()));
+  TEST((typename HasInputType<T, Integer<1> >::type()));
+  TEST(!(typename HasInputType<T, Integer<2> >::type()));
+  TEST((typename is_same<Input0, typename GetInputType<T, Integer<0> >::type>::type()));
+  TEST((typename is_same<int, typename GetInputType<T, Integer<1> >::type>::type()));
+  TEST((2 == typename GetFunctionArity<T>::type()));
+  TEST((typename is_same<Array<Input0, int>, typename GetInputTypeArray<T>::type>::type()));
+}
+
+template<typename ReturnType, typename Input0, typename T>
+void testFun2(T)
+{
+  TEST((typename is_same<typename GetCodomainType<T>::type,ReturnType>::type()));
+  TEST((typename is_same<typename DeduceCodomainType<T>::type,ReturnType>::type()));
+  TEST((typename FunctionSignatureEnabled<T>::type()));
+  TEST((typename HasInputType<T, Integer<0> >::type()));
+  TEST((typename HasInputType<T, Integer<1> >::type()));
+  TEST((typename HasInputType<T, Integer<2> >::type()));
+  TEST(!(typename HasInputType<T, Integer<3> >::type()));
+  TEST((typename is_same<Input0, typename GetInputType<T, Integer<0> >::type>::type()));
+  TEST((typename is_same<int, typename GetInputType<T, Integer<1> >::type>::type()));
+  TEST((typename is_same<char&, typename GetInputType<T, Integer<2> >::type>::type()));
+  TEST((3 == typename GetFunctionArity<T>::type()));
+  TEST((typename is_same<Array<Input0, int, char&>, typename GetInputTypeArray<T>::type>::type()));
+}
+
+template<typename ReturnType, typename Input0, typename T>
+void testFun3(T)
+{
+  TEST((typename is_same<typename GetCodomainType<T>::type,ReturnType>::type()));
+  TEST((typename is_same<typename DeduceCodomainType<T>::type,ReturnType>::type()));
+  TEST((typename FunctionSignatureEnabled<T>::type()));
+  TEST((typename HasInputType<T, Integer<0> >::type()));
+  TEST((typename HasInputType<T, Integer<1> >::type()));
+  TEST((typename HasInputType<T, Integer<2> >::type()));
+  TEST((typename HasInputType<T, Integer<3> >::type()));
+  TEST(!(typename HasInputType<T, Integer<4> >::type()));
+  TEST((typename is_same<Input0, typename GetInputType<T, Integer<0> >::type>::type()));
+  TEST((typename is_same<int, typename GetInputType<T, Integer<1> >::type>::type()));
+  TEST((typename is_same<char&, typename GetInputType<T, Integer<2> >::type>::type()));
+  TEST((typename is_same<double const&, typename GetInputType<T, Integer<3> >::type>::type()));
+  TEST((4 == typename GetFunctionArity<T>::type()));
+  TEST((typename is_same<Array<Input0, int, char&, double const&>, typename GetInputTypeArray<T>::type>::type()));
+}
+
+template<typename ReturnType, typename Input0, typename T>
+void testFun4(T)
+{
+  TEST((typename is_same<typename GetCodomainType<T>::type,ReturnType>::type()));
+  TEST((typename is_same<typename DeduceCodomainType<T>::type,ReturnType>::type()));
+  TEST((typename FunctionSignatureEnabled<T>::type()));
+  TEST((typename HasInputType<T, Integer<0> >::type()));
+  TEST((typename HasInputType<T, Integer<1> >::type()));
+  TEST((typename HasInputType<T, Integer<2> >::type()));
+  TEST((typename HasInputType<T, Integer<3> >::type()));
+  TEST((typename HasInputType<T, Integer<4> >::type()));
+  TEST(!(typename HasInputType<T, Integer<5> >::type()));
+  TEST((typename is_same<Input0, typename GetInputType<T, Integer<0> >::type>::type()));
+  TEST((typename is_same<int, typename GetInputType<T, Integer<1> >::type>::type()));
+  TEST((typename is_same<char&, typename GetInputType<T, Integer<2> >::type>::type()));
+  TEST((typename is_same<double const&, typename GetInputType<T, Integer<3> >::type>::type()));
+  TEST((typename is_same<int*&, typename GetInputType<T, Integer<4> >::type>::type()));
+  TEST((5 == typename GetFunctionArity<T>::type()));
+  TEST((typename is_same<Array<Input0, int, char&, double const&, int*&>, typename GetInputTypeArray<T>::type>::type()));
+}
+
 void test_function_signatures()
 {
   TEST((is_same<GetCodomainType<int(*)()>::type,int>::type()));
@@ -1003,6 +1106,21 @@ void test_function_signatures()
   TEST((is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<4> >::type>::type()));
   TEST((5 == GetFunctionArity<MyGenericFunctionObject2>::type()));
   TEST((is_same<Array<template_param, template_param, template_param, template_param, template_param>, GetInputTypeArray<MyGenericFunctionObject2>::type>::type()));
+
+  testFun0<void, MemberFunctionTest const>(&MemberFunctionTest::voidFun0);
+  testFun0<int, MemberFunctionTest>(&MemberFunctionTest::intFun0);
+
+  testFun1<void, MemberFunctionTest const>(&MemberFunctionTest::voidFun1);
+  testFun1<int, MemberFunctionTest>(&MemberFunctionTest::intFun1);
+
+  testFun2<void, MemberFunctionTest const>(&MemberFunctionTest::voidFun2);
+  testFun2<int, MemberFunctionTest>(&MemberFunctionTest::intFun2);
+
+  testFun3<void, MemberFunctionTest const>(&MemberFunctionTest::voidFun3);
+  testFun3<int, MemberFunctionTest>(&MemberFunctionTest::intFun3);
+
+  testFun4<void, MemberFunctionTest const>(&MemberFunctionTest::voidFun4);
+  testFun4<int, MemberFunctionTest>(&MemberFunctionTest::intFun4);
 }
 
 } // unnamed namespace
