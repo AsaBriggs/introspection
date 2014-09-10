@@ -799,7 +799,6 @@ struct ReturnFirstValue
     };
 };
 
-
 struct ReturnThirdValue
 {
     template<typename T, typename U, typename V, typename W, typename X>
@@ -933,7 +932,7 @@ void test_function_signatures()
 
 
 
-  // OK, test out the generic codomain deduction mechanism
+  // OK, test out the generic codomain deduction mechanism with 5 parameters
   TEST((is_same<GetCodomainType<MyGenericFunctionObject2>::type,CodomainDeduction<ReturnThirdValue> >::type()));
   TEST((is_same<DeduceCodomainType<MyGenericFunctionObject2, char, short, int, float, void*>::type,int>::type()));
   TEST((FunctionSignatureEnabled<MyGenericFunctionObject2>::type()));
