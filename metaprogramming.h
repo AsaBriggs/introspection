@@ -857,7 +857,6 @@ template<template<typename, typename, typename, typename, typename> class T, typ
 struct Apply_Impl<T<P0, P1, P2, P3, P4>, Params> : BindArguments<T<P0, P1, P2, P3, P4>, Params>
 {};
 
-
 } // namespace impl
 
 template<typename T, typename P0=impl::apply_ignore, typename P1=impl::apply_ignore, typename P2=impl::apply_ignore, typename P3=impl::apply_ignore, typename P4=impl::apply_ignore>
@@ -874,7 +873,6 @@ struct ApplyIfNotArrayNoArg : Apply<Fun, T>
 template<typename Fun>
 struct ApplyIfNotArrayNoArg<ArrayNoArg, Fun> : ArrayNoArg {};
 
-
 template<typename T, typename Fun>
 struct ArrayTransform_Impl
 {
@@ -888,9 +886,8 @@ struct ArrayTransform_Impl
                   typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<7> >::type, Fun>::type,
                   typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<8> >::type, Fun>::type,
                   typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<9> >::type, Fun>::type> type;
-
-
 };
+
 
 template<typename T0, typename T1, typename Fun>
 struct ApplyIfNotArrayNoArg2 : Apply<Fun, T0, T1>
@@ -932,6 +929,33 @@ struct ArrayTransform : impl::ArrayTransform_Impl<T, Fun> {};
 
 template<typename T, typename U, typename Fun>
 struct ArrayZip : impl::ArrayZip_Impl<T, U, Fun> {};
+
+namespace impl {
+
+template<typename T, typename From, typename To>
+struct RationaliseApplyArrayConvert
+{
+    typedef T type;
+};
+
+template<typename From, typename To>
+struct RationaliseApplyArrayConvert<From, From, To>
+{
+    typedef To type;
+};
+
+template<typename T, typename ToRemove>
+struct RationaliseApplyArray
+{
+    // Did not use ArrayTransform as this skips over ArrayNoArg elements, which is not what this metafunction should do.
+    typedef Array<typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<0> >::type, ToRemove, impl::apply_ignore>::type,
+                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<1> >::type, ToRemove, impl::apply_ignore>::type,
+                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<2> >::type, ToRemove, impl::apply_ignore>::type,
+                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<3> >::type, ToRemove, impl::apply_ignore>::type,
+                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<4> >::type, ToRemove, impl::apply_ignore>::type> type;
+};
+
+} // namespace impl
 
 } // namespace intro
 

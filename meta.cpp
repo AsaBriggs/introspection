@@ -908,9 +908,9 @@ void test_function_signatures()
   TEST((is_same<long, GetInputType<int(*)(long, float, short&, int const&), Integer<0> >::type>::type()));
   TEST((is_same<float, GetInputType<int(*)(long, float, short&, int const&), Integer<1> >::type>::type()));
   TEST((is_same<short&, GetInputType<int(*)(long, float, short&, int const&), Integer<2> >::type>::type()));
-  TEST((is_same<int, GetInputType<int(*)(long, float, short&, int const&), Integer<3> >::type>::type()));
+  TEST((is_same<int const&, GetInputType<int(*)(long, float, short&, int const&), Integer<3> >::type>::type()));
   TEST((4 == GetFunctionArity<int(*)(long, float, short&, int const&)>::type()));
-  TEST((is_same<Array<long, float, short&, int>, GetInputTypeArray<int(*)(long, float, short&, int const&)>::type>::type()));
+  TEST((is_same<Array<long, float, short&, int const&>, GetInputTypeArray<int(*)(long, float, short&, int const&)>::type>::type()));
 
 
   TEST((is_same<GetCodomainType<int(*)(long, float, short&, int const&, bool)>::type,int>::type()));
@@ -925,10 +925,10 @@ void test_function_signatures()
   TEST((is_same<long, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<0> >::type>::type()));
   TEST((is_same<float, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<1> >::type>::type()));
   TEST((is_same<short&, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<2> >::type>::type()));
-  TEST((is_same<int, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<3> >::type>::type()));
+  TEST((is_same<int const&, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<3> >::type>::type()));
   TEST((is_same<bool, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<4> >::type>::type()));
   TEST((5 == GetFunctionArity<int(*)(long, float, short&, int const&, bool)>::type()));
-  TEST((is_same<Array<long, float, short&, int, bool>, GetInputTypeArray<int(*)(long, float, short&, int const&, bool)>::type>::type()));
+  TEST((is_same<Array<long, float, short&, int const&, bool>, GetInputTypeArray<int(*)(long, float, short&, int const&, bool)>::type>::type()));
 
   TEST((is_same<GetCodomainType<MyFunctionObject>::type,int>::type()));
   TEST((is_same<DeduceCodomainType<MyFunctionObject>::type,int>::type()));

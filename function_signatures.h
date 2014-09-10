@@ -11,26 +11,70 @@
 
 namespace intro {
 
-struct no_function_argument { typedef no_function_argument type; };
+namespace impl {
+
+// This is the metafunction by which function pointers become associated with a metafunction
+// describing it. For standard functors it is trivial to add typedefs with the appropriate information
+// but nesting typedefs is impossible in pointers.
+// It is assumed that all types using within namespace impl have been passed through this metafunction first
+// to get the appropriate information.
+template<typename T>
+struct ResolveFunctionSignatureType
+{
+    typedef T type;
+};
+
+
+// Note that this type is identical in form to identity_type but has been kept distinct
+// to aid understanding of what the code does.
+template<typename T>
+struct box_ref
+{
+    typedef T type;
+};
+
+template<typename T>
+struct unbox_ref
+{
+    typedef T type;
+};
+
+template<typename T>
+struct unbox_ref<box_ref<T> >
+{
+    typedef T type;
+};
+
+}
+
+struct no_template_argument { typedef no_template_argument type; };
 struct template_param { typedef template_param type; };
 
 template<typename T>
 struct CodomainDeduction { typedef CodomainDeduction type; };
 
-GENERATE_HAS_AND_GET_MEMBER_TYPE(input_type_0)
-GENERATE_HAS_AND_GET_MEMBER_TYPE(input_type_1)
-GENERATE_HAS_AND_GET_MEMBER_TYPE(input_type_2)
-GENERATE_HAS_AND_GET_MEMBER_TYPE(input_type_3)
-GENERATE_HAS_AND_GET_MEMBER_TYPE(input_type_4)
-GENERATE_HAS_AND_GET_MEMBER_TYPE(codomain_type)
+// Generates the non-impl functions to forward onto the impl, via the ResolveFunctionSignatureType metafunction.
+#define GENERATE_FUNCTION_SIGNATURE_GETTERS(x)\
+namespace impl{\
+GENERATE_HAS_AND_GET_MEMBER_TYPE(x)\
+}\
+template<typename T> struct Get_##x : impl::unbox_ref< typename impl::GetMemberType_##x<typename impl::ResolveFunctionSignatureType<T>::type>::type > {}; \
+template<typename T> struct Has_##x : impl::HasMemberType_##x<typename impl::ResolveFunctionSignatureType<T>::type> {};\
 
+GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_0)
+GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_1)
+GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_2)
+GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_3)
+GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_4)
+GENERATE_FUNCTION_SIGNATURE_GETTERS(codomain_type)
+
+#undef GENERATE_FUNCTION_SIGNATURE_GETTERS
 
 template<typename T>
-struct GetCodomainType : GetMemberType_codomain_type<T> {};
+struct GetCodomainType : Get_codomain_type<T> {};
 
 template<typename T>
-struct FunctionSignatureEnabled : HasMemberType_codomain_type<T> {};
-
+struct FunctionSignatureEnabled : Has_codomain_type<T> {};
 
 namespace impl {
 
@@ -38,19 +82,19 @@ template<typename T, typename Index>
 struct HasInputType_Impl;
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<0> > : HasMemberType_input_type_0<T> {};
+struct HasInputType_Impl<T, Integer<0> > : Has_input_type_0<T> {};
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<1> > : HasMemberType_input_type_1<T> {};
+struct HasInputType_Impl<T, Integer<1> > : Has_input_type_1<T> {};
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<2> > : HasMemberType_input_type_2<T> {};
+struct HasInputType_Impl<T, Integer<2> > : Has_input_type_2<T> {};
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<3> > : HasMemberType_input_type_3<T> {};
+struct HasInputType_Impl<T, Integer<3> > : Has_input_type_3<T> {};
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<4> > : HasMemberType_input_type_4<T> {};
+struct HasInputType_Impl<T, Integer<4> > : Has_input_type_4<T> {};
 
 template<typename T>
 struct HasInputType_Impl<T, Integer<5> > : false_type {};
@@ -60,27 +104,27 @@ template<typename T, typename Index>
 struct GetInputType_Impl;
 
 template<typename T>
-struct GetInputType_Impl<T, Integer<0> > : GetMemberType_input_type_0<T> {};
+struct GetInputType_Impl<T, Integer<0> > : Get_input_type_0<T> {};
 
 template<typename T>
-struct GetInputType_Impl<T, Integer<1> > : GetMemberType_input_type_1<T> {};
+struct GetInputType_Impl<T, Integer<1> > : Get_input_type_1<T> {};
 
 template<typename T>
-struct GetInputType_Impl<T, Integer<2> > : GetMemberType_input_type_2<T> {};
+struct GetInputType_Impl<T, Integer<2> > : Get_input_type_2<T> {};
 
 template<typename T>
-struct GetInputType_Impl<T, Integer<3> > : GetMemberType_input_type_3<T> {};
+struct GetInputType_Impl<T, Integer<3> > : Get_input_type_3<T> {};
 
 template<typename T>
-struct GetInputType_Impl<T, Integer<4> > : GetMemberType_input_type_4<T> {};
+struct GetInputType_Impl<T, Integer<4> > : Get_input_type_4<T> {};
 
 } // namespace impl
 
 template<typename T, typename Index>
-struct HasInputType : impl::HasInputType_Impl<T, Index> {};
+struct HasInputType : impl::HasInputType_Impl<typename impl::ResolveFunctionSignatureType<T>::type, Index> {};
 
 template<typename T, typename Index>
-struct GetInputType : impl::GetInputType_Impl<T, Index> {};
+struct GetInputType : impl::GetInputType_Impl<typename impl::ResolveFunctionSignatureType<T>::type, Index> {};
 
 namespace impl {
 
@@ -95,7 +139,7 @@ struct GetFunctionArityLoop : eval_if<HasInputType<T, CurrentArity>,
 } // namespace impl
 
 template<typename T>
-struct GetFunctionArity : impl::GetFunctionArityLoop<T, Integer<0> > {};
+struct GetFunctionArity : impl::GetFunctionArityLoop<typename impl::ResolveFunctionSignatureType<T>::type, Integer<0> > {};
 
 
 namespace impl {
@@ -104,11 +148,13 @@ template<typename T, typename AccumulatedArray, typename CurrentIndex, typename 
 struct GetInputTypeArrayLoop;
 
 template<typename T, typename AccumulatedArray, typename Arity>
-struct GetInputTypeArrayLoop<T, AccumulatedArray, Arity, Arity> : AccumulatedArray {};
+struct GetInputTypeArrayLoop<T, AccumulatedArray, Arity, Arity> : AccumulatedArray
+{};
 
 template<typename T, typename AccumulatedArray, typename CurrentIndex, typename Arity>
 struct GetInputTypeArrayLoop :
-    GetInputTypeArrayLoop<T, typename ArrayConcat<AccumulatedArray, Array<typename GetInputType<T, CurrentIndex>::type> >::type, typename Successor<CurrentIndex>::type, Arity> {};
+    GetInputTypeArrayLoop<T, typename ArrayConcat<AccumulatedArray, Array<typename GetInputType<T, CurrentIndex>::type> >::type, typename Successor<CurrentIndex>::type, Arity>
+{};
 
 
 template<typename T>
@@ -126,7 +172,7 @@ template<typename InputType, typename ParamArrayItem>
 struct UseTemplateParamWhereNeeded;
 
 template<>
-struct UseTemplateParamWhereNeeded<template_param, no_function_argument>
+struct UseTemplateParamWhereNeeded<template_param, no_template_argument>
 {}; // typedef type not defined as this situation is unexpected; a parameter was expected
 
 template<typename ParamArrayItem>
@@ -136,72 +182,24 @@ struct UseTemplateParamWhereNeeded<template_param, ParamArrayItem>
 };
 
 template<typename InputType>
-struct UseTemplateParamWhereNeeded<InputType, no_function_argument>
+struct UseTemplateParamWhereNeeded<InputType, no_template_argument>
 {
     typedef InputType type;
 };
 
 template<>
-struct UseTemplateParamWhereNeeded<ArrayNoArg, no_function_argument>
-{
-    typedef ArrayNoArg type;
-};
+struct UseTemplateParamWhereNeeded<ArrayNoArg, no_template_argument> : ArrayNoArg {};
 
 template<>
-struct UseTemplateParamWhereNeeded<ArrayNoArg, ArrayNoArg>
-{
-    typedef ArrayNoArg type;
-};
-
-struct UseTemplateParam
-{
-    template<typename InputType, typename ParamArrayItem>
-    struct apply : UseTemplateParamWhereNeeded<InputType, ParamArrayItem> {};
-};
-
-template<typename MFC, typename TypesToApply, typename Arity>
-struct ApplyCodomainDeduction_Impl;
-
-template<typename MFC, typename TypesToApply>
-struct ApplyCodomainDeduction_Impl<MFC, TypesToApply, Integer<1> > :
-    MFC::template apply<typename ArrayIndex<TypesToApply, Integer<0> >::type>
-{};
-
-template<typename MFC, typename TypesToApply>
-struct ApplyCodomainDeduction_Impl<MFC, TypesToApply, Integer<2> > :
-    MFC::template apply<typename ArrayIndex<TypesToApply, Integer<0> >::type,
-                        typename ArrayIndex<TypesToApply, Integer<1> >::type>
-{};
-
-template<typename MFC, typename TypesToApply>
-struct ApplyCodomainDeduction_Impl<MFC, TypesToApply, Integer<3> > :
-    MFC::template apply<typename ArrayIndex<TypesToApply, Integer<0> >::type,
-                        typename ArrayIndex<TypesToApply, Integer<1> >::type,
-                        typename ArrayIndex<TypesToApply, Integer<2> >::type>
-{};
-
-template<typename MFC, typename TypesToApply>
-struct ApplyCodomainDeduction_Impl<MFC, TypesToApply, Integer<4> > :
-    MFC::template apply<typename ArrayIndex<TypesToApply, Integer<0> >::type,
-                        typename ArrayIndex<TypesToApply, Integer<1> >::type,
-                        typename ArrayIndex<TypesToApply, Integer<2> >::type,
-                        typename ArrayIndex<TypesToApply, Integer<3> >::type>
-{};
-
-template<typename MFC, typename TypesToApply>
-struct ApplyCodomainDeduction_Impl<MFC, TypesToApply, Integer<5> > :
-    MFC::template apply<typename ArrayIndex<TypesToApply, Integer<0> >::type,
-                        typename ArrayIndex<TypesToApply, Integer<1> >::type,
-                        typename ArrayIndex<TypesToApply, Integer<2> >::type,
-                        typename ArrayIndex<TypesToApply, Integer<3> >::type,
-                        typename ArrayIndex<TypesToApply, Integer<4> >::type>
-{};
+struct UseTemplateParamWhereNeeded<ArrayNoArg, ArrayNoArg> : ArrayNoArg {};
 
 template<typename T, typename CodomainMFC, typename ParamArray, typename Arity>
 struct ApplyCodomainDeduction
 {
-    typedef typename ArrayZip<typename GetInputTypeArray<T>::type, ParamArray, UseTemplateParam>::type TypesToApply;
-    typedef typename ApplyCodomainDeduction_Impl<CodomainMFC, TypesToApply, Arity>::type type;
+    typedef typename ArrayZip<typename GetInputTypeArray<T>::type, ParamArray, UseTemplateParamWhereNeeded<placeholders::_0, placeholders::_1> >::type TypesToApply;
+    // Must use RationaliseApplyArray to convert the ArrayNoArg into apply_ignore within the first 5 elements of the array.
+    // If we did not do this then very bad things would happen.
+    typedef typename Apply_Impl<CodomainMFC, typename RationaliseApplyArray<TypesToApply, ArrayNoArg>::type>::type type;
 };
 
 template<typename T, typename CodomainType, typename ParamArray>
@@ -213,212 +211,130 @@ struct GetCodomainType_Impl<T, CodomainDeduction<U>, ParamArray> : ApplyCodomain
 
 } // namespace impl
 
-template<typename T, typename I0=no_function_argument, typename I1=no_function_argument, typename I2=no_function_argument, typename I3=no_function_argument, typename I4=no_function_argument>
-struct DeduceCodomainType : impl::GetCodomainType_Impl<T, typename GetCodomainType<T>::type, Array<I0, I1, I2, I3, I4> > {};
+template<typename T, typename I0=no_template_argument, typename I1=no_template_argument, typename I2=no_template_argument, typename I3=no_template_argument, typename I4=no_template_argument>
+struct DeduceCodomainType : impl::GetCodomainType_Impl<typename impl::ResolveFunctionSignatureType<T>::type,
+  typename GetCodomainType<typename impl::ResolveFunctionSignatureType<T>::type>::type, Array<I0, I1, I2, I3, I4> > {};
 
 
 
 
 
 //Specialisations for function pointers
-template<typename T>
-struct GetCodomainType<T(*)()>
-{
-    typedef T type;
-};
+
+namespace impl {
 
 template<typename T>
-struct FunctionSignatureEnabled<T(*)()> : true_type {};
-
-template<typename T, typename Index>
-struct HasInputType<T(*)(), Index> : false_type {};
-
-template<typename T, typename Index>
-struct GetInputType<T(*)(), Index> ;
+struct nullary_function
+{
+    typedef nullary_function type;
+    typedef true_type introspection_enabled;
+    typedef T codomain_type;
+};
 
 template<typename T>
-struct GetFunctionArity<T(*)()> : Integer<0> {};
-
-
+struct ResolveFunctionSignatureType<T(*)()> :
+    nullary_function<box_ref<T> >
+{};
 
 template<typename T, typename U>
-struct GetCodomainType<T(*)(U)>
+struct unary_function
 {
-    typedef T type;
+    typedef unary_function type;
+    typedef true_type introspection_enabled;
+    typedef U input_type_0;
+    typedef T codomain_type;
 };
 
 template<typename T, typename U>
-struct FunctionSignatureEnabled<T(*)(U)> : true_type {};
-
-template<typename T, typename U>
-struct HasInputType<T(*)(U), Integer<0> > : true_type {};
-
-template<typename T, typename U, typename Index>
-struct HasInputType<T(*)(U), Index> : false_type {};
-
-template<typename T, typename U>
-struct GetInputType<T(*)(U), Integer<0> > : deduce_input_type<U> {};
-
-template<typename T, typename U>
-struct GetFunctionArity<T(*)(U)> : Integer<1> {};
-
-
-
+struct ResolveFunctionSignatureType<T(*)(U)> :
+    unary_function<box_ref<T>,
+                   box_ref<U> >
+{};
 
 template<typename T, typename U, typename V>
-struct GetCodomainType<T(*)(U, V)>
+struct binary_function
 {
-    typedef T type;
+    typedef binary_function type;
+    typedef true_type introspection_enabled;
+    typedef U input_type_0;
+    typedef V input_type_1;
+    typedef T codomain_type;
 };
 
 template<typename T, typename U, typename V>
-struct FunctionSignatureEnabled<T(*)(U, V)> : true_type {};
-
-template<typename T, typename U, typename V>
-struct HasInputType<T(*)(U, V), Integer<0> > : true_type {};
-
-template<typename T, typename U, typename V>
-struct HasInputType<T(*)(U, V), Integer<1> > : true_type {};
-
-template<typename T, typename U, typename V, typename Index>
-struct HasInputType<T(*)(U, V), Index> : false_type {};
-
-template<typename T, typename U, typename V>
-struct GetInputType<T(*)(U, V), Integer<0> > : deduce_input_type<U> {};
-
-template<typename T, typename U, typename V>
-struct GetInputType<T(*)(U, V), Integer<1> > : deduce_input_type<V> {};
-
-template<typename T, typename U, typename V>
-struct GetFunctionArity<T(*)(U, V)> : Integer<2> {};
-
-
-
+struct ResolveFunctionSignatureType<T(*)(U, V)> :
+    binary_function<box_ref<T>,
+                    box_ref<U>,
+                    box_ref<V> >
+{};
 
 
 template<typename T, typename U, typename V, typename W>
-struct GetCodomainType<T(*)(U, V, W)>
+struct trinary_function
 {
-    typedef T type;
+    typedef trinary_function type;
+    typedef true_type introspection_enabled;
+    typedef U input_type_0;
+    typedef V input_type_1;
+    typedef W input_type_2;
+    typedef T codomain_type;
 };
 
 template<typename T, typename U, typename V, typename W>
-struct FunctionSignatureEnabled<T(*)(U, V, W)> : true_type {};
-
-template<typename T, typename U, typename V, typename W>
-struct HasInputType<T(*)(U, V, W), Integer<0> > : true_type {};
-
-template<typename T, typename U, typename V, typename W>
-struct HasInputType<T(*)(U, V, W), Integer<1> > : true_type {};
-
-template<typename T, typename U, typename V, typename W>
-struct HasInputType<T(*)(U, V, W), Integer<2> > : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename Index>
-struct HasInputType<T(*)(U, V, W), Index> : false_type {};
-
-template<typename T, typename U, typename V, typename W>
-struct GetInputType<T(*)(U, V, W), Integer<0> > : deduce_input_type<U> {};
-
-template<typename T, typename U, typename V, typename W>
-struct GetInputType<T(*)(U, V, W), Integer<1> > : deduce_input_type<V> {};
-
-template<typename T, typename U, typename V, typename W>
-struct GetInputType<T(*)(U, V, W), Integer<2> > : deduce_input_type<W> {};
-
-template<typename T, typename U, typename V, typename W>
-struct GetFunctionArity<T(*)(U, V, W)> : Integer<3> {};
-
-
-
+struct ResolveFunctionSignatureType<T(*)(U, V, W)> :
+    trinary_function<box_ref<T>,
+                     box_ref<U>,
+                     box_ref<V> ,
+                     box_ref<W> >
+{};
 
 
 template<typename T, typename U, typename V, typename W, typename X>
-struct GetCodomainType<T(*)(U, V, W, X)>
+struct quaternary_function
 {
-    typedef T type;
+    typedef quaternary_function type;
+    typedef true_type introspection_enabled;
+    typedef U input_type_0;
+    typedef V input_type_1;
+    typedef W input_type_2;
+    typedef X input_type_3;
+    typedef T codomain_type;
 };
 
 template<typename T, typename U, typename V, typename W, typename X>
-struct FunctionSignatureEnabled<T(*)(U, V, W, X)> : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename X>
-struct HasInputType<T(*)(U, V, W, X), Integer<0> > : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename X>
-struct HasInputType<T(*)(U, V, W, X), Integer<1> > : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename X>
-struct HasInputType<T(*)(U, V, W, X), Integer<2> > : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename X>
-struct HasInputType<T(*)(U, V, W, X), Integer<3> > : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Index>
-struct HasInputType<T(*)(U, V, W, X), Index> : false_type {};
-
-template<typename T, typename U, typename V, typename W, typename X>
-struct GetInputType<T(*)(U, V, W, X), Integer<0> > : deduce_input_type<U> {};
-
-template<typename T, typename U, typename V, typename W, typename X>
-struct GetInputType<T(*)(U, V, W, X), Integer<1> > : deduce_input_type<V> {};
-
-template<typename T, typename U, typename V, typename W, typename X>
-struct GetInputType<T(*)(U, V, W, X), Integer<2> > : deduce_input_type<W> {};
-
-template<typename T, typename U, typename V, typename W, typename X>
-struct GetInputType<T(*)(U, V, W, X), Integer<3> > : deduce_input_type<X> {};
-
-template<typename T, typename U, typename V, typename W, typename X>
-struct GetFunctionArity<T(*)(U, V, W, X)> : Integer<4> {};
-
-
+struct ResolveFunctionSignatureType<T(*)(U, V, W, X)> :
+    quaternary_function<box_ref<T>,
+                        box_ref<U>,
+                        box_ref<V>,
+                        box_ref<W>,
+                        box_ref<X> >
+{};
 
 
 template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct GetCodomainType<T(*)(U, V, W, X, Y)>
+struct quinternary_function
 {
-    typedef T type;
+    typedef quinternary_function type;
+    typedef true_type introspection_enabled;
+    typedef U input_type_0;
+    typedef V input_type_1;
+    typedef W input_type_2;
+    typedef X input_type_3;
+    typedef Y input_type_4;
+    typedef T codomain_type;
 };
 
 template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct FunctionSignatureEnabled<T(*)(U, V, W, X, Y)> : true_type {};
+  struct ResolveFunctionSignatureType<T(*)(U, V, W, X, Y)> :
+    quinternary_function<box_ref<T>,
+                         box_ref<U>,
+                         box_ref<V>,
+                         box_ref<W>,
+                         box_ref<X>,
+                         box_ref<Y> >
+{};
 
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct HasInputType<T(*)(U, V, W, X, Y), Integer<0> > : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct HasInputType<T(*)(U, V, W, X, Y), Integer<1> > : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct HasInputType<T(*)(U, V, W, X, Y), Integer<2> > : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct HasInputType<T(*)(U, V, W, X, Y), Integer<3> > : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct HasInputType<T(*)(U, V, W, X, Y), Integer<4> > : true_type {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y, typename Index>
-struct HasInputType<T(*)(U, V, W, X, Y), Index> : false_type {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct GetInputType<T(*)(U, V, W, X, Y), Integer<0> > : deduce_input_type<U> {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct GetInputType<T(*)(U, V, W, X, Y), Integer<1> > : deduce_input_type<V> {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct GetInputType<T(*)(U, V, W, X, Y), Integer<2> > : deduce_input_type<W> {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct GetInputType<T(*)(U, V, W, X, Y), Integer<3> > : deduce_input_type<X> {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct GetInputType<T(*)(U, V, W, X, Y), Integer<4> > : deduce_input_type<Y> {};
-
-template<typename T, typename U, typename V, typename W, typename X, typename Y>
-struct GetFunctionArity<T(*)(U, V, W, X, Y)> : Integer<5> {};
+}
 
 } // namespace intro
 
