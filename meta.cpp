@@ -165,6 +165,7 @@ void test_array_transform()
   typedef Array<Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9>, Integer<10> > Expected;
 
   TEST((is_same<ArrayTransform<Integers, AddOne>::type, Expected>()));
+  TEST((is_same<ArrayTransform<Integers, Add<placeholders::_0, Integer<1> > >::type, Expected>()));
 }
 
 struct AddTogether
@@ -180,6 +181,7 @@ void test_array_zip()
   typedef Array<Integer<1>, Integer<3>, Integer<5>, Integer<7>, Integer<9>, Integer<11>, Integer<13>, Integer<15>, Integer<17>, Integer<19> > Expected;
 
   TEST((is_same<ArrayZip<Integers, MoreIntegers, AddTogether>::type, Expected>()));
+  TEST((is_same<ArrayZip<Integers, MoreIntegers, Add<placeholders::_0, placeholders::_1> >::type, Expected>()));
 }
 
 void test_apply()
