@@ -11,6 +11,22 @@
 
 namespace intro {
 
+// It is essential to box at the very least reference (const and non-const) types
+// as otherwise the detect traits mechanism will not work; you can't form a pointer to a reference
+// and any attempt to do so just results in the function being SFINAE (silently) removed from the
+// overload set. Sad but true.
+template<typename T>
+struct box_ref
+{
+    typedef T type;
+};
+
+template<typename T>
+struct box_ref<Ref<T> >
+{
+    typedef T& type;
+};
+
 namespace impl {
 
 // This is the metafunction by which function pointers become associated with a metafunction
@@ -20,15 +36,6 @@ namespace impl {
 // to get the appropriate information.
 template<typename T>
 struct ResolveFunctionSignatureType
-{
-    typedef T type;
-};
-
-
-// Note that this type is identical in form to identity_type but has been kept distinct
-// to aid understanding of what the code does.
-template<typename T>
-struct box_ref
 {
     typedef T type;
 };
@@ -43,6 +50,13 @@ template<typename T>
 struct unbox_ref<box_ref<T> >
 {
     typedef T type;
+};
+
+template<typename T>
+struct unbox_ref<Ref<T> >
+{
+
+    typedef T& type;
 };
 
 }

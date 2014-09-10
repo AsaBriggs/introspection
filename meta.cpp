@@ -809,13 +809,28 @@ struct MyFunctionObject
     int operator()(long){ return 1; }
 };
 
+struct MyRefFunctionObject
+{
+    static int aValue;
+    typedef box_ref<long const&> input_type_0;
+    typedef box_ref<int&> codomain_type;
+    int& operator()(long const&){ return aValue; }
+};
+int MyRefFunctionObject::aValue = 0;
+
+struct MyRefFunctionObject2
+{
+    static int aValue;
+    typedef Ref<long const&> input_type_0;
+    typedef Ref<int&> codomain_type;
+    int& operator()(long const&){ return aValue; }
+};
+int MyRefFunctionObject2::aValue = 0;
+
+template<typename T>
 struct ReturnFirstValue
 {
-    template<typename T>
-    struct apply
-    {
-        typedef T type;
-    };
+    typedef T type;
 };
 
 struct ReturnThirdValue
@@ -831,7 +846,7 @@ struct MyGenericFunctionObject
 {
     typedef MyGenericFunctionObject type;
     typedef template_param input_type_0;
-    typedef CodomainDeduction<ReturnFirstValue> codomain_type;
+    typedef CodomainDeduction<ReturnFirstValue<placeholders::_0> > codomain_type;
 
     template<typename T>
     typename DeduceCodomainType<type, T>::type
@@ -939,8 +954,28 @@ void test_function_signatures()
   TEST((1 == GetFunctionArity<MyFunctionObject>::type()));
   TEST((is_same<Array<long>, GetInputTypeArray<MyFunctionObject>::type>::type()));
 
+
+  TEST((is_same<GetCodomainType<MyRefFunctionObject>::type,int&>::type()));
+  TEST((is_same<DeduceCodomainType<MyRefFunctionObject>::type,int&>::type()));
+  TEST((FunctionSignatureEnabled<MyRefFunctionObject>::type()));
+  TEST((HasInputType<MyRefFunctionObject, Integer<0> >::type()));
+  TEST(!(HasInputType<MyRefFunctionObject, Integer<1> >::type()));
+  TEST((is_same<long const&, GetInputType<MyRefFunctionObject, Integer<0> >::type>::type()));
+  TEST((1 == GetFunctionArity<MyRefFunctionObject>::type()));
+  TEST((is_same<Array<long const&>, GetInputTypeArray<MyRefFunctionObject>::type>::type()));
+
+  TEST((is_same<GetCodomainType<MyRefFunctionObject2>::type,int&>::type()));
+  TEST((is_same<DeduceCodomainType<MyRefFunctionObject2>::type,int&>::type()));
+  TEST((FunctionSignatureEnabled<MyRefFunctionObject2>::type()));
+  TEST((HasInputType<MyRefFunctionObject2, Integer<0> >::type()));
+  TEST(!(HasInputType<MyRefFunctionObject2, Integer<1> >::type()));
+  TEST((is_same<long const&, GetInputType<MyRefFunctionObject2, Integer<0> >::type>::type()));
+  TEST((1 == GetFunctionArity<MyRefFunctionObject2>::type()));
+  TEST((is_same<Array<long const&>, GetInputTypeArray<MyRefFunctionObject2>::type>::type()));
+
+
   // OK, test out the generic codomain deduction mechanism
-  TEST((is_same<GetCodomainType<MyGenericFunctionObject>::type,CodomainDeduction<ReturnFirstValue> >::type()));
+  TEST((is_same<GetCodomainType<MyGenericFunctionObject>::type,CodomainDeduction<ReturnFirstValue<placeholders::_0> > >::type()));
   TEST((is_same<DeduceCodomainType<MyGenericFunctionObject, int>::type,int>::type()));
   TEST((FunctionSignatureEnabled<MyGenericFunctionObject>::type()));
   TEST((HasInputType<MyGenericFunctionObject, Integer<0> >::type()));
