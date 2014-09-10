@@ -11,8 +11,8 @@
 
 namespace intro {
 
+struct no_function_argument { typedef no_function_argument type; };
 struct template_param { typedef template_param type; };
-struct no_argument { typedef no_argument type; };
 
 template<typename T>
 struct CodomainDeduction { typedef CodomainDeduction type; };
@@ -126,7 +126,7 @@ template<typename InputType, typename ParamArrayItem>
 struct UseTemplateParamWhereNeeded;
 
 template<>
-struct UseTemplateParamWhereNeeded<template_param, no_argument>
+struct UseTemplateParamWhereNeeded<template_param, no_function_argument>
 {}; // typedef type not defined as this situation is unexpected; a parameter was expected
 
 template<typename ParamArrayItem>
@@ -136,21 +136,21 @@ struct UseTemplateParamWhereNeeded<template_param, ParamArrayItem>
 };
 
 template<typename InputType>
-struct UseTemplateParamWhereNeeded<InputType, no_argument>
+struct UseTemplateParamWhereNeeded<InputType, no_function_argument>
 {
     typedef InputType type;
 };
 
 template<>
-struct UseTemplateParamWhereNeeded<Empty, no_argument>
+struct UseTemplateParamWhereNeeded<ArrayNoArg, no_function_argument>
 {
-    typedef Empty type;
+    typedef ArrayNoArg type;
 };
 
 template<>
-struct UseTemplateParamWhereNeeded<Empty, Empty>
+struct UseTemplateParamWhereNeeded<ArrayNoArg, ArrayNoArg>
 {
-    typedef Empty type;
+    typedef ArrayNoArg type;
 };
 
 struct UseTemplateParam
@@ -213,7 +213,7 @@ struct GetCodomainType_Impl<T, CodomainDeduction<U>, ParamArray> : ApplyCodomain
 
 } // namespace impl
 
-template<typename T, typename I0=no_argument, typename I1=no_argument, typename I2=no_argument, typename I3=no_argument, typename I4=no_argument>
+template<typename T, typename I0=no_function_argument, typename I1=no_function_argument, typename I2=no_function_argument, typename I3=no_function_argument, typename I4=no_function_argument>
 struct DeduceCodomainType : impl::GetCodomainType_Impl<T, typename GetCodomainType<T>::type, Array<I0, I1, I2, I3, I4> > {};
 
 

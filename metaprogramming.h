@@ -3,8 +3,6 @@
 
 namespace intro {
 
-struct Empty { typedef Empty type; };
-
 struct true_type
 {
     typedef true_type type;
@@ -353,9 +351,9 @@ inline typename get_underlying_type<T>::type& get_underlying_ref(T& x)
 template<typename T>
 inline void swap_basic(T& x, T& y)
 {
-  T tmp = x;
-  x = y;
-  y = tmp;
+    T tmp = x;
+    x = y;
+    y = tmp;
 }
 
 template<typename T>
@@ -414,7 +412,10 @@ struct DecayRef
     {};
 };
 
-template<typename T0=Empty, typename T1=Empty, typename T2=Empty, typename T3=Empty, typename T4=Empty, typename T5=Empty, typename T6=Empty, typename T7=Empty, typename T8=Empty, typename T9=Empty>
+
+struct ArrayNoArg { typedef ArrayNoArg type; };
+
+template<typename T0=ArrayNoArg, typename T1=ArrayNoArg, typename T2=ArrayNoArg, typename T3=ArrayNoArg, typename T4=ArrayNoArg, typename T5=ArrayNoArg, typename T6=ArrayNoArg, typename T7=ArrayNoArg, typename T8=ArrayNoArg, typename T9=ArrayNoArg>
 struct Array
 {
     typedef Array type;
@@ -667,48 +668,6 @@ struct ArrayRotate
   typedef typename ArrayConcat<B, typename ArrayIndex<SplitAtL, Integer<1> >::type>::type type; // 0..F & M..L & F..M & L..End
 };
 
-template<typename T, typename Fun>
-struct ArrayTransform_Impl
-{
-    typedef Array<typename Fun::template apply<typename ArrayIndex<T, Integer<0> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<1> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<2> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<3> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<4> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<5> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<6> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<7> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<8> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<9> >::type>::type> type;
-
-
-};
-
-template<typename T, typename U, typename Fun>
-struct ArrayZip_Impl
-{
-    typedef Array<typename Fun::template apply<typename ArrayIndex<T, Integer<0> >::type,
-                                               typename ArrayIndex<U, Integer<0> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<1> >::type,
-                                               typename ArrayIndex<U, Integer<1> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<2> >::type,
-                                               typename ArrayIndex<U, Integer<2> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<3> >::type,
-                                               typename ArrayIndex<U, Integer<3> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<4> >::type,
-                                               typename ArrayIndex<U, Integer<4> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<5> >::type,
-                                               typename ArrayIndex<U, Integer<5> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<6> >::type,
-                                               typename ArrayIndex<U, Integer<6> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<7> >::type,
-                                               typename ArrayIndex<U, Integer<7> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<8> >::type,
-                                               typename ArrayIndex<U, Integer<8> >::type>::type,
-                  typename Fun::template apply<typename ArrayIndex<T, Integer<9> >::type,
-                                               typename ArrayIndex<U, Integer<9> >::type>::type> type;
-};
-
 } // namespace impl
 
 template<typename T, typename Index>
@@ -732,7 +691,242 @@ struct ArrayRotate : impl::ArrayRotate<T, F, M, L> {};
 template<typename T, typename M>
 struct ArrayRotateDefault : impl::ArrayRotate<T, Integer<0>, M, typename ArraySize<T>::type > {};
 
-// Note that applying Fun to Empty should return Empty
+namespace placeholders {
+
+template<typename Index>
+struct Placeholder
+{
+    typedef Placeholder type;
+};
+
+typedef Placeholder<Integer<0> > _0;
+typedef Placeholder<Integer<1> > _1;
+typedef Placeholder<Integer<2> > _2;
+typedef Placeholder<Integer<3> > _3;
+typedef Placeholder<Integer<4> > _4;
+
+}
+
+namespace impl {
+
+struct apply_ignore { typedef apply_ignore type; };
+
+template<typename T>
+struct CheckIsNotNoArgument
+{
+    typedef T type;
+};
+
+template<>
+struct CheckIsNotNoArgument<apply_ignore>; // leave undefined as binding apply_ignore is an error.
+
+template<typename T, typename Params>
+struct LookupPlaceholder
+{
+    typedef T type;
+};
+
+template<typename Index, typename Params>
+struct LookupPlaceholder<placeholders::Placeholder<Index>, Params> :
+    CheckIsNotNoArgument<typename ArrayIndex<Params, Index>::type>
+{};
+
+template<typename T>
+struct ParamsArity;
+
+template<>
+struct ParamsArity<Array<apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<0> {};
+
+template<typename T0>
+struct ParamsArity<Array<T0, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<1> {};
+
+template<typename T0, typename T1>
+struct ParamsArity<Array<T0, T1, apply_ignore, apply_ignore, apply_ignore> > : Integer<2> {};
+
+template<typename T0, typename T1, typename T2>
+struct ParamsArity<Array<T0, T1, T2, apply_ignore, apply_ignore> > : Integer<3> {};
+
+template<typename T0, typename T1, typename T2, typename T3>
+struct ParamsArity<Array<T0, T1, T2, T3, apply_ignore> > : Integer<4> {};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4>
+struct ParamsArity<Array<T0, T1, T2, T3, T4> > : Integer<5> {};
+
+
+
+template<typename T, typename Params>
+struct BindArguments
+{
+    typedef T type;
+};
+
+template<template<typename> class T, typename P0, typename Params>
+struct BindArguments<T<P0>, Params> : T<typename LookupPlaceholder<P0, Params>::type>
+{};
+
+template<template<typename, typename> class T, typename P0, typename P1, typename Params>
+struct BindArguments<T<P0, P1>, Params> : T<typename LookupPlaceholder<P0, Params>::type,
+                                            typename LookupPlaceholder<P1, Params>::type>
+{};
+
+template<template<typename, typename, typename> class T, typename P0, typename P1, typename P2, typename Params>
+struct BindArguments<T<P0, P1, P2>, Params> : T<typename LookupPlaceholder<P0, Params>::type,
+                                                typename LookupPlaceholder<P1, Params>::type,
+                                                typename LookupPlaceholder<P2, Params>::type>
+{};
+
+template<template<typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename Params>
+struct BindArguments<T<P0, P1, P2, P3>, Params> : T<typename LookupPlaceholder<P0, Params>::type,
+                                                    typename LookupPlaceholder<P1, Params>::type,
+                                                    typename LookupPlaceholder<P2, Params>::type,
+                                                    typename LookupPlaceholder<P3, Params>::type>
+{};
+
+template<template<typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename Params>
+struct BindArguments<T<P0, P1, P2, P3, P4>, Params> : T<typename LookupPlaceholder<P0, Params>::type,
+                                                        typename LookupPlaceholder<P1, Params>::type,
+                                                        typename LookupPlaceholder<P2, Params>::type,
+                                                        typename LookupPlaceholder<P3, Params>::type,
+                                                        typename LookupPlaceholder<P4, Params>::type>
+{};
+
+
+template<typename T, typename ParamsAirty>
+struct AddPlaceholders;
+
+template<typename T>
+struct AddPlaceholders<T, Integer<0> >
+{
+    typedef T type;
+};
+
+template<typename T>
+struct AddPlaceholders<T, Integer<1> >
+{
+    typedef typename T::template apply<placeholders::_0> type;
+};
+
+template<typename T>
+struct AddPlaceholders<T, Integer<2> >
+{
+    typedef typename T::template apply<placeholders::_0, placeholders::_1> type;
+};
+
+template<typename T>
+struct AddPlaceholders<T, Integer<3> >
+{
+    typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2> type;
+};
+
+template<typename T>
+struct AddPlaceholders<T, Integer<4> >
+{
+  typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2, placeholders::_3> type;
+};
+
+template<typename T>
+struct AddPlaceholders<T, Integer<5> >
+{
+    typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4> type;
+};
+
+// Metafunction Class passed in, so add placeholders to nested template class apply
+// and bind the Params. Note Apply_Impl and BindArguments are different metafunctions to prevent
+// an infinte loop when Params is empty
+template<typename T, typename Params>
+struct Apply_Impl : BindArguments<typename AddPlaceholders<T, typename ParamsArity<Params>::type >::type, Params>
+{};
+
+template<template<typename> class T, typename P0, typename Params>
+struct Apply_Impl<T<P0>, Params> : BindArguments<T<P0>, Params>
+{};
+
+template<template<typename, typename> class T, typename P0, typename P1, typename Params>
+struct Apply_Impl<T<P0, P1>, Params> : BindArguments<T<P0, P1>, Params>
+{};
+
+template<template<typename, typename, typename> class T, typename P0, typename P1, typename P2, typename Params>
+struct Apply_Impl<T<P0, P1, P2>, Params> : BindArguments<T<P0, P1, P2>, Params>
+{};
+
+template<template<typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename Params>
+struct Apply_Impl<T<P0, P1, P2, P3>, Params> : BindArguments<T<P0, P1, P2, P3>, Params>
+{};
+
+template<template<typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename Params>
+struct Apply_Impl<T<P0, P1, P2, P3, P4>, Params> : BindArguments<T<P0, P1, P2, P3, P4>, Params>
+{};
+
+
+} // namespace impl
+
+template<typename T, typename P0=impl::apply_ignore, typename P1=impl::apply_ignore, typename P2=impl::apply_ignore, typename P3=impl::apply_ignore, typename P4=impl::apply_ignore>
+struct Apply : impl::Apply_Impl<T, Array<P0, P1, P2, P3, P4> > {};
+
+
+
+namespace impl {
+
+template<typename T, typename Fun>
+struct ApplyIfNotArrayNoArg : Apply<Fun, T>
+{};
+
+template<typename Fun>
+struct ApplyIfNotArrayNoArg<ArrayNoArg, Fun> : ArrayNoArg {};
+
+
+template<typename T, typename Fun>
+struct ArrayTransform_Impl
+{
+    typedef Array<typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<0> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<1> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<2> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<3> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<4> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<5> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<6> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<7> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<8> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<9> >::type, Fun>::type> type;
+
+
+};
+
+template<typename T0, typename T1, typename Fun>
+struct ApplyIfNotArrayNoArg2 : Apply<Fun, T0, T1>
+{};
+
+template<typename Fun>
+struct ApplyIfNotArrayNoArg2<ArrayNoArg, ArrayNoArg, Fun> : ArrayNoArg {};
+
+
+template<typename T, typename U, typename Fun>
+struct ArrayZip_Impl
+{
+    typedef Array<typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<0> >::type,
+                                                 typename ArrayIndex<U, Integer<0> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<1> >::type,
+                                                 typename ArrayIndex<U, Integer<1> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<2> >::type,
+                                                 typename ArrayIndex<U, Integer<2> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<3> >::type,
+                                                 typename ArrayIndex<U, Integer<3> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<4> >::type,
+                                                 typename ArrayIndex<U, Integer<4> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<5> >::type,
+                                                 typename ArrayIndex<U, Integer<5> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<6> >::type,
+                                                 typename ArrayIndex<U, Integer<6> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<7> >::type,
+                                                 typename ArrayIndex<U, Integer<7> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<8> >::type,
+                                                 typename ArrayIndex<U, Integer<8> >::type, Fun>::type,
+                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<9> >::type,
+                                                 typename ArrayIndex<U, Integer<9> >::type, Fun>::type> type;
+};
+
+} // namespace impl
+
 template<typename T, typename Fun>
 struct ArrayTransform : impl::ArrayTransform_Impl<T, Fun> {};
 

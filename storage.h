@@ -332,7 +332,7 @@ struct HasNumberedIntrospectionItem<T, Integer<10> > : false_type {};
 
 template<typename T, typename Index>
 struct HasArrayIntrospectionItem :
-    not_<is_same<Empty, ArrayIndex<typename GetMemberType_IntrospectionItems<T>::type, Index> > >
+    not_<is_same<ArrayNoArg, ArrayIndex<typename GetMemberType_IntrospectionItems<T>::type, Index> > >
 {};
 
 } // namespace HasItem
@@ -869,9 +869,9 @@ struct underlying_type<T,
         typename IntrospectionStorageTag<T>::type>::type type;
 };
 
-// Empty type and singleton can be reduced to simpler cases, unwrapping the struct in singelton's case
+// ArrayNoArg type and singleton can be reduced to simpler cases, unwrapping the struct in singelton's case
 template<typename Tag>
-struct underlying_type<empty_type<Tag> > : Empty {};
+struct underlying_type<empty_type<Tag> > : ArrayNoArg {};
 
 template<typename T, typename Tag>
 struct underlying_type<singleton<T, Tag> > : get_underlying_type<T> {};

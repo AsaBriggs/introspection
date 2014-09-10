@@ -182,6 +182,20 @@ void test_array_zip()
   TEST((is_same<ArrayZip<Integers, MoreIntegers, AddTogether>::type, Expected>()));
 }
 
+void test_apply()
+{
+  TEST((is_same<empty_type<int>, Apply<empty_type<int> >::type>::type()));
+  TEST((is_same<empty_type<int>, Apply<empty_type<int>, short, double, char, float, void >::type>::type()));
+
+  TEST((is_same<empty_type<bool>, Apply<empty_type<placeholders::_0>, bool, int, long, float, short>::type>::type()));
+  TEST((is_same<empty_type<int>, Apply<empty_type<placeholders::_1>, bool, int, long, float, short>::type>::type()));
+  TEST((is_same<empty_type<long>, Apply<empty_type<placeholders::_2>, bool, int, long, float, short>::type>::type()));
+  TEST((is_same<empty_type<float>, Apply<empty_type<placeholders::_3>, bool, int, long, float, short>::type>::type()));
+  TEST((is_same<empty_type<short>, Apply<empty_type<placeholders::_4>, bool, int, long, float, short>::type>::type()));
+
+  TEST((is_same<Integer<3>, Apply<AddTogether, Integer<1>, Integer<2> >::type>::type()));
+}
+
 void test_metaprogramming()
 {
   TEST(true_type());
@@ -352,6 +366,9 @@ void test_metaprogramming()
   test_array_rotate();
   test_array_transform();
   test_array_zip();
+
+  test_apply();
+
 }
 
 void test_empty()
