@@ -110,6 +110,12 @@ public:
 // as well as make it value for void
 template<typename T> struct IsStructClassOrUnion<T*> { typedef false_type type; };
 template<typename T> struct IsStructClassOrUnion<T&> { typedef false_type type; };
+template<typename T> struct IsStructClassOrUnion<T(*)()> { typedef false_type type; };
+template<typename T, typename U> struct IsStructClassOrUnion<T(*)(U)> { typedef false_type type; };
+template<typename T, typename U, typename V> struct IsStructClassOrUnion<T(*)(U, V)> { typedef false_type type; };
+template<typename T, typename U> struct IsStructClassOrUnion<T U::*> { typedef false_type type; };
+template<typename T, typename U> struct IsStructClassOrUnion<T(U::*)()> { typedef false_type type; };
+template<typename T, typename U, typename V> struct IsStructClassOrUnion<T(U::*)(V)> { typedef false_type type; };
 
 #define IS_SUC_SPECIALISATION(Type) template<>struct IsStructClassOrUnion<Type>{ typedef false_type type; };
 IS_SUC_SPECIALISATION(void)
