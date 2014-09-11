@@ -694,8 +694,12 @@ typedef Placeholder<Integer<4> > _4;
 
 namespace impl {
 
+// Type deliberately distinct from ArrayNoArgs so that
+// applying < 5 arguments is distinguishable.
 struct apply_ignore { typedef apply_ignore type; };
 
+// Check performed on looking up the value of a placeholder in the current
+// Apply application parameters
 template<typename T>
 struct CheckIsNotNoArgument
 {
@@ -705,78 +709,88 @@ struct CheckIsNotNoArgument
 template<>
 struct CheckIsNotNoArgument<apply_ignore>; // leave undefined as binding apply_ignore is an error.
 
-template<typename T, typename Params>
+template<typename T, typename Environment>
 struct LookupPlaceholder
 {
     typedef T type;
 };
 
-template<typename Index, typename Params>
-struct LookupPlaceholder<placeholders::Placeholder<Index>, Params> :
-    CheckIsNotNoArgument<typename ArrayIndex<Params, Index>::type>
+template<typename Index, typename Environment>
+struct LookupPlaceholder<placeholders::Placeholder<Index>, Environment> :
+    CheckIsNotNoArgument<typename ArrayIndex<Environment, Index>::type>
 {};
 
+// Environment Arity is required when a metafunction class is passed into Apply
+// (as opposed to passing in a placeholder expression which can be analysed
+// using template class parameter syntax).
 template<typename T>
-struct ParamsArity;
+struct EnvironmentArity;
 
 template<>
-struct ParamsArity<Array<apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<0> {};
+struct EnvironmentArity<Array<apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<0> {};
 
 template<typename T0>
-struct ParamsArity<Array<T0, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<1> {};
+struct EnvironmentArity<Array<T0, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<1> {};
 
 template<typename T0, typename T1>
-struct ParamsArity<Array<T0, T1, apply_ignore, apply_ignore, apply_ignore> > : Integer<2> {};
+struct EnvironmentArity<Array<T0, T1, apply_ignore, apply_ignore, apply_ignore> > : Integer<2> {};
 
 template<typename T0, typename T1, typename T2>
-struct ParamsArity<Array<T0, T1, T2, apply_ignore, apply_ignore> > : Integer<3> {};
+struct EnvironmentArity<Array<T0, T1, T2, apply_ignore, apply_ignore> > : Integer<3> {};
 
 template<typename T0, typename T1, typename T2, typename T3>
-struct ParamsArity<Array<T0, T1, T2, T3, apply_ignore> > : Integer<4> {};
+struct EnvironmentArity<Array<T0, T1, T2, T3, apply_ignore> > : Integer<4> {};
 
 template<typename T0, typename T1, typename T2, typename T3, typename T4>
-struct ParamsArity<Array<T0, T1, T2, T3, T4> > : Integer<5> {};
+struct EnvironmentArity<Array<T0, T1, T2, T3, T4> > : Integer<5> {};
 
 
 
-template<typename T, typename Params>
+template<typename T, typename Environment>
 struct BindArguments
 {
     typedef T type;
 };
 
-template<template<typename> class T, typename P0, typename Params>
-struct BindArguments<T<P0>, Params> : T<typename LookupPlaceholder<P0, Params>::type>
+template<template<typename> class T, typename P0, typename Environment>
+struct BindArguments<T<P0>, Environment> :
+    T<typename LookupPlaceholder<P0, Environment>::type>
 {};
 
-template<template<typename, typename> class T, typename P0, typename P1, typename Params>
-struct BindArguments<T<P0, P1>, Params> : T<typename LookupPlaceholder<P0, Params>::type,
-                                            typename LookupPlaceholder<P1, Params>::type>
+template<template<typename, typename> class T, typename P0, typename P1, typename Environment>
+struct BindArguments<T<P0, P1>, Environment> :
+    T<typename LookupPlaceholder<P0, Environment>::type,
+      typename LookupPlaceholder<P1, Environment>::type>
 {};
 
-template<template<typename, typename, typename> class T, typename P0, typename P1, typename P2, typename Params>
-struct BindArguments<T<P0, P1, P2>, Params> : T<typename LookupPlaceholder<P0, Params>::type,
-                                                typename LookupPlaceholder<P1, Params>::type,
-                                                typename LookupPlaceholder<P2, Params>::type>
+template<template<typename, typename, typename> class T, typename P0, typename P1, typename P2, typename Environment>
+struct BindArguments<T<P0, P1, P2>, Environment> :
+    T<typename LookupPlaceholder<P0, Environment>::type,
+      typename LookupPlaceholder<P1, Environment>::type,
+      typename LookupPlaceholder<P2, Environment>::type>
 {};
 
-template<template<typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename Params>
-struct BindArguments<T<P0, P1, P2, P3>, Params> : T<typename LookupPlaceholder<P0, Params>::type,
-                                                    typename LookupPlaceholder<P1, Params>::type,
-                                                    typename LookupPlaceholder<P2, Params>::type,
-                                                    typename LookupPlaceholder<P3, Params>::type>
+template<template<typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename Environment>
+struct BindArguments<T<P0, P1, P2, P3>, Environment> :
+    T<typename LookupPlaceholder<P0, Environment>::type,
+      typename LookupPlaceholder<P1, Environment>::type,
+      typename LookupPlaceholder<P2, Environment>::type,
+      typename LookupPlaceholder<P3, Environment>::type>
 {};
 
-template<template<typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename Params>
-struct BindArguments<T<P0, P1, P2, P3, P4>, Params> : T<typename LookupPlaceholder<P0, Params>::type,
-                                                        typename LookupPlaceholder<P1, Params>::type,
-                                                        typename LookupPlaceholder<P2, Params>::type,
-                                                        typename LookupPlaceholder<P3, Params>::type,
-                                                        typename LookupPlaceholder<P4, Params>::type>
+template<template<typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename Environment>
+struct BindArguments<T<P0, P1, P2, P3, P4>, Environment> :
+    T<typename LookupPlaceholder<P0, Environment>::type,
+      typename LookupPlaceholder<P1, Environment>::type,
+      typename LookupPlaceholder<P2, Environment>::type,
+      typename LookupPlaceholder<P3, Environment>::type,
+      typename LookupPlaceholder<P4, Environment>::type>
 {};
 
-
-template<typename T, typename ParamsAirty>
+// This is the magic of the Apply mechanism. The assumption is that the Airty of the
+// environment is the arity of the metafunction class passed into it. Through this
+// binding we obtain a placeholder expression that can be passed to BindArguments.
+template<typename T, typename EnvironmentAirty>
 struct AddPlaceholders;
 
 template<typename T>
@@ -816,30 +830,31 @@ struct AddPlaceholders<T, Integer<5> >
 };
 
 // Metafunction Class passed in, so add placeholders to nested template class apply
-// and bind the Params. Note Apply_Impl and BindArguments are different metafunctions to prevent
-// an infinte loop when Params is empty
-template<typename T, typename Params>
-struct Apply_Impl : BindArguments<typename AddPlaceholders<T, typename ParamsArity<Params>::type >::type, Params>
+// and bind the Environment. Note Apply_Impl and BindArguments are different metafunctions to prevent
+// an infinte loop when the Environment is empty
+template<typename T, typename Environment>
+struct Apply_Impl :
+    BindArguments<typename AddPlaceholders<T, typename EnvironmentArity<Environment>::type >::type, Environment>
 {};
 
-template<template<typename> class T, typename P0, typename Params>
-struct Apply_Impl<T<P0>, Params> : BindArguments<T<P0>, Params>
+template<template<typename> class T, typename P0, typename Environment>
+struct Apply_Impl<T<P0>, Environment> : BindArguments<T<P0>, Environment>
 {};
 
-template<template<typename, typename> class T, typename P0, typename P1, typename Params>
-struct Apply_Impl<T<P0, P1>, Params> : BindArguments<T<P0, P1>, Params>
+template<template<typename, typename> class T, typename P0, typename P1, typename Environment>
+struct Apply_Impl<T<P0, P1>, Environment> : BindArguments<T<P0, P1>, Environment>
 {};
 
-template<template<typename, typename, typename> class T, typename P0, typename P1, typename P2, typename Params>
-struct Apply_Impl<T<P0, P1, P2>, Params> : BindArguments<T<P0, P1, P2>, Params>
+template<template<typename, typename, typename> class T, typename P0, typename P1, typename P2, typename Environment>
+struct Apply_Impl<T<P0, P1, P2>, Environment> : BindArguments<T<P0, P1, P2>, Environment>
 {};
 
-template<template<typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename Params>
-struct Apply_Impl<T<P0, P1, P2, P3>, Params> : BindArguments<T<P0, P1, P2, P3>, Params>
+template<template<typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename Environment>
+struct Apply_Impl<T<P0, P1, P2, P3>, Environment> : BindArguments<T<P0, P1, P2, P3>, Environment>
 {};
 
-template<template<typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename Params>
-struct Apply_Impl<T<P0, P1, P2, P3, P4>, Params> : BindArguments<T<P0, P1, P2, P3, P4>, Params>
+template<template<typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename Environment>
+struct Apply_Impl<T<P0, P1, P2, P3, P4>, Environment> : BindArguments<T<P0, P1, P2, P3, P4>, Environment>
 {};
 
 } // namespace impl
