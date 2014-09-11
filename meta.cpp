@@ -201,6 +201,28 @@ void test_apply()
 struct Parent {};
 struct Child : Parent {};
 
+struct ToType {};
+
+struct FromType
+{
+  operator ToType() const;
+};
+
+struct FromType2
+{
+  operator ToType const&() const;
+};
+
+struct ImplicitConvertingConstructor
+{
+  ImplicitConvertingConstructor(int) {}
+};
+
+struct ExplicitConvertingConstructor
+{
+  explicit ExplicitConvertingConstructor(int) {}
+};
+
 void test_is_convertible()
 {
   TEST((is_convertible<int, long>::type()));
@@ -215,6 +237,19 @@ void test_is_convertible()
   TEST(!(is_convertible<Parent*, Child*>::type()));
   TEST((is_convertible<Child*, Parent*>::type()));
   TEST((is_convertible<Child*, Parent const*>::type()));
+
+  TEST((is_convertible<FromType, ToType>::type()));
+  TEST((is_convertible<FromType, ToType const&>::type()));
+
+  TEST((is_convertible<FromType2, ToType>::type()));
+  TEST(!(is_convertible<FromType2, ToType&>::type()));
+  TEST((is_convertible<FromType2, ToType const&>::type()));
+
+  TEST((is_convertible<int, ImplicitConvertingConstructor>::type()));
+  TEST((is_convertible<int const&, ImplicitConvertingConstructor>::type()));
+  TEST((is_convertible<int const volatile&, ImplicitConvertingConstructor>::type()));
+
+  TEST(!(is_convertible<int, ExplicitConvertingConstructor>::type()));
 }
 
 void test_metaprogramming()
