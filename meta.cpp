@@ -991,7 +991,7 @@ struct MemberFunctionTest
 };
 
 template<typename ReturnType, typename Input0, typename T>
-void testFun0(T)
+void testFun0(T func)
 {
   TEST((typename is_same<typename GetCodomainType<T>::type,ReturnType>::type()));
   TEST((typename is_same<typename DeduceCodomainType<T>::type,ReturnType>::type()));
@@ -1001,10 +1001,13 @@ void testFun0(T)
   TEST((typename is_same<Input0, typename GetInputType<T, Integer<0> >::type>::type()));
   TEST((1 == typename GetFunctionArity<T>::type()));
   TEST((typename is_same<Array<Input0>, typename GetInputTypeArray<T>::type>::type()));
+
+  MemberFunctionTest a;
+  typename ResolveFunctionSignatureType<T>::type()(func, a);
 }
 
 template<typename ReturnType, typename Input0, typename T>
-void testFun1(T)
+void testFun1(T func)
 {
   TEST((typename is_same<typename GetCodomainType<T>::type,ReturnType>::type()));
   TEST((typename is_same<typename DeduceCodomainType<T>::type,ReturnType>::type()));
@@ -1016,10 +1019,13 @@ void testFun1(T)
   TEST((typename is_same<int, typename GetInputType<T, Integer<1> >::type>::type()));
   TEST((2 == typename GetFunctionArity<T>::type()));
   TEST((typename is_same<Array<Input0, int>, typename GetInputTypeArray<T>::type>::type()));
+
+  MemberFunctionTest a;
+  typename ResolveFunctionSignatureType<T>::type()(func, a, 1);
 }
 
 template<typename ReturnType, typename Input0, typename T>
-void testFun2(T)
+void testFun2(T func)
 {
   TEST((typename is_same<typename GetCodomainType<T>::type,ReturnType>::type()));
   TEST((typename is_same<typename DeduceCodomainType<T>::type,ReturnType>::type()));
@@ -1033,10 +1039,16 @@ void testFun2(T)
   TEST((typename is_same<char&, typename GetInputType<T, Integer<2> >::type>::type()));
   TEST((3 == typename GetFunctionArity<T>::type()));
   TEST((typename is_same<Array<Input0, int, char&>, typename GetInputTypeArray<T>::type>::type()));
+
+  char tmp = 'a';
+  MemberFunctionTest a;
+  typename ResolveFunctionSignatureType<T>::type()(func, a, 1, tmp);
 }
 
+extern double TEST_DOUBLE_ARRAY[];
+
 template<typename ReturnType, typename Input0, typename T>
-void testFun3(T)
+void testFun3(T func)
 {
   TEST((typename is_same<typename GetCodomainType<T>::type,ReturnType>::type()));
   TEST((typename is_same<typename DeduceCodomainType<T>::type,ReturnType>::type()));
@@ -1052,10 +1064,14 @@ void testFun3(T)
   TEST((typename is_same<double (&)[], typename GetInputType<T, Integer<3> >::type>::type()));
   TEST((4 == typename GetFunctionArity<T>::type()));
   TEST((typename is_same<Array<Input0, int, char&, double (&)[]>, typename GetInputTypeArray<T>::type>::type()));
+
+  char tmp = 'a';
+  MemberFunctionTest a;
+  typename ResolveFunctionSignatureType<T>::type()(func, a, 1, tmp, TEST_DOUBLE_ARRAY);
 }
 
 template<typename ReturnType, typename Input0, typename T>
-void testFun4(T)
+void testFun4(T func)
 {
   TEST((typename is_same<typename GetCodomainType<T>::type,ReturnType>::type()));
   TEST((typename is_same<typename DeduceCodomainType<T>::type,ReturnType>::type()));
@@ -1073,7 +1089,14 @@ void testFun4(T)
   TEST((typename is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type>::type()));
   TEST((5 == typename GetFunctionArity<T>::type()));
   TEST((typename is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10]>, typename GetInputTypeArray<T>::type>::type()));
+
+  char tmp = 'a';
+  int volatile const tmp2[10] = {};
+  MemberFunctionTest a;
+  typename ResolveFunctionSignatureType<T>::type()(func, a, 1, tmp, TEST_DOUBLE_ARRAY, tmp2);
 }
+
+double TEST_DOUBLE_ARRAY[1] = {};
 
 int fun0() { return 0; }
 void voidfun0() {}

@@ -332,7 +332,7 @@ struct HasNumberedIntrospectionItem<T, Integer<10> > : false_type {};
 
 template<typename T, typename Index>
 struct HasArrayIntrospectionItem :
-    not_<is_same<ArrayNoArg, ArrayIndex<typename GetMemberType_IntrospectionItems<T>::type, Index> > >
+    not_<is_same<ArrayNoArg, typename ArrayIndex<typename GetMemberType_IntrospectionItems<T>::type, Index>::type > >
 {};
 
 } // namespace HasItem

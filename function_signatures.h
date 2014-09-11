@@ -43,6 +43,10 @@ GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_3)
 GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_4)
 GENERATE_FUNCTION_SIGNATURE_GETTERS(codomain_type)
 
+// add typedef input_types to return all the types in a single Array.
+// Used in preference to input_type_N typedefs.
+GENERATE_FUNCTION_SIGNATURE_GETTERS(input_types)
+
 #undef GENERATE_FUNCTION_SIGNATURE_GETTERS
 
 template<typename T>
@@ -54,92 +58,133 @@ struct FunctionSignatureEnabled : Has_codomain_type<T> {};
 namespace impl {
 
 template<typename T, typename Index>
-struct HasInputType_Impl;
+struct HasNumberedInputType;
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<0> > : Has_input_type_0<T> {};
+struct HasNumberedInputType<T, Integer<0> > : Has_input_type_0<T> {};
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<1> > : Has_input_type_1<T> {};
+struct HasNumberedInputType<T, Integer<1> > : Has_input_type_1<T> {};
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<2> > : Has_input_type_2<T> {};
+struct HasNumberedInputType<T, Integer<2> > : Has_input_type_2<T> {};
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<3> > : Has_input_type_3<T> {};
+struct HasNumberedInputType<T, Integer<3> > : Has_input_type_3<T> {};
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<4> > : Has_input_type_4<T> {};
+struct HasNumberedInputType<T, Integer<4> > : Has_input_type_4<T> {};
 
 template<typename T>
-struct HasInputType_Impl<T, Integer<5> > : false_type {};
+struct HasNumberedInputType<T, Integer<5> > : false_type {};
 
 
 template<typename T, typename Index>
-struct GetInputType_Impl;
+struct HasArrayInputItem :
+    not_<is_same<ArrayNoArg, typename ArrayIndex<typename GetMemberType_input_types<T>::type, Index>::type > >
+{};
 
-template<typename T>
-struct GetInputType_Impl<T, Integer<0> > : Get_input_type_0<T> {};
-
-template<typename T>
-struct GetInputType_Impl<T, Integer<1> > : Get_input_type_1<T> {};
-
-template<typename T>
-struct GetInputType_Impl<T, Integer<2> > : Get_input_type_2<T> {};
-
-template<typename T>
-struct GetInputType_Impl<T, Integer<3> > : Get_input_type_3<T> {};
-
-template<typename T>
-struct GetInputType_Impl<T, Integer<4> > : Get_input_type_4<T> {};
+template<typename T, typename Index>
+struct HasInputType_Impl :
+     eval_if<HasMemberType_input_types<T>,
+             HasArrayInputItem<T, Index>,
+             HasNumberedInputType<T, Index> >
+{};
 
 } // namespace impl
 
 template<typename T, typename Index>
-struct HasInputType : impl::HasInputType_Impl<typename ResolveFunctionSignatureType<T>::type, Index> {};
+struct HasInputType : impl::HasInputType_Impl<typename ResolveFunctionSignatureType<T>::type, Index>
+{};
+
+
+namespace impl {
 
 template<typename T, typename Index>
-struct GetInputType : impl::GetInputType_Impl<typename ResolveFunctionSignatureType<T>::type, Index> {};
+struct GetNumberedInputType_Impl;
+
+template<typename T>
+struct GetNumberedInputType_Impl<T, Integer<0> > : Get_input_type_0<T> {};
+
+template<typename T>
+struct GetNumberedInputType_Impl<T, Integer<1> > : Get_input_type_1<T> {};
+
+template<typename T>
+struct GetNumberedInputType_Impl<T, Integer<2> > : Get_input_type_2<T> {};
+
+template<typename T>
+struct GetNumberedInputType_Impl<T, Integer<3> > : Get_input_type_3<T> {};
+
+template<typename T>
+struct GetNumberedInputType_Impl<T, Integer<4> > : Get_input_type_4<T> {};
+
+template<typename T, typename Index>
+struct GetArrayInputType_Impl : ArrayIndex<typename GetMemberType_input_types<T>::type, Index>
+{};
+
+template<typename T, typename Index>
+struct GetInputType_Impl : eval_if<HasMemberType_input_types<T>,
+    GetArrayInputType_Impl<T, Index>,
+    GetNumberedInputType_Impl<T, Index> >
+{};
+
+} // namespace impl
+
+template<typename T, typename Index>
+struct GetInputType : impl::GetInputType_Impl<typename ResolveFunctionSignatureType<T>::type, Index>
+{};
 
 namespace impl {
 
 // Count upwards; higher Arity is less likely.
 // Note that Indexing is zero based, and that CurrentArity suggests 0..CurrentArity-1(inclusive) are available
 template<typename T, typename CurrentArity>
-struct GetFunctionArityLoop : eval_if<HasInputType<T, CurrentArity>,
+struct GetFunctionArityLoop : eval_if<HasNumberedInputType<T, CurrentArity>,
                                       GetFunctionArityLoop<T, typename Successor<CurrentArity>::type>,
                                       CurrentArity>
+{};
+
+template<typename T>
+struct GetFunctionArityArray : ArraySize<typename GetMemberType_input_types<T>::type>
+{};
+
+template<typename T>
+struct GetFunctionArity_Impl : eval_if<HasMemberType_input_types<T>,
+  GetFunctionArityArray<T>,
+  GetFunctionArityLoop<T, Integer<0> > >
 {};
 
 } // namespace impl
 
 template<typename T>
-struct GetFunctionArity : impl::GetFunctionArityLoop<typename ResolveFunctionSignatureType<T>::type, Integer<0> > {};
-
+struct GetFunctionArity : impl::GetFunctionArity_Impl<typename ResolveFunctionSignatureType<T>::type>
+{};
 
 namespace impl {
 
 template<typename T, typename AccumulatedArray, typename CurrentIndex, typename Arity>
-struct GetInputTypeArrayLoop;
+struct GetInputTypeArrayNumbered;
 
 template<typename T, typename AccumulatedArray, typename Arity>
-struct GetInputTypeArrayLoop<T, AccumulatedArray, Arity, Arity> : AccumulatedArray
+struct GetInputTypeArrayNumbered<T, AccumulatedArray, Arity, Arity> : AccumulatedArray
 {};
 
 template<typename T, typename AccumulatedArray, typename CurrentIndex, typename Arity>
-struct GetInputTypeArrayLoop :
-    GetInputTypeArrayLoop<T, typename ArrayConcat<AccumulatedArray, Array<typename GetInputType<T, CurrentIndex>::type> >::type, typename Successor<CurrentIndex>::type, Arity>
+struct GetInputTypeArrayNumbered :
+    GetInputTypeArrayNumbered<T, typename ArrayConcat<AccumulatedArray, Array<typename GetInputType<T, CurrentIndex>::type> >::type, typename Successor<CurrentIndex>::type, Arity>
 {};
 
 
 template<typename T>
-struct GetInputTypeArray_Impl :
-    GetInputTypeArrayLoop<T, Array<>, Integer<0>, typename GetFunctionArity<T>::type > {};
+struct GetInputTypeArray_Impl : eval_if<HasMemberType_input_types<T>,
+    GetMemberType_input_types<T>,
+    GetInputTypeArrayNumbered<T, Array<>, Integer<0>, typename GetFunctionArity<T>::type> >
+{};
 
 }
 
 template<typename T>
-struct GetInputTypeArray : impl::GetInputTypeArray_Impl<T> {};
+struct GetInputTypeArray : impl::GetInputTypeArray_Impl<typename ResolveFunctionSignatureType<T>::type> {};
 
 namespace impl {
 
@@ -203,10 +248,10 @@ struct nullary_function
     typedef R codomain_type;
     typedef codomain_type (*Func)();
 
-    codomain_type
-    operator()(Func x) const
+    inline codomain_type
+    operator()(Func func) const
     {
-        return (*x)();
+        return (*func)();
     }
 };
 
@@ -218,10 +263,10 @@ struct nullary_function<void>
     typedef void codomain_type;
     typedef codomain_type (*Func)();
 
-    codomain_type
-    operator()(Func x) const
+    inline codomain_type
+    operator()(Func func) const
     {
-        (*x)();
+        (*func)();
     }
 };
 
@@ -230,15 +275,14 @@ struct unary_function
 {
     typedef unary_function type;
     typedef true_type introspection_enabled;
-    typedef U input_type_0;
+    typedef Array<U> input_types;
     typedef R codomain_type;
-    typedef codomain_type(*Func)(input_type_0);
+    typedef codomain_type(*Func)(U);
 
-    codomain_type
-    operator()(Func x,
-               input_type_0 a) const
+    inline codomain_type
+    operator()(Func func, U a) const
     {
-        return (*x)(a);
+        return (*func)(a);
     }
 };
 
@@ -247,15 +291,14 @@ struct unary_function<void, U>
 {
     typedef unary_function type;
     typedef true_type introspection_enabled;
-    typedef U input_type_0;
+    typedef Array<U> input_types;
     typedef void codomain_type;
-    typedef codomain_type (*Func)(input_type_0);
+    typedef codomain_type (*Func)(U);
 
-    codomain_type
-    operator()(Func x,
-               input_type_0 a) const
+    inline codomain_type
+    operator()(Func func, U a) const
     {
-        (*x)(a);
+        (*func)(a);
     }
 };
 
@@ -264,19 +307,14 @@ struct binary_function
 {
     typedef binary_function type;
     typedef true_type introspection_enabled;
-    typedef U input_type_0;
-    typedef V input_type_1;
+    typedef Array<U, V> input_types;
     typedef R codomain_type;
-    typedef codomain_type (*Func)(
-        input_type_0,
-        input_type_1);
+    typedef codomain_type (*Func)(U, V);
 
-    codomain_type
-    operator()(Func x,
-               input_type_0 a,
-               input_type_1 b) const
+    inline codomain_type
+    operator()(Func func, U a, V b) const
     {
-        return (*x)(a, b);
+        return (*func)(a, b);
     }
 };
 
@@ -285,19 +323,14 @@ struct binary_function<void, U, V>
 {
     typedef binary_function type;
     typedef true_type introspection_enabled;
-    typedef U input_type_0;
-    typedef V input_type_1;
+    typedef Array<U, V> input_types;
     typedef void codomain_type;
-    typedef codomain_type (*Func)(
-        input_type_0,
-        input_type_1);
+    typedef codomain_type (*Func)(U, V);
 
-    codomain_type
-    operator()(Func x,
-               input_type_0 a,
-               input_type_1 b) const
+    inline codomain_type
+    operator()(Func func, U a, V b) const
     {
-        (*x)(a, b);
+        (*func)(a, b);
     }
 };
 
@@ -307,22 +340,14 @@ struct trinary_function
 {
     typedef trinary_function type;
     typedef true_type introspection_enabled;
-    typedef U input_type_0;
-    typedef V input_type_1;
-    typedef W input_type_2;
+    typedef Array<U, V, W> input_types;
     typedef R codomain_type;
-    typedef codomain_type (*Func)(
-        input_type_0,
-        input_type_1,
-        input_type_2) ;
+    typedef codomain_type (*Func)(U, V, W);
 
-    codomain_type
-    operator()(Func x,
-               input_type_0 a,
-               input_type_1 b, 
-               input_type_2 c) const
+    inline codomain_type
+    operator()(Func func, U a, V b, W c) const
     {
-        return (*x)(a, b, c);
+        return (*func)(a, b, c);
     }
 };
 
@@ -331,22 +356,14 @@ struct trinary_function<void, U, V, W>
 {
     typedef trinary_function type;
     typedef true_type introspection_enabled;
-    typedef U input_type_0;
-    typedef V input_type_1;
-    typedef W input_type_2;
+    typedef Array<U, V, W> input_types;
     typedef void codomain_type;
-    typedef codomain_type (*Func)(
-        input_type_0,
-        input_type_1,
-        input_type_2) ;
+    typedef codomain_type (*Func)(U, V, W);
 
-    codomain_type
-    operator()(Func x,
-               input_type_0 a,
-               input_type_1 b, 
-               input_type_2 c) const
+    inline codomain_type
+    operator()(Func func, U a, V b, W c) const
     {
-        (*x)(a, b, c);
+        (*func)(a, b, c);
     }
 };
 
@@ -355,25 +372,14 @@ struct quaternary_function
 {
     typedef quaternary_function type;
     typedef true_type introspection_enabled;
-    typedef U input_type_0;
-    typedef V input_type_1;
-    typedef W input_type_2;
-    typedef X input_type_3;
+    typedef Array<U, V, W, X> input_types;
     typedef R codomain_type;
-    typedef codomain_type (*Func)(
-        input_type_0,
-        input_type_1,
-        input_type_2,
-        input_type_3) ;
+    typedef codomain_type (*Func)(U, V, W, X);
 
-    codomain_type
-    operator()(Func x,
-               input_type_0 a,
-               input_type_1 b, 
-               input_type_2 c, 
-               input_type_3 d) const
+    inline codomain_type
+    operator()(Func func, U a, V b, W c, X d) const
     {
-        return (*x)(a, b, c, d);
+        return (*func)(a, b, c, d);
     }
 };
 
@@ -382,25 +388,14 @@ struct quaternary_function<void, U, V, W, X>
 {
     typedef quaternary_function type;
     typedef true_type introspection_enabled;
-    typedef U input_type_0;
-    typedef V input_type_1;
-    typedef W input_type_2;
-    typedef X input_type_3;
+    typedef Array<U, V, W, X> input_types;
     typedef void codomain_type;
-    typedef codomain_type (*Func)(
-        input_type_0,
-        input_type_1,
-        input_type_2,
-        input_type_3) ;
+    typedef codomain_type (*Func)(U, V, W, X);
 
-    codomain_type
-    operator()(Func x,
-               input_type_0 a,
-               input_type_1 b, 
-               input_type_2 c, 
-               input_type_3 d) const
+    inline codomain_type
+    operator()(Func func, U a, V b, W c, X d) const
     {
-        (*x)(a, b, c, d);
+        (*func)(a, b, c, d);
     }
 };
 
@@ -410,28 +405,14 @@ struct quinternary_function
 {
     typedef quinternary_function type;
     typedef true_type introspection_enabled;
-    typedef U input_type_0;
-    typedef V input_type_1;
-    typedef W input_type_2;
-    typedef X input_type_3;
-    typedef Y input_type_4;
+    typedef Array<U, V, W, X, Y> input_types;
     typedef R codomain_type;
-    typedef codomain_type (*Func)(
-        input_type_0,
-        input_type_1,
-        input_type_2,
-        input_type_3,
-        input_type_4) ;
+    typedef codomain_type (*Func)(U, V, W, X, Y);
 
-    codomain_type
-    operator()(Func x,
-               input_type_0 a,
-               input_type_1 b, 
-               input_type_2 c, 
-               input_type_3 d, 
-               input_type_4 e) const
+    inline codomain_type
+    operator()(Func func, U a, V b, W c, X d, Y e) const
     {
-        return (*x)(a, b, c, d, e);
+        return (*func)(a, b, c, d, e);
     }
 };
 
@@ -440,174 +421,267 @@ struct quinternary_function<void, U, V, W, X, Y>
 {
     typedef quinternary_function type;
     typedef true_type introspection_enabled;
-    typedef U input_type_0;
-    typedef V input_type_1;
-    typedef W input_type_2;
-    typedef X input_type_3;
-    typedef Y input_type_4;
+    typedef Array<U, V, W, X, Y> input_types;
     typedef void codomain_type;
-    typedef codomain_type (*Func)(
-        input_type_0,
-        input_type_1,
-        input_type_2,
-        input_type_3,
-        input_type_4) ;
+    typedef codomain_type (*Func)(U, V, W, X, Y);
 
-    codomain_type
-    operator()(Func x,
-               input_type_0 a,
-               input_type_1 b, 
-               input_type_2 c, 
-               input_type_3 d, 
-               input_type_4 e) const
+    inline codomain_type
+    operator()(Func func, U a, V b, W c, X d, Y e) const
     {
-        (*x)(a, b, c, d, e);
+        (*func)(a, b, c, d, e);
     }
 };
 
 
-template<typename R, typename C>
+template<typename R, typename C, typename Signature>
 struct nullary_member_function
 {
     typedef nullary_member_function type;
     typedef true_type introspection_enabled;
-    typedef C input_type_0;
+    typedef Array<C> input_types;
     typedef R codomain_type;
+    typedef Signature Func;
+
+    inline codomain_type
+    operator()(Func func, C c) const
+    {
+        return (c.*func)();
+    }
+};
+
+template<typename C, typename Signature>
+struct nullary_member_function<void, C, Signature>
+{
+    typedef nullary_member_function type;
+    typedef true_type introspection_enabled;
+    typedef Array<C> input_types;
+    typedef void codomain_type;
+    typedef Signature Func;
+
+    inline codomain_type
+    operator()(Func func, C c) const
+    {
+        (c.*func)();
+    }
 };
 
 
-template<typename R, typename C, typename U>
+template<typename R, typename C, typename U, typename Signature>
 struct unary_member_function
 {
     typedef unary_member_function type;
     typedef true_type introspection_enabled;
-    typedef C input_type_0;
-    typedef U input_type_1;
+    typedef Array<C, U> input_types;
     typedef R codomain_type;
+    typedef Signature Func;
+
+    inline codomain_type
+    operator()(Func func, C c, U u) const
+    {
+        return (c.*func)(u);
+    }
 };
 
-template<typename R, typename C, typename U, typename V>
+template<typename C, typename U, typename Signature>
+struct unary_member_function<void, C, U, Signature>
+{
+    typedef unary_member_function type;
+    typedef true_type introspection_enabled;
+    typedef Array<C, U> input_types;
+    typedef void codomain_type;
+    typedef Signature Func;
+
+    inline codomain_type
+    operator()(Func func, C c, U u) const
+    {
+        (c.*func)(u);
+    }
+};
+
+
+template<typename R, typename C, typename U, typename V, typename Signature>
 struct binary_member_function
 {
     typedef binary_member_function type;
     typedef true_type introspection_enabled;
-    typedef C input_type_0;
-    typedef U input_type_1;
-    typedef V input_type_2;
+    typedef Array<C, U, V> input_types;
     typedef R codomain_type;
+    typedef Signature Func;
+
+    inline codomain_type
+    operator()(Func func, C c, U u, V v) const
+    {
+        return (c.*func)(u, v);
+    }
+};
+
+template<typename C, typename U, typename V, typename Signature>
+struct binary_member_function<void, C, U, V, Signature>
+{
+    typedef binary_member_function type;
+    typedef true_type introspection_enabled;
+    typedef Array<C, U, V> input_types;
+    typedef void codomain_type;
+    typedef Signature Func;
+
+    inline codomain_type
+    operator()(Func func, C c, U u, V v) const
+    {
+        (c.*func)(u, v);
+    }
 };
 
 
-template<typename R, typename C, typename U, typename V, typename W>
+template<typename R, typename C, typename U, typename V, typename W, typename Signature>
 struct ternary_member_function
 {
     typedef ternary_member_function type;
     typedef true_type introspection_enabled;
-    typedef C input_type_0;
-    typedef U input_type_1;
-    typedef V input_type_2;
-    typedef W input_type_3;
+    typedef Array<C, U, V, W> input_types;
     typedef R codomain_type;
+    typedef Signature Func;
+
+    inline codomain_type
+    operator()(Func func, C c, U u, V v, W w) const
+    {
+        return (c.*func)(u, v, w);
+    }
 };
 
-template<typename R, typename C, typename U, typename V, typename W, typename X>
+template<typename C, typename U, typename V, typename W, typename Signature>
+struct ternary_member_function<void, C, U, V, W, Signature>
+{
+    typedef ternary_member_function type;
+    typedef true_type introspection_enabled;
+    typedef Array<C, U, V, W> input_types;
+    typedef void codomain_type;
+    typedef Signature Func;
+
+    inline codomain_type
+    operator()(Func func, C c, U u, V v, W w) const
+    {
+        (c.*func)(u, v, w);
+    }
+};
+
+
+template<typename R, typename C, typename U, typename V, typename W, typename X, typename Signature>
 struct quaternary_member_function
 {
     typedef quaternary_member_function type;
     typedef true_type introspection_enabled;
-    typedef C input_type_0;
-    typedef U input_type_1;
-    typedef V input_type_2;
-    typedef W input_type_3;
-    typedef X input_type_4;
+    typedef Array<C, U, V, W, X> input_types;
     typedef R codomain_type;
+    typedef Signature Func;
+
+    inline codomain_type
+    operator()(Func func, C c, U u, V v, W w, X x) const
+    {
+        return (c.*func)(u, v, w, x);
+    }
+};
+
+template<typename C, typename U, typename V, typename W, typename X, typename Signature>
+struct quaternary_member_function<void, C, U, V, W, X, Signature>
+{
+    typedef quaternary_member_function type;
+    typedef true_type introspection_enabled;
+    typedef Array<C, U, V, W, X> input_types;
+    typedef void codomain_type;
+    typedef Signature Func;
+
+    inline codomain_type
+    operator()(Func func, C c, U u, V v, W w, X x) const
+    {
+        (c.*func)(u, v, w, x);
+    }
 };
 
 } // namespace impl
  
 template<typename R>
 struct ResolveFunctionSignatureType<R(*)()> :
-    impl::nullary_function<R >
+    impl::nullary_function<R>
 {};
 
 template<typename R, typename U>
 struct ResolveFunctionSignatureType<R(*)(U)> :
-    impl::unary_function<R, U >
+    impl::unary_function<R, U>
 {};
 
 template<typename R, typename U, typename V>
 struct ResolveFunctionSignatureType<R(*)(U, V)> :
-    impl::binary_function<R, U, V >
+    impl::binary_function<R, U, V>
 {};
 
 template<typename R, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(*)(U, V, W)> :
-    impl::trinary_function<R, U, V, W >
+    impl::trinary_function<R, U, V, W>
 {};
 
 template<typename R, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(*)(U, V, W, X)> :
-    impl::quaternary_function<R, U, V, W, X >
+    impl::quaternary_function<R, U, V, W, X>
 {};
 
 template<typename R, typename U, typename V, typename W, typename X, typename Y>
 struct ResolveFunctionSignatureType<R(*)(U, V, W, X, Y)> :
-    impl::quinternary_function<R, U, V, W, X, Y >
+    impl::quinternary_function<R, U, V, W, X, Y>
 {};
 
 
 template<typename R, typename C>
 struct ResolveFunctionSignatureType<R(C::*)()> :
-    impl::nullary_member_function<R, C& >
+    impl::nullary_member_function<R, C&, R(C::*)()>
 {};
 
 template<typename R, typename C>
 struct ResolveFunctionSignatureType<R(C::*)() const> :
-    impl::nullary_member_function<R, C const& >
+    impl::nullary_member_function<R, C const&, R(C::*)() const>
 {};
 
 
 template<typename R, typename C, typename U>
 struct ResolveFunctionSignatureType<R(C::*)(U)> :
-   impl::unary_member_function<R, C&, U >
+    impl::unary_member_function<R, C&, U, R(C::*)(U)>
 {};
 
 template<typename R, typename C, typename U>
 struct ResolveFunctionSignatureType<R(C::*)(U) const> :
-   impl::unary_member_function<R, C const&, U >
+    impl::unary_member_function<R, C const&, U, R(C::*)(U) const>
 {};
 
 
 template<typename R, typename C, typename U, typename V>
 struct ResolveFunctionSignatureType<R(C::*)(U, V)> :
-    impl::binary_member_function<R, C&, U, V >
+    impl::binary_member_function<R, C&, U, V,R(C::*)(U, V)>
 {};
 
 template<typename R, typename C, typename U, typename V>
 struct ResolveFunctionSignatureType<R(C::*)(U, V) const> :
-    impl::binary_member_function<R, C const&, U, V >
+    impl::binary_member_function<R, C const&, U, V, R(C::*)(U, V) const>
 {};
 
 
 template<typename R, typename C, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W)> :
-    impl::ternary_member_function<R, C&, U, V, W >
+    impl::ternary_member_function<R, C&, U, V, W, R(C::*)(U, V, W)>
 {};
 
 template<typename R, typename C, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W) const> :
-    impl::ternary_member_function<R, C const&, U, V, W >
+    impl::ternary_member_function<R, C const&, U, V, W, R(C::*)(U, V, W) const>
 {};
 
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X)> :
-    impl::quaternary_member_function<R, C&, U, V, W, X >
+    impl::quaternary_member_function<R, C&, U, V, W, X, R(C::*)(U, V, W, X)>
 {};
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X) const> :
-    impl::quaternary_member_function<R, C const&, U, V, W, X >
+    impl::quaternary_member_function<R, C const&, U, V, W, X, R(C::*)(U, V, W, X) const>
 {};
 
 } // namespace intro
