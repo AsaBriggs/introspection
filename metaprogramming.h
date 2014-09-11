@@ -41,8 +41,7 @@ struct Ref
 
     // Need implict conversion operator to allow
     // storage conversion to happen without another function call
-    operator T&() { return *m0; }
-    operator T const&() const { return *m0; }
+    operator T&() const { return *m0; }
 
     template<typename P0>
     static inline type make(P0& p0)

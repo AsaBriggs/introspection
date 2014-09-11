@@ -507,6 +507,8 @@ void test_singleton()
 
     TEST((HasIntrospectionItem<type, Integer<0> >::type()));
     TEST(!(HasIntrospectionItem<type, Integer<1> >::type()));
+
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<0> >::type>::type()));
 }
 
 void test_pair()
@@ -526,6 +528,9 @@ void test_pair()
     TEST((HasIntrospectionItem<type, Integer<0> >::type()));
     TEST((HasIntrospectionItem<type, Integer<1> >::type()));
     TEST(!(HasIntrospectionItem<type, Integer<2> >::type()));
+
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+    TEST((is_same<float, GetIntrospectionItem<type, Integer<1> >::type>::type()));
 }
 
 void test_triple()
@@ -551,6 +556,10 @@ void test_triple()
     TEST((HasIntrospectionItem<type, Integer<1> >::type()));
     TEST((HasIntrospectionItem<type, Integer<2> >::type()));
     TEST(!(HasIntrospectionItem<type, Integer<3> >::type()));
+
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+    TEST((is_same<float, GetIntrospectionItem<type, Integer<1> >::type>::type()));
+    TEST((is_same<char, GetIntrospectionItem<type, Integer<2> >::type>::type()));
 }
 
 void test_quadruple()
@@ -582,6 +591,11 @@ void test_quadruple()
     TEST((HasIntrospectionItem<type, Integer<2> >::type()));
     TEST((HasIntrospectionItem<type, Integer<3> >::type()));
     TEST(!(HasIntrospectionItem<type, Integer<4> >::type()));
+
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+    TEST((is_same<float, GetIntrospectionItem<type, Integer<1> >::type>::type()));
+    TEST((is_same<char, GetIntrospectionItem<type, Integer<2> >::type>::type()));
+    TEST((is_same<bool, GetIntrospectionItem<type, Integer<3> >::type>::type()));
 }
 
 void test_quintuple()
@@ -619,6 +633,12 @@ void test_quintuple()
     TEST((HasIntrospectionItem<type, Integer<3> >::type()));
     TEST((HasIntrospectionItem<type, Integer<4> >::type()));
     TEST(!(HasIntrospectionItem<type, Integer<5> >::type()));
+
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+    TEST((is_same<float, GetIntrospectionItem<type, Integer<1> >::type>::type()));
+    TEST((is_same<char, GetIntrospectionItem<type, Integer<2> >::type>::type()));
+    TEST((is_same<bool, GetIntrospectionItem<type, Integer<3> >::type>::type()));
+    TEST((is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type>::type()));
 }
 
 void test_sextuple()
@@ -662,6 +682,13 @@ void test_sextuple()
     TEST((HasIntrospectionItem<type, Integer<4> >::type()));
     TEST((HasIntrospectionItem<type, Integer<5> >::type()));
     TEST(!(HasIntrospectionItem<type, Integer<6> >::type()));
+
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+    TEST((is_same<float, GetIntrospectionItem<type, Integer<1> >::type>::type()));
+    TEST((is_same<char, GetIntrospectionItem<type, Integer<2> >::type>::type()));
+    TEST((is_same<bool, GetIntrospectionItem<type, Integer<3> >::type>::type()));
+    TEST((is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type>::type()));
+    TEST((is_same<long long, GetIntrospectionItem<type, Integer<5> >::type>::type()));
 }
 
 void test_septuple()
@@ -711,6 +738,14 @@ void test_septuple()
     TEST((HasIntrospectionItem<type, Integer<5> >::type()));
     TEST((HasIntrospectionItem<type, Integer<6> >::type()));
     TEST(!(HasIntrospectionItem<type, Integer<7> >::type()));
+
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+    TEST((is_same<float, GetIntrospectionItem<type, Integer<1> >::type>::type()));
+    TEST((is_same<char, GetIntrospectionItem<type, Integer<2> >::type>::type()));
+    TEST((is_same<bool, GetIntrospectionItem<type, Integer<3> >::type>::type()));
+    TEST((is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type>::type()));
+    TEST((is_same<long long, GetIntrospectionItem<type, Integer<5> >::type>::type()));
+    TEST((is_same<double, GetIntrospectionItem<type, Integer<6> >::type>::type()));
 }
 
 void test_octuple()
@@ -766,6 +801,15 @@ void test_octuple()
     TEST((HasIntrospectionItem<type, Integer<6> >::type()));
     TEST((HasIntrospectionItem<type, Integer<7> >::type()));
     TEST(!(HasIntrospectionItem<type, Integer<8> >::type()));
+
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+    TEST((is_same<float, GetIntrospectionItem<type, Integer<1> >::type>::type()));
+    TEST((is_same<char, GetIntrospectionItem<type, Integer<2> >::type>::type()));
+    TEST((is_same<bool, GetIntrospectionItem<type, Integer<3> >::type>::type()));
+    TEST((is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type>::type()));
+    TEST((is_same<long long, GetIntrospectionItem<type, Integer<5> >::type>::type()));
+    TEST((is_same<double, GetIntrospectionItem<type, Integer<6> >::type>::type()));
+    TEST((is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type>::type()));
 }
 
 void test_nonuple()
@@ -827,6 +871,16 @@ void test_nonuple()
     TEST((HasIntrospectionItem<type, Integer<7> >::type()));
     TEST((HasIntrospectionItem<type, Integer<8> >::type()));
     TEST(!(HasIntrospectionItem<type, Integer<9> >::type()));
+
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+    TEST((is_same<float, GetIntrospectionItem<type, Integer<1> >::type>::type()));
+    TEST((is_same<char, GetIntrospectionItem<type, Integer<2> >::type>::type()));
+    TEST((is_same<bool, GetIntrospectionItem<type, Integer<3> >::type>::type()));
+    TEST((is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type>::type()));
+    TEST((is_same<long long, GetIntrospectionItem<type, Integer<5> >::type>::type()));
+    TEST((is_same<double, GetIntrospectionItem<type, Integer<6> >::type>::type()));
+    TEST((is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type>::type()));
+    TEST((is_same<bool, GetIntrospectionItem<type, Integer<8> >::type>::type()));
 }
 
 void test_decuple()
@@ -894,7 +948,80 @@ void test_decuple()
     TEST((HasIntrospectionItem<type, Integer<8> >::type()));
     TEST((HasIntrospectionItem<type, Integer<9> >::type()));
     TEST(!(HasIntrospectionItem<type, Integer<10> >::type()));
+
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+    TEST((is_same<float, GetIntrospectionItem<type, Integer<1> >::type>::type()));
+    TEST((is_same<char, GetIntrospectionItem<type, Integer<2> >::type>::type()));
+    TEST((is_same<bool, GetIntrospectionItem<type, Integer<3> >::type>::type()));
+    TEST((is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type>::type()));
+    TEST((is_same<long long, GetIntrospectionItem<type, Integer<5> >::type>::type()));
+    TEST((is_same<double, GetIntrospectionItem<type, Integer<6> >::type>::type()));
+    TEST((is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type>::type()));
+    TEST((is_same<bool, GetIntrospectionItem<type, Integer<8> >::type>::type()));
+    TEST((is_same<int, GetIntrospectionItem<type, Integer<9> >::type>::type()));
 }
+
+void test_storage_reference_types()
+{
+    typedef singleton<int&, DefaultTag> type;
+    int tmp = 0;
+    type x = {tmp};
+    type y = type::make(make_ref(tmp));
+    (void) x;
+    (void) y;
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<1> >::type()));
+
+    TEST((is_same<int&, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+}
+
+struct NumberedStorageType
+{
+    typedef NumberedStorageType type;
+    typedef true_type IntrospectionEnabled;
+    typedef Integer<0> IntrospectionItem0;
+    typedef Integer<1> IntrospectionItem1;
+    typedef Integer<2> IntrospectionItem2;
+    typedef Integer<3> IntrospectionItem3;
+    typedef Integer<4> IntrospectionItem4;
+    typedef Integer<5> IntrospectionItem5;
+    typedef Integer<6> IntrospectionItem6;
+    typedef Integer<7> IntrospectionItem7;
+    typedef Integer<8> IntrospectionItem8;
+    typedef Integer<9> IntrospectionItem9;
+};
+
+void test_numbered_introspection()
+{
+    typedef NumberedStorageType type;
+    TEST((10 == IntrospectionArity<type>::type()));
+    TEST((is_same<Array<Integer<0>, Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9> >, GenerateIntrospectionItems<type>::type>::type()));
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<1> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<2> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<3> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<4> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<5> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<6> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<7> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<8> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<9> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<10> >::type()));
+
+    TEST((is_same<Integer<0>, GetIntrospectionItem<type, Integer<0> >::type>::type()));
+    TEST((is_same<Integer<1>, GetIntrospectionItem<type, Integer<1> >::type>::type()));
+    TEST((is_same<Integer<2>, GetIntrospectionItem<type, Integer<2> >::type>::type()));
+    TEST((is_same<Integer<3>, GetIntrospectionItem<type, Integer<3> >::type>::type()));
+    TEST((is_same<Integer<4>, GetIntrospectionItem<type, Integer<4> >::type>::type()));
+    TEST((is_same<Integer<5>, GetIntrospectionItem<type, Integer<5> >::type>::type()));
+    TEST((is_same<Integer<6>, GetIntrospectionItem<type, Integer<6> >::type>::type()));
+    TEST((is_same<Integer<7>, GetIntrospectionItem<type, Integer<7> >::type>::type()));
+    TEST((is_same<Integer<8>, GetIntrospectionItem<type, Integer<8> >::type>::type()));
+    TEST((is_same<Integer<9>, GetIntrospectionItem<type, Integer<9> >::type>::type()));
+
+}
+
 typedef triple<int, long, char> VisitorTestType;
 
 struct TestVisitor
@@ -1312,6 +1439,8 @@ int main()
     test_octuple();
     test_nonuple();
     test_decuple();
+    test_storage_reference_types();
+    test_numbered_introspection();
     test_visit();
 
     test_function_signatures();
