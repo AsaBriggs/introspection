@@ -106,6 +106,26 @@ private:
 public:
     typedef typename ValueToTrueFalse<sizeof(test<T>(0)) == 1>::type type;
 };
+// Define a few specialisations to speed up the deduction process
+// as well as make it value for void
+template<typename T> struct IsStructClassOrUnion<T*> { typedef false_type type; };
+template<typename T> struct IsStructClassOrUnion<T&> { typedef false_type type; };
+
+#define IS_SUC_SPECIALISATION(Type) template<>struct IsStructClassOrUnion<Type>{ typedef false_type type; };
+IS_SUC_SPECIALISATION(void)
+IS_SUC_SPECIALISATION(bool)
+IS_SUC_SPECIALISATION(unsigned char)
+IS_SUC_SPECIALISATION(signed char)
+IS_SUC_SPECIALISATION(char)
+IS_SUC_SPECIALISATION(unsigned short)
+IS_SUC_SPECIALISATION(short)
+IS_SUC_SPECIALISATION(unsigned int)
+IS_SUC_SPECIALISATION(int)
+IS_SUC_SPECIALISATION(unsigned long)
+IS_SUC_SPECIALISATION(long)
+IS_SUC_SPECIALISATION(float)
+IS_SUC_SPECIALISATION(double)
+#undef IS_SUC_SPECIALISATION
 
 #define GENERATE_HAS_MEMBER_TYPE3(Type)              \
 GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                                    \
