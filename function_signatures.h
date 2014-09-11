@@ -11,22 +11,6 @@
 
 namespace intro {
 
-// It is essential to box at the very least reference (const and non-const) types
-// as otherwise the detect traits mechanism will not work; you can't form a pointer to a reference
-// and any attempt to do so just results in the function being SFINAE (silently) removed from the
-// overload set. Sad but true.
-template<typename T>
-struct box_ref
-{
-    typedef T type;
-};
-
-template<typename T>
-struct box_ref<Ref<T> >
-{
-    typedef T& type;
-};
-
 // This is the metafunction by which function pointers become associated with a metafunction
 // describing it. For standard functors it is trivial to add typedefs with the appropriate information
 // but nesting typedefs is impossible in pointers.
@@ -38,29 +22,6 @@ struct ResolveFunctionSignatureType
     typedef T type;
 };
 
-namespace impl {
-
-template<typename T>
-struct unbox_ref
-{
-    typedef T type;
-};
-
-template<typename T>
-struct unbox_ref<box_ref<T> >
-{
-    typedef T type;
-};
-
-template<typename T>
-struct unbox_ref<Ref<T> >
-{
-
-    typedef T& type;
-};
-
-}
-
 struct no_template_argument { typedef no_template_argument type; };
 struct template_param { typedef template_param type; };
 
@@ -70,9 +31,9 @@ struct CodomainDeduction { typedef CodomainDeduction type; };
 // Generates the non-impl functions to forward onto the impl, via the ResolveFunctionSignatureType metafunction.
 #define GENERATE_FUNCTION_SIGNATURE_GETTERS(x)\
 namespace impl{\
-GENERATE_HAS_AND_GET_MEMBER_TYPE(x)\
+GENERATE_HAS_AND_GET_MEMBER_TYPE3(x)\
 }\
-template<typename T> struct Get_##x : impl::unbox_ref< typename impl::GetMemberType_##x<typename ResolveFunctionSignatureType<T>::type>::type > {}; \
+template<typename T> struct Get_##x : impl::GetMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {}; \
 template<typename T> struct Has_##x : impl::HasMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {};\
 
 GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_0)
@@ -240,9 +201,9 @@ struct nullary_function
     typedef nullary_function type;
     typedef true_type introspection_enabled;
     typedef R codomain_type;
-    typedef typename unbox_ref<codomain_type>::type (*Func)() ;
+    typedef codomain_type (*Func)();
 
-    typename unbox_ref<codomain_type>::type
+    codomain_type
     operator()(Func x) const
     {
         return (*x)();
@@ -250,14 +211,14 @@ struct nullary_function
 };
 
 template<>
-struct nullary_function<box_ref<void> >
+struct nullary_function<void>
 {
     typedef nullary_function type;
     typedef true_type introspection_enabled;
-    typedef box_ref<void> codomain_type;
-    typedef void (*Func)() ;
+    typedef void codomain_type;
+    typedef codomain_type (*Func)();
 
-    void
+    codomain_type
     operator()(Func x) const
     {
         (*x)();
@@ -271,28 +232,28 @@ struct unary_function
     typedef true_type introspection_enabled;
     typedef U input_type_0;
     typedef R codomain_type;
-    typedef typename unbox_ref<codomain_type>::type (*Func)(typename unbox_ref<input_type_0>::type) ;
+    typedef codomain_type(*Func)(input_type_0);
 
-    typename unbox_ref<codomain_type>::type
+    codomain_type
     operator()(Func x,
-               typename unbox_ref<input_type_0>::type a) const
+               input_type_0 a) const
     {
         return (*x)(a);
     }
 };
 
 template<typename U>
-struct unary_function<box_ref<void>, U>
+struct unary_function<void, U>
 {
     typedef unary_function type;
     typedef true_type introspection_enabled;
     typedef U input_type_0;
-    typedef box_ref<void> codomain_type;
-    typedef void (*Func)(typename unbox_ref<input_type_0>::type) ;
+    typedef void codomain_type;
+    typedef codomain_type (*Func)(input_type_0);
 
-    void
+    codomain_type
     operator()(Func x,
-               typename unbox_ref<input_type_0>::type a) const
+               input_type_0 a) const
     {
         (*x)(a);
     }
@@ -306,35 +267,35 @@ struct binary_function
     typedef U input_type_0;
     typedef V input_type_1;
     typedef R codomain_type;
-    typedef typename unbox_ref<codomain_type>::type (*Func)(
-        typename unbox_ref<input_type_0>::type,
-        typename unbox_ref<input_type_1>::type) ;
+    typedef codomain_type (*Func)(
+        input_type_0,
+        input_type_1);
 
-    typename unbox_ref<codomain_type>::type
+    codomain_type
     operator()(Func x,
-               typename unbox_ref<input_type_0>::type a,
-               typename unbox_ref<input_type_1>::type b) const
+               input_type_0 a,
+               input_type_1 b) const
     {
         return (*x)(a, b);
     }
 };
 
 template<typename U, typename V>
-struct binary_function<box_ref<void>, U, V>
+struct binary_function<void, U, V>
 {
     typedef binary_function type;
     typedef true_type introspection_enabled;
     typedef U input_type_0;
     typedef V input_type_1;
-    typedef box_ref<void> codomain_type;
-    typedef void (*Func)(
-        typename unbox_ref<input_type_0>::type,
-        typename unbox_ref<input_type_1>::type) ;
+    typedef void codomain_type;
+    typedef codomain_type (*Func)(
+        input_type_0,
+        input_type_1);
 
-    void
+    codomain_type
     operator()(Func x,
-               typename unbox_ref<input_type_0>::type a,
-               typename unbox_ref<input_type_1>::type b) const
+               input_type_0 a,
+               input_type_1 b) const
     {
         (*x)(a, b);
     }
@@ -350,40 +311,40 @@ struct trinary_function
     typedef V input_type_1;
     typedef W input_type_2;
     typedef R codomain_type;
-    typedef typename unbox_ref<codomain_type>::type (*Func)(
-        typename unbox_ref<input_type_0>::type,
-        typename unbox_ref<input_type_1>::type,
-        typename unbox_ref<input_type_2>::type) ;
+    typedef codomain_type (*Func)(
+        input_type_0,
+        input_type_1,
+        input_type_2) ;
 
-    typename unbox_ref<codomain_type>::type
+    codomain_type
     operator()(Func x,
-               typename unbox_ref<input_type_0>::type a,
-               typename unbox_ref<input_type_1>::type b, 
-               typename unbox_ref<input_type_2>::type c) const
+               input_type_0 a,
+               input_type_1 b, 
+               input_type_2 c) const
     {
         return (*x)(a, b, c);
     }
 };
 
 template<typename U, typename V, typename W>
-struct trinary_function<box_ref<void>, U, V, W>
+struct trinary_function<void, U, V, W>
 {
     typedef trinary_function type;
     typedef true_type introspection_enabled;
     typedef U input_type_0;
     typedef V input_type_1;
     typedef W input_type_2;
-    typedef box_ref<void> codomain_type;
-    typedef void (*Func)(
-        typename unbox_ref<input_type_0>::type,
-        typename unbox_ref<input_type_1>::type,
-        typename unbox_ref<input_type_2>::type) ;
+    typedef void codomain_type;
+    typedef codomain_type (*Func)(
+        input_type_0,
+        input_type_1,
+        input_type_2) ;
 
-    void
+    codomain_type
     operator()(Func x,
-               typename unbox_ref<input_type_0>::type a,
-               typename unbox_ref<input_type_1>::type b, 
-               typename unbox_ref<input_type_2>::type c) const
+               input_type_0 a,
+               input_type_1 b, 
+               input_type_2 c) const
     {
         (*x)(a, b, c);
     }
@@ -399,25 +360,25 @@ struct quaternary_function
     typedef W input_type_2;
     typedef X input_type_3;
     typedef R codomain_type;
-    typedef typename unbox_ref<codomain_type>::type (*Func)(
-        typename unbox_ref<input_type_0>::type,
-        typename unbox_ref<input_type_1>::type,
-        typename unbox_ref<input_type_2>::type,
-        typename unbox_ref<input_type_3>::type) ;
+    typedef codomain_type (*Func)(
+        input_type_0,
+        input_type_1,
+        input_type_2,
+        input_type_3) ;
 
-    typename unbox_ref<codomain_type>::type
+    codomain_type
     operator()(Func x,
-               typename unbox_ref<input_type_0>::type a,
-               typename unbox_ref<input_type_1>::type b, 
-               typename unbox_ref<input_type_2>::type c, 
-               typename unbox_ref<input_type_3>::type d) const
+               input_type_0 a,
+               input_type_1 b, 
+               input_type_2 c, 
+               input_type_3 d) const
     {
         return (*x)(a, b, c, d);
     }
 };
 
 template<typename U, typename V, typename W, typename X>
-struct quaternary_function<box_ref<void>, U, V, W, X>
+struct quaternary_function<void, U, V, W, X>
 {
     typedef quaternary_function type;
     typedef true_type introspection_enabled;
@@ -426,18 +387,18 @@ struct quaternary_function<box_ref<void>, U, V, W, X>
     typedef W input_type_2;
     typedef X input_type_3;
     typedef void codomain_type;
-    typedef void (*Func)(
-        typename unbox_ref<input_type_0>::type,
-        typename unbox_ref<input_type_1>::type,
-        typename unbox_ref<input_type_2>::type,
-        typename unbox_ref<input_type_3>::type) ;
+    typedef codomain_type (*Func)(
+        input_type_0,
+        input_type_1,
+        input_type_2,
+        input_type_3) ;
 
-    void
+    codomain_type
     operator()(Func x,
-               typename unbox_ref<input_type_0>::type a,
-               typename unbox_ref<input_type_1>::type b, 
-               typename unbox_ref<input_type_2>::type c, 
-               typename unbox_ref<input_type_3>::type d) const
+               input_type_0 a,
+               input_type_1 b, 
+               input_type_2 c, 
+               input_type_3 d) const
     {
         (*x)(a, b, c, d);
     }
@@ -455,27 +416,27 @@ struct quinternary_function
     typedef X input_type_3;
     typedef Y input_type_4;
     typedef R codomain_type;
-    typedef typename unbox_ref<codomain_type>::type (*Func)(
-        typename unbox_ref<input_type_0>::type,
-        typename unbox_ref<input_type_1>::type,
-        typename unbox_ref<input_type_2>::type,
-        typename unbox_ref<input_type_3>::type,
-        typename unbox_ref<input_type_4>::type) ;
+    typedef codomain_type (*Func)(
+        input_type_0,
+        input_type_1,
+        input_type_2,
+        input_type_3,
+        input_type_4) ;
 
-    typename unbox_ref<codomain_type>::type
+    codomain_type
     operator()(Func x,
-               typename unbox_ref<input_type_0>::type a,
-               typename unbox_ref<input_type_1>::type b, 
-               typename unbox_ref<input_type_2>::type c, 
-               typename unbox_ref<input_type_3>::type d, 
-               typename unbox_ref<input_type_4>::type e) const
+               input_type_0 a,
+               input_type_1 b, 
+               input_type_2 c, 
+               input_type_3 d, 
+               input_type_4 e) const
     {
         return (*x)(a, b, c, d, e);
     }
 };
 
 template<typename U, typename V, typename W, typename X, typename Y>
-struct quinternary_function<box_ref<void>, U, V, W, X, Y>
+struct quinternary_function<void, U, V, W, X, Y>
 {
     typedef quinternary_function type;
     typedef true_type introspection_enabled;
@@ -485,20 +446,20 @@ struct quinternary_function<box_ref<void>, U, V, W, X, Y>
     typedef X input_type_3;
     typedef Y input_type_4;
     typedef void codomain_type;
-    typedef void (*Func)(
-        typename unbox_ref<input_type_0>::type,
-        typename unbox_ref<input_type_1>::type,
-        typename unbox_ref<input_type_2>::type,
-        typename unbox_ref<input_type_3>::type,
-        typename unbox_ref<input_type_4>::type) ;
+    typedef codomain_type (*Func)(
+        input_type_0,
+        input_type_1,
+        input_type_2,
+        input_type_3,
+        input_type_4) ;
 
-    void
+    codomain_type
     operator()(Func x,
-               typename unbox_ref<input_type_0>::type a,
-               typename unbox_ref<input_type_1>::type b, 
-               typename unbox_ref<input_type_2>::type c, 
-               typename unbox_ref<input_type_3>::type d, 
-               typename unbox_ref<input_type_4>::type e) const
+               input_type_0 a,
+               input_type_1 b, 
+               input_type_2 c, 
+               input_type_3 d, 
+               input_type_4 e) const
     {
         (*x)(a, b, c, d, e);
     }
@@ -566,87 +527,87 @@ struct quaternary_member_function
  
 template<typename R>
 struct ResolveFunctionSignatureType<R(*)()> :
-    impl::nullary_function<box_ref<R> >
+    impl::nullary_function<R >
 {};
 
 template<typename R, typename U>
 struct ResolveFunctionSignatureType<R(*)(U)> :
-    impl::unary_function<box_ref<R>, box_ref<U> >
+    impl::unary_function<R, U >
 {};
 
 template<typename R, typename U, typename V>
 struct ResolveFunctionSignatureType<R(*)(U, V)> :
-    impl::binary_function<box_ref<R>, box_ref<U>, box_ref<V> >
+    impl::binary_function<R, U, V >
 {};
 
 template<typename R, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(*)(U, V, W)> :
-    impl::trinary_function<box_ref<R>, box_ref<U>, box_ref<V>, box_ref<W> >
+    impl::trinary_function<R, U, V, W >
 {};
 
 template<typename R, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(*)(U, V, W, X)> :
-    impl::quaternary_function<box_ref<R>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
+    impl::quaternary_function<R, U, V, W, X >
 {};
 
 template<typename R, typename U, typename V, typename W, typename X, typename Y>
 struct ResolveFunctionSignatureType<R(*)(U, V, W, X, Y)> :
-    impl::quinternary_function<box_ref<R>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X>, box_ref<Y> >
+    impl::quinternary_function<R, U, V, W, X, Y >
 {};
 
 
 template<typename R, typename C>
 struct ResolveFunctionSignatureType<R(C::*)()> :
-    impl::nullary_member_function<box_ref<R>, box_ref<C&> >
+    impl::nullary_member_function<R, C& >
 {};
 
 template<typename R, typename C>
 struct ResolveFunctionSignatureType<R(C::*)() const> :
-    impl::nullary_member_function<box_ref<R>, box_ref<C const&> >
+    impl::nullary_member_function<R, C const& >
 {};
 
 
 template<typename R, typename C, typename U>
 struct ResolveFunctionSignatureType<R(C::*)(U)> :
-   impl::unary_member_function<box_ref<R>, box_ref<C&>, box_ref<U> >
+   impl::unary_member_function<R, C&, U >
 {};
 
 template<typename R, typename C, typename U>
 struct ResolveFunctionSignatureType<R(C::*)(U) const> :
-   impl::unary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U> >
+   impl::unary_member_function<R, C const&, U >
 {};
 
 
 template<typename R, typename C, typename U, typename V>
 struct ResolveFunctionSignatureType<R(C::*)(U, V)> :
-    impl::binary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V> >
+    impl::binary_member_function<R, C&, U, V >
 {};
 
 template<typename R, typename C, typename U, typename V>
 struct ResolveFunctionSignatureType<R(C::*)(U, V) const> :
-    impl::binary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V> >
+    impl::binary_member_function<R, C const&, U, V >
 {};
 
 
 template<typename R, typename C, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W)> :
-    impl::ternary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V>, box_ref<W> >
+    impl::ternary_member_function<R, C&, U, V, W >
 {};
 
 template<typename R, typename C, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W) const> :
-    impl::ternary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V>, box_ref<W> >
+    impl::ternary_member_function<R, C const&, U, V, W >
 {};
 
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X)> :
-    impl::quaternary_member_function<box_ref<R>, box_ref<C&>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
+    impl::quaternary_member_function<R, C&, U, V, W, X >
 {};
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X) const> :
-    impl::quaternary_member_function<box_ref<R>, box_ref<C const&>, box_ref<U>, box_ref<V>, box_ref<W>, box_ref<X> >
+    impl::quaternary_member_function<R, C const&, U, V, W, X >
 {};
 
 } // namespace intro

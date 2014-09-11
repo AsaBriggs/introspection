@@ -107,8 +107,8 @@ public:
     typedef typename ValueToTrueFalse<sizeof(test<T>(0)) == 1>::type type;
 };
 
-template<>struct IsStructClassOrUnion<void>{ typedef false_type type; };
-template<typename T>struct IsStructClassOrUnion<T&>{ typedef false_type type; };
+//template<>struct IsStructClassOrUnion<void>{ typedef false_type type; };
+//template<typename T>struct IsStructClassOrUnion<T&>{ typedef false_type type; };
 
 #define GENERATE_HAS_MEMBER_TYPE3(Type)              \
 GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                                    \
