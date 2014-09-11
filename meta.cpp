@@ -454,6 +454,7 @@ void test_detect_traits_complex()
   TEST((IsStructClassOrUnion<AStruct>::type()));
   TEST((IsStructClassOrUnion<AClass>::type()));
   TEST((IsStructClassOrUnion<AUnion>::type()));
+  TEST(!(IsStructClassOrUnion<void>::type()));
   TEST(!(IsStructClassOrUnion<bool>::type()));
   TEST(!(IsStructClassOrUnion<double>::type()));
   TEST(!(IsStructClassOrUnion<double&>::type()));
