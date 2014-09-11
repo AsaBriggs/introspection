@@ -971,6 +971,24 @@ void testFun4(T)
   TEST((typename is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10]>, typename GetInputTypeArray<T>::type>::type()));
 }
 
+int fun0() { return 0; }
+void voidfun0() {}
+
+int fun1(long) { return 0; }
+void voidfun1(long) {}
+
+int fun2(long, float) { return 0; }
+void voidfun2(long, float) {}
+
+int fun3(long, float, short&) { return 0; }
+void voidfun3(long, float, short&) {}
+
+int fun4(long, float, short&, int const&) { return 0; }
+void voidfun4(long, float, short&, int const&) {}
+
+int fun5(long, float, short&, int const&, bool) { return 0; }
+void voidfun5(long, float, short&, int const&, bool) {}
+
 void test_function_signatures()
 {
   TEST((is_same<GetCodomainType<int(*)()>::type,int>::type()));
@@ -979,6 +997,10 @@ void test_function_signatures()
   TEST(!(HasInputType<int(*)(), Integer<0> >::type()));
   TEST((0 == GetFunctionArity<int(*)()>::type()));
   TEST((is_same<Array<>, GetInputTypeArray<int(*)()>::type>::type()));
+
+  TEST((0 == ResolveFunctionSignatureType<int(*)()>::type()(&fun0)));
+  ResolveFunctionSignatureType<void(*)()>::type()(&voidfun0);
+
 
 
   TEST((is_same<GetCodomainType<int(*)(long)>::type,int>::type()));
@@ -989,6 +1011,10 @@ void test_function_signatures()
   TEST((is_same<long, GetInputType<int(*)(long), Integer<0> >::type>::type()));
   TEST((1 == GetFunctionArity<int(*)(long)>::type()));
   TEST((is_same<Array<long>, GetInputTypeArray<int(*)(long)>::type>::type()));
+
+  TEST((0 == ResolveFunctionSignatureType<int(*)(long)>::type()(&fun1, 1)));
+  ResolveFunctionSignatureType<void(*)(long)>::type()(&voidfun1, 0);
+
 
 
   TEST((is_same<GetCodomainType<int(*)(long, float)>::type,int>::type()));
@@ -1002,6 +1028,11 @@ void test_function_signatures()
   TEST((2 == GetFunctionArity<int(*)(long, float)>::type()));
   TEST((is_same<Array<long, float>, GetInputTypeArray<int(*)(long, float)>::type>::type()));
 
+  TEST((0 == ResolveFunctionSignatureType<int(*)(long, float)>::type()(&fun2, 1, 2.0f)));
+  ResolveFunctionSignatureType<void(*)(long, float)>::type()(&voidfun2, 0, 2.0f);
+
+
+
   TEST((is_same<GetCodomainType<int(*)(long, float, short&)>::type,int>::type()));
   TEST((is_same<DeduceCodomainType<int(*)(long, float, short&)>::type,int>::type()));
   TEST((FunctionSignatureEnabled<int(*)(long, float, short&)>::type()));
@@ -1014,6 +1045,12 @@ void test_function_signatures()
   TEST((is_same<short&, GetInputType<int(*)(long, float, short&), Integer<2> >::type>::type()));
   TEST((3 == GetFunctionArity<int(*)(long, float, short&)>::type()));
   TEST((is_same<Array<long, float, short&>, GetInputTypeArray<int(*)(long, float, short&)>::type>::type()));
+
+  short tmp = 0;
+  TEST((0 == ResolveFunctionSignatureType<int(*)(long, float, short&)>::type()(&fun3, 1, 2.0f, tmp)));
+  ResolveFunctionSignatureType<void(*)(long, float, short&)>::type()(&voidfun3, 0, 2.0f, tmp);
+
+
 
   TEST((is_same<GetCodomainType<int(*)(long, float, short&, int const&)>::type,int>::type()));
   TEST((is_same<DeduceCodomainType<int(*)(long, float, short&, int const&)>::type,int>::type()));
@@ -1029,6 +1066,11 @@ void test_function_signatures()
   TEST((is_same<int const&, GetInputType<int(*)(long, float, short&, int const&), Integer<3> >::type>::type()));
   TEST((4 == GetFunctionArity<int(*)(long, float, short&, int const&)>::type()));
   TEST((is_same<Array<long, float, short&, int const&>, GetInputTypeArray<int(*)(long, float, short&, int const&)>::type>::type()));
+
+  int tmp2 = 1;
+  TEST((0 == ResolveFunctionSignatureType<int(*)(long, float, short&, int const&)>::type()(&fun4, 1, 2.0f, tmp, tmp2)));
+  ResolveFunctionSignatureType<void(*)(long, float, short&, int const&)>::type()(&voidfun4, 0, 2.0f, tmp, tmp2);
+
 
 
   TEST((is_same<GetCodomainType<int(*)(long, float, short&, int const&, bool)>::type,int>::type()));
@@ -1047,6 +1089,9 @@ void test_function_signatures()
   TEST((is_same<bool, GetInputType<int(*)(long, float, short&, int const&, bool), Integer<4> >::type>::type()));
   TEST((5 == GetFunctionArity<int(*)(long, float, short&, int const&, bool)>::type()));
   TEST((is_same<Array<long, float, short&, int const&, bool>, GetInputTypeArray<int(*)(long, float, short&, int const&, bool)>::type>::type()));
+
+  TEST((0 == ResolveFunctionSignatureType<int(*)(long, float, short&, int const&, bool)>::type()(&fun5, 1, 2.0f, tmp, tmp2, true)));
+  ResolveFunctionSignatureType<void(*)(long, float, short&, int const&, bool)>::type()(&voidfun5, 0, 2.0f, tmp, tmp2, true);
 
   TEST((is_same<GetCodomainType<MyFunctionObject>::type,int>::type()));
   TEST((is_same<DeduceCodomainType<MyFunctionObject>::type,int>::type()));

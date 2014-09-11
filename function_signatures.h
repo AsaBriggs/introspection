@@ -240,21 +240,25 @@ struct nullary_function
     typedef nullary_function type;
     typedef true_type introspection_enabled;
     typedef R codomain_type;
+    typedef typename unbox_ref<codomain_type>::type (*Func)() ;
 
-    codomain_type operator()(codomain_type(*x)()) const
+    typename unbox_ref<codomain_type>::type
+    operator()(Func x) const
     {
         return (*x)();
     }
 };
 
 template<>
-struct nullary_function<void>
+struct nullary_function<box_ref<void> >
 {
     typedef nullary_function type;
     typedef true_type introspection_enabled;
-    typedef void codomain_type;
+    typedef box_ref<void> codomain_type;
+    typedef void (*Func)() ;
 
-    codomain_type operator()(codomain_type(*x)()) const
+    void
+    operator()(Func x) const
     {
         (*x)();
     }
@@ -267,22 +271,28 @@ struct unary_function
     typedef true_type introspection_enabled;
     typedef U input_type_0;
     typedef R codomain_type;
+    typedef typename unbox_ref<codomain_type>::type (*Func)(typename unbox_ref<input_type_0>::type) ;
 
-    codomain_type operator()(codomain_type(*x)(U), U a) const
+    typename unbox_ref<codomain_type>::type
+    operator()(Func x,
+               typename unbox_ref<input_type_0>::type a) const
     {
         return (*x)(a);
     }
 };
 
 template<typename U>
-struct unary_function<void, U>
+struct unary_function<box_ref<void>, U>
 {
     typedef unary_function type;
     typedef true_type introspection_enabled;
     typedef U input_type_0;
-    typedef void codomain_type;
+    typedef box_ref<void> codomain_type;
+    typedef void (*Func)(typename unbox_ref<input_type_0>::type) ;
 
-    codomain_type operator()(codomain_type(*x)(U), U a) const
+    void
+    operator()(Func x,
+               typename unbox_ref<input_type_0>::type a) const
     {
         (*x)(a);
     }
@@ -296,23 +306,35 @@ struct binary_function
     typedef U input_type_0;
     typedef V input_type_1;
     typedef R codomain_type;
+    typedef typename unbox_ref<codomain_type>::type (*Func)(
+        typename unbox_ref<input_type_0>::type,
+        typename unbox_ref<input_type_1>::type) ;
 
-    codomain_type operator()(codomain_type(*x)(U, V), U a, V b) const
+    typename unbox_ref<codomain_type>::type
+    operator()(Func x,
+               typename unbox_ref<input_type_0>::type a,
+               typename unbox_ref<input_type_1>::type b) const
     {
         return (*x)(a, b);
     }
 };
 
 template<typename U, typename V>
-struct binary_function<void, U, V>
+struct binary_function<box_ref<void>, U, V>
 {
     typedef binary_function type;
     typedef true_type introspection_enabled;
     typedef U input_type_0;
     typedef V input_type_1;
-    typedef void codomain_type;
+    typedef box_ref<void> codomain_type;
+    typedef void (*Func)(
+        typename unbox_ref<input_type_0>::type,
+        typename unbox_ref<input_type_1>::type) ;
 
-    codomain_type operator()(codomain_type(*x)(U, V), U a, V b) const
+    void
+    operator()(Func x,
+               typename unbox_ref<input_type_0>::type a,
+               typename unbox_ref<input_type_1>::type b) const
     {
         (*x)(a, b);
     }
@@ -328,24 +350,40 @@ struct trinary_function
     typedef V input_type_1;
     typedef W input_type_2;
     typedef R codomain_type;
+    typedef typename unbox_ref<codomain_type>::type (*Func)(
+        typename unbox_ref<input_type_0>::type,
+        typename unbox_ref<input_type_1>::type,
+        typename unbox_ref<input_type_2>::type) ;
 
-    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c) const
+    typename unbox_ref<codomain_type>::type
+    operator()(Func x,
+               typename unbox_ref<input_type_0>::type a,
+               typename unbox_ref<input_type_1>::type b, 
+               typename unbox_ref<input_type_2>::type c) const
     {
         return (*x)(a, b, c);
     }
 };
 
 template<typename U, typename V, typename W>
-struct trinary_function<void, U, V, W>
+struct trinary_function<box_ref<void>, U, V, W>
 {
     typedef trinary_function type;
     typedef true_type introspection_enabled;
     typedef U input_type_0;
     typedef V input_type_1;
     typedef W input_type_2;
-    typedef void codomain_type;
+    typedef box_ref<void> codomain_type;
+    typedef void (*Func)(
+        typename unbox_ref<input_type_0>::type,
+        typename unbox_ref<input_type_1>::type,
+        typename unbox_ref<input_type_2>::type) ;
 
-    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c) const
+    void
+    operator()(Func x,
+               typename unbox_ref<input_type_0>::type a,
+               typename unbox_ref<input_type_1>::type b, 
+               typename unbox_ref<input_type_2>::type c) const
     {
         (*x)(a, b, c);
     }
@@ -361,15 +399,25 @@ struct quaternary_function
     typedef W input_type_2;
     typedef X input_type_3;
     typedef R codomain_type;
+    typedef typename unbox_ref<codomain_type>::type (*Func)(
+        typename unbox_ref<input_type_0>::type,
+        typename unbox_ref<input_type_1>::type,
+        typename unbox_ref<input_type_2>::type,
+        typename unbox_ref<input_type_3>::type) ;
 
-    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c, X d) const
+    typename unbox_ref<codomain_type>::type
+    operator()(Func x,
+               typename unbox_ref<input_type_0>::type a,
+               typename unbox_ref<input_type_1>::type b, 
+               typename unbox_ref<input_type_2>::type c, 
+               typename unbox_ref<input_type_3>::type d) const
     {
         return (*x)(a, b, c, d);
     }
 };
 
 template<typename U, typename V, typename W, typename X>
-struct quaternary_function<void, U, V, W, X>
+struct quaternary_function<box_ref<void>, U, V, W, X>
 {
     typedef quaternary_function type;
     typedef true_type introspection_enabled;
@@ -378,8 +426,18 @@ struct quaternary_function<void, U, V, W, X>
     typedef W input_type_2;
     typedef X input_type_3;
     typedef void codomain_type;
+    typedef void (*Func)(
+        typename unbox_ref<input_type_0>::type,
+        typename unbox_ref<input_type_1>::type,
+        typename unbox_ref<input_type_2>::type,
+        typename unbox_ref<input_type_3>::type) ;
 
-    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c, X d) const
+    void
+    operator()(Func x,
+               typename unbox_ref<input_type_0>::type a,
+               typename unbox_ref<input_type_1>::type b, 
+               typename unbox_ref<input_type_2>::type c, 
+               typename unbox_ref<input_type_3>::type d) const
     {
         (*x)(a, b, c, d);
     }
@@ -397,15 +455,27 @@ struct quinternary_function
     typedef X input_type_3;
     typedef Y input_type_4;
     typedef R codomain_type;
+    typedef typename unbox_ref<codomain_type>::type (*Func)(
+        typename unbox_ref<input_type_0>::type,
+        typename unbox_ref<input_type_1>::type,
+        typename unbox_ref<input_type_2>::type,
+        typename unbox_ref<input_type_3>::type,
+        typename unbox_ref<input_type_4>::type) ;
 
-    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c, X d, Y e) const
+    typename unbox_ref<codomain_type>::type
+    operator()(Func x,
+               typename unbox_ref<input_type_0>::type a,
+               typename unbox_ref<input_type_1>::type b, 
+               typename unbox_ref<input_type_2>::type c, 
+               typename unbox_ref<input_type_3>::type d, 
+               typename unbox_ref<input_type_4>::type e) const
     {
         return (*x)(a, b, c, d, e);
     }
 };
 
 template<typename U, typename V, typename W, typename X, typename Y>
-struct quinternary_function<void, U, V, W, X, Y>
+struct quinternary_function<box_ref<void>, U, V, W, X, Y>
 {
     typedef quinternary_function type;
     typedef true_type introspection_enabled;
@@ -415,8 +485,20 @@ struct quinternary_function<void, U, V, W, X, Y>
     typedef X input_type_3;
     typedef Y input_type_4;
     typedef void codomain_type;
+    typedef void (*Func)(
+        typename unbox_ref<input_type_0>::type,
+        typename unbox_ref<input_type_1>::type,
+        typename unbox_ref<input_type_2>::type,
+        typename unbox_ref<input_type_3>::type,
+        typename unbox_ref<input_type_4>::type) ;
 
-    codomain_type operator()(codomain_type(*x)(U, V), U a, V b, W c, X d, Y e) const
+    void
+    operator()(Func x,
+               typename unbox_ref<input_type_0>::type a,
+               typename unbox_ref<input_type_1>::type b, 
+               typename unbox_ref<input_type_2>::type c, 
+               typename unbox_ref<input_type_3>::type d, 
+               typename unbox_ref<input_type_4>::type e) const
     {
         (*x)(a, b, c, d, e);
     }
