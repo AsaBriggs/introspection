@@ -334,13 +334,6 @@ struct get_underlying_type
     static char arr[sizeof(T) == sizeof(type) ? 1 : 0];
 };
 
-struct GetUnderlyingType
-{
-    template<typename T>
-    struct apply : get_underlying_type<T>
-    {};
-};
-
 template<typename T>
 inline typename get_underlying_type<T>::type& get_underlying_ref(T& x)
 {
@@ -403,13 +396,6 @@ struct equal : OperatorEquals<T> {};
 
 template<typename T>
 struct decay_ref : impl::decay_ref_impl<T> {};
-
-struct DecayRef
-{
-    template<typename T>
-    struct apply : decay_ref<T>
-    {};
-};
 
 
 struct ArrayNoArg { typedef ArrayNoArg type; };

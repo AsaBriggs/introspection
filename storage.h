@@ -23,7 +23,7 @@ struct empty_type
     typedef empty_type type;
     typedef true_type IntrospectionEnabled;
 
-    static type make()
+    static inline type make()
     {
         type tmp = {};
         return tmp;
@@ -625,7 +625,8 @@ struct Visit1<T, Proc, Arity, Arity>
     typedef Proc input_type_1;
     typedef Proc codomain_type;
 
-    inline Proc operator()(input_type_0 x, Proc p)
+    inline Proc
+    operator()(input_type_0 x, Proc p)
     {
         return p;
     }
@@ -640,7 +641,8 @@ struct Visit1
     typedef Proc input_type_1;
     typedef Proc codomain_type;
 
-    inline Proc operator()(input_type_0 x, Proc p)
+    inline Proc
+    operator()(input_type_0 x, Proc p)
     {
         typedef typename Get<T, Index>::type Getter;
         p(Getter()(x), Index());
@@ -662,7 +664,8 @@ struct Visit2<T, Proc, Arity, Arity>
     typedef Proc input_type_2;
     typedef Proc codomain_type;
 
-    inline Proc operator()(input_type_0 x, input_type_1 y, Proc p)
+    inline Proc
+    operator()(input_type_0 x, input_type_1 y, Proc p)
     {
         return p;
     }
@@ -678,7 +681,8 @@ struct Visit2
     typedef Proc input_type_2;
     typedef Proc codomain_type;
 
-    inline Proc operator()(input_type_0 x, input_type_1 y, Proc p)
+    inline Proc
+    operator()(input_type_0 x, input_type_1 y, Proc p)
     {
         typedef typename Get<T, Index>::type Getter;
         p(Getter()(x), Getter()(y), Index());
@@ -708,7 +712,8 @@ struct Equal_Visitor
     typedef bool IntrospectionItem0;
 
     template<typename T, typename Index>
-    inline void operator() (T const& x, T const& y, Index)
+    inline void
+    operator() (T const& x, T const& y, Index)
     {
       value = value ? typename Apply<GetComparator, T>::type()(x, y) : false ;
     }
@@ -724,7 +729,8 @@ struct Less_Visitor
     typedef bool IntrospectionItem0;
 
     template<typename T, typename Index>
-    inline void operator() (T const& x, T const& y, Index)
+    inline void
+    operator() (T const& x, T const& y, Index)
     {
       value = value ? true : typename Apply<GetComparator, T>::type()(x, y);
     }
@@ -744,39 +750,6 @@ inline bool less_impl(T const& x, T const& y)
     return visit_impl(x, y, tmp).value;
 }
 
-// Metafunction classes to be passed into functiosn equal and less
-struct GetEqual
-{
-    template<typename T>
-    struct apply
-    {
-        // Chose not to inherit as implementors might not follow metafunction protocol
-        typedef equal<T> type;
-    };
-};
-
-struct GetOperatorEquals
-{
-    template<typename T>
-    struct apply : OperatorEquals<T> {};
-};
-
-struct GetLess
-{
-    template<typename T>
-    struct apply
-    {
-        // Chose not to inherit as implementors might not follow metafunction protocol
-        typedef less<T> type;
-    };
-};
-
-struct GetOperatorLessThan
-{
-    template<typename T>
-    struct apply : OperatorLessThan<T> {};
-};
-
 } // namespace impl
 
 template<typename T, typename enable=void>
@@ -793,7 +766,7 @@ struct less<T, typename enable_if<generate_introspected_comparisons<T>, void>::t
 
     inline codomain_type operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
     {
-        return impl::less_impl<impl::GetLess>(impl::get_storage(x), impl::get_storage(y));
+        return impl::less_impl<less<placeholders::_0> >(impl::get_storage(x), impl::get_storage(y));
     }
 };
 
@@ -808,7 +781,7 @@ struct equal<T, typename enable_if<generate_introspected_comparisons<T>, void>::
 
     inline codomain_type operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
     {
-        return impl::equal_impl<impl::GetEqual>(impl::get_storage(x), impl::get_storage(y));
+      return impl::equal_impl<equal<placeholders::_0> >(impl::get_storage(x), impl::get_storage(y));
     }
 };
 
@@ -816,7 +789,7 @@ template<typename T>
 inline typename enable_if<generate_introspected_comparisons<T>, bool>::type
 operator==(T const& x, T const& y)
 {
-    return impl::equal_impl<impl::GetOperatorEquals>(impl::get_storage(x), impl::get_storage(y));
+    return impl::equal_impl<OperatorEquals<placeholders::_0> >(impl::get_storage(x), impl::get_storage(y));
 }
 
 template<typename T>
@@ -830,7 +803,7 @@ template<typename T>
 inline typename enable_if<generate_introspected_comparisons<T>, bool>::type
 operator<(T const& x, T const& y)
 {
-    return impl::less_impl<impl::GetOperatorLessThan>(impl::get_storage(x), impl::get_storage(y));
+    return impl::less_impl<OperatorLessThan<placeholders::_0> >(impl::get_storage(x), impl::get_storage(y));
 }
 
 template<typename T>
@@ -868,7 +841,7 @@ template<typename T>
 struct underlying_type<T,
     typename enable_if<generate_introspected_underlying_type<T>, void>::type>
 {
-    typedef typename ArrayTransform<typename GenerateIntrospectionItems<T>::type, GetUnderlyingType>::type TransformedTypes;
+    typedef typename ArrayTransform<typename GenerateIntrospectionItems<T>::type, get_underlying_type<placeholders::_0> >::type TransformedTypes;
 
     typedef typename impl::GenerateStorageNS::GenerateStorageFromArray<TransformedTypes,
         typename IntrospectionStorageTag<T>::type>::type type;
@@ -885,7 +858,7 @@ struct underlying_type<singleton<T, Tag> > : get_underlying_type<T> {};
 template<typename Arr, typename Tag>
 struct deduce_type
 {
-    typedef typename ArrayTransform<Arr, DecayRef>::type TransformedTypes;
+    typedef typename ArrayTransform<Arr, decay_ref<placeholders::_0> >::type TransformedTypes;
 
     typedef typename impl::GenerateStorageNS::GenerateStorageFromArray<TransformedTypes,
         Tag>::type type;
