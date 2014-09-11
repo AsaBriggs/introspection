@@ -10,18 +10,6 @@ namespace {
 const char EXPECTED_VALUE = 'a';
 const char UNEXPECTED_VALUE = 'b';
 
-template<typename T>
-typename enable_if<is_same<T, int>, char>::type enable_if_test() { return EXPECTED_VALUE; }
-
-template<typename T>
-typename enable_if<not_<is_same<T, int> >, char>::type enable_if_test() { return UNEXPECTED_VALUE; }
-
-template<typename T>
-typename disable_if<is_same<T, int>, char>::type disable_if_test() { return UNEXPECTED_VALUE; }
-
-template<typename T>
-typename disable_if<not_<is_same<T, int> >, char>::type disable_if_test() { return EXPECTED_VALUE; }
-
 // All distinct types
 typedef Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, long, unsigned long> TestArray;
 typedef Array<unsigned long, long, unsigned int, int, unsigned short, short, char, signed char, unsigned char, bool> ReversedTestArray;
@@ -184,7 +172,7 @@ void test_array_zip()
   TEST((is_same<ArrayZip<Integers, MoreIntegers, Add<placeholders::_0, placeholders::_1> >::type, Expected>()));
 }
 
-void test_apply()
+void test_Apply()
 {
   TEST((is_same<empty_type<int>, Apply<empty_type<int> >::type>::type()));
   TEST((is_same<empty_type<int>, Apply<empty_type<int>, short, double, char, float, void >::type>::type()));
@@ -252,15 +240,21 @@ void test_is_convertible()
   TEST(!(is_convertible<int, ExplicitConvertingConstructor>::type()));
 }
 
-void test_metaprogramming()
+void test_boolean_types()
 {
   TEST(true_type());
   TEST(!false_type());
+}
 
+void test_make_ref()
+{
   int x = 0;
   Ref<int> y = make_ref(x);
   TEST(y.m0 == &x);
+}
 
+void test_integer_operations()
+{
   TEST( Integer<1>() == Successor<Integer<0> >::type());
   TEST( Integer<3>() == Successor<Integer<2> >::type());
 
@@ -275,7 +269,10 @@ void test_metaprogramming()
 
   TEST((Integer<5>() == Add<Integer<3>, Integer<2> >::type()));
   TEST((Integer<10>() == Add<Integer<3>, Integer<7> >::type()));
+}
 
+void test_boolean_operations()
+{
   TEST(!not_<true_type>::type());
   TEST(not_<false_type>::type());
 
@@ -301,13 +298,38 @@ void test_metaprogramming()
   TEST(!(and_<true_type, false_type, true_type>::type()));
   TEST(!(and_<true_type, true_type, false_type>::type()));
   TEST((and_<true_type, true_type, true_type>::type()));
+}
 
+template<typename T>
+typename enable_if<is_same<T, int>, char>::type enable_if_test() { return EXPECTED_VALUE; }
+
+template<typename T>
+typename enable_if<not_<is_same<T, int> >, char>::type enable_if_test() { return UNEXPECTED_VALUE; }
+
+template<typename T>
+typename disable_if<is_same<T, int>, char>::type disable_if_test() { return UNEXPECTED_VALUE; }
+
+template<typename T>
+typename disable_if<not_<is_same<T, int> >, char>::type disable_if_test() { return EXPECTED_VALUE; }
+
+void test_enable_disable_if()
+{
   char test = enable_if_test<int>();
   TEST(EXPECTED_VALUE == test);
 
   char test2 = disable_if_test<int>();
   TEST(EXPECTED_VALUE == test2);
+}
+void test_is_reference()
+{
+  TEST((!is_reference<int>::type()));
+  TEST((is_reference<int&>::type()));
+  TEST((is_reference<int(&)[2]>::type()));
+  TEST((is_reference<int(&)[]>::type()));
+}
 
+void test_is_same()
+{
   TEST((is_same<int, identity_type<identity_type<int> >::type >::type()));
 
   TEST((is_same<if_<true_type, int, void>::type, int>()));
@@ -315,10 +337,6 @@ void test_metaprogramming()
 
   TEST((is_same<eval_if<true_type, identity_type<int>, void>::type, int>()));
   TEST((is_same<eval_if<false_type, void, identity_type<int> >::type, int>()));
-
-  TEST((!is_reference<int>::type()));
-  TEST((is_reference<int&>::type()));
-  TEST((is_reference<int(&)[2]>::type()));
 
   TEST((is_same<make_const_ref<int>::type, int const&>::type()));
   TEST((is_same<make_const_ref<int const>::type, int const&>::type()));
@@ -329,18 +347,26 @@ void test_metaprogramming()
   TEST((is_same<make_const_ref<int volatile const>::type, int volatile const&>::type()));
   TEST((is_same<make_const_ref<int volatile const&>::type, int volatile const&>::type()));
   TEST((is_same<make_const_ref<int volatile &>::type, int volatile const&>::type()));
+}
 
+void test_deduce_input_type()
+{
   TEST((is_same<int&, deduce_input_type<int&>::type >::type()));
   TEST((is_same<int, deduce_input_type<int const&>::type >::type()));
   TEST((is_same<int, deduce_input_type<int>::type >::type()));
+}
 
+void test_parameter_type()
+{
   TEST((is_same<parameter_type<int>::type, int const&>::type()));
   TEST((is_same<parameter_type<int&>::type, int&>::type()));
+}
 
+void test_underlying_ref_swap()
+{
   TEST((is_same<underlying_type<int>::type, int>::type()));
 
   TEST((is_same<get_underlying_type<int>::type, int>::type()));
-
   {
     int a = 0 ;
     TEST(&a == &get_underlying_ref(a));
@@ -358,7 +384,10 @@ void test_metaprogramming()
     TEST(1 == a);
     TEST(2 == b);
   }
+}
 
+void test_logical_operations()
+{
   TEST((OperatorEquals<int>()(1, 1)));
   TEST(!(OperatorEquals<int>()(1, 2)));
 
@@ -372,16 +401,20 @@ void test_metaprogramming()
   TEST(!(less<int>()(1, 1)));
   TEST((less<int>()(1, 2)));
   TEST(!(less<int>()(2, 1)));
+}
 
+void test_decay_ref()
+{
   TEST((is_same<decay_ref<int>::type, int>::type()));
   TEST((is_same<decay_ref<int&>::type, int&>::type()));
   TEST((is_same<decay_ref<int const&>::type, int const&>::type()));
   TEST((is_same<decay_ref<Ref<int> >::type, int&>::type()));
   TEST((is_same<decay_ref<Ref<int const> >::type, int const&>::type()));
-
+}
+void test_Array()
+{
+  // Tests the array is self-evaluating
   TEST((is_same<TestArray, TestArray::type>::type()));
-
-  test_is_convertible();
 
 #define ARRAY_INDEX_TEST(n, X) TEST((is_same<ArrayIndex<TestArray, Integer<n> >::type, X>::type()))
   ARRAY_INDEX_TEST(0, bool);
@@ -424,8 +457,26 @@ void test_metaprogramming()
   test_array_rotate();
   test_array_transform();
   test_array_zip();
+}
 
-  test_apply();
+
+void test_metaprogramming()
+{
+  test_boolean_types();
+  test_make_ref();
+  test_integer_operations();
+  test_boolean_operations();
+  test_enable_disable_if();
+  test_is_reference();
+  test_is_same();
+  test_deduce_input_type();
+  test_parameter_type();
+  test_underlying_ref_swap();
+  test_logical_operations();
+  test_decay_ref();
+  test_is_convertible();
+  test_Array();
+  test_Apply();
 }
 
 struct AStruct {};
