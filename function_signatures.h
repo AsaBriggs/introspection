@@ -240,13 +240,123 @@ struct DeduceCodomainType : impl::GetCodomainType_Impl<typename ResolveFunctionS
 
 namespace impl {
 
-template<typename R>
-struct nullary_function
+template<typename CodomainType, typename InputTypes>
+struct function_pointer_signature;
+
+template<typename CodomainType>
+struct function_pointer_signature<CodomainType, Array<ArrayNoArg> >
 {
-    typedef nullary_function type;
+    typedef CodomainType(*type)();
+};
+
+template<typename CodomainType, typename A>
+struct function_pointer_signature<CodomainType, Array<A, ArrayNoArg> >
+{
+    typedef CodomainType(*type)(A);
+};
+
+template<typename CodomainType, typename A, typename B>
+struct function_pointer_signature<CodomainType, Array<A, B, ArrayNoArg> >
+{
+    typedef CodomainType(*type)(A, B);
+};
+
+template<typename CodomainType, typename A, typename B, typename C>
+struct function_pointer_signature<CodomainType, Array<A, B, C, ArrayNoArg> >
+{
+    typedef CodomainType(*type)(A, B, C);
+};
+
+template<typename CodomainType, typename A, typename B, typename C, typename D>
+struct function_pointer_signature<CodomainType, Array<A, B, C, D, ArrayNoArg> >
+{
+    typedef CodomainType(*type)(A, B, C, D);
+};
+
+template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
+struct function_pointer_signature<CodomainType, Array<A, B, C, D, E, ArrayNoArg> >
+{
+    typedef CodomainType(*type)(A, B, C, D, E);
+};
+
+
+template<typename CodomainType, typename InputTypes>
+struct member_function_pointer_signature;
+
+template<typename CodomainType, typename A>
+struct member_function_pointer_signature<CodomainType, Array<A const&, ArrayNoArg> >
+{
+    typedef CodomainType(A::*type)() const;
+};
+
+template<typename CodomainType, typename A>
+struct member_function_pointer_signature<CodomainType, Array<A&, ArrayNoArg> >
+{
+    typedef CodomainType(A::*type)();
+};
+
+template<typename CodomainType, typename A, typename B>
+struct member_function_pointer_signature<CodomainType, Array<A const&, B, ArrayNoArg> >
+{
+    typedef CodomainType(A::*type)(B) const;
+};
+
+template<typename CodomainType, typename A, typename B>
+struct member_function_pointer_signature<CodomainType, Array<A&, B, ArrayNoArg> >
+{
+    typedef CodomainType(A::*type)(B);
+};
+
+template<typename CodomainType, typename A, typename B, typename C>
+struct member_function_pointer_signature<CodomainType, Array<A const&, B, C, ArrayNoArg> >
+{
+    typedef CodomainType(A::*type)(B, C) const;
+};
+
+template<typename CodomainType, typename A, typename B, typename C>
+struct member_function_pointer_signature<CodomainType, Array<A&, B, C, ArrayNoArg> >
+{
+    typedef CodomainType(A::*type)(B, C);
+};
+
+template<typename CodomainType, typename A, typename B, typename C, typename D>
+struct member_function_pointer_signature<CodomainType, Array<A const&, B, C, D, ArrayNoArg> >
+{
+    typedef CodomainType(A::*type)(B, C, D) const;
+};
+
+template<typename CodomainType, typename A, typename B, typename C, typename D>
+struct member_function_pointer_signature<CodomainType, Array<A&, B, C, D, ArrayNoArg> >
+{
+    typedef CodomainType(A::*type)(B, C, D);
+};
+
+template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
+struct member_function_pointer_signature<CodomainType, Array<A const&, B, C, D, E, ArrayNoArg> >
+{
+  typedef CodomainType(A::*type)(B, C, D, E) const;
+};
+
+template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
+struct member_function_pointer_signature<CodomainType, Array<A&, B, C, D, E, ArrayNoArg> >
+{
+    typedef CodomainType(A::*type)(B, C, D, E);
+};
+
+
+template<typename CodomainType, typename InputTypes, typename MemberFunction>
+struct function_wrapper;
+
+// Note ArrayNoArg explicitly mentioned in the specialisations
+// to remove ambiguity between partial specialsations
+template<typename CodomainType>
+struct function_wrapper<CodomainType, Array<ArrayNoArg>, false_type>
+{
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef R codomain_type;
-    typedef codomain_type (*Func)();
+    typedef CodomainType codomain_type;
+    typedef Array<> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func) const
@@ -256,12 +366,13 @@ struct nullary_function
 };
 
 template<>
-struct nullary_function<void>
+struct function_wrapper<void, Array<ArrayNoArg>, false_type>
 {
-    typedef nullary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef void codomain_type;
-    typedef codomain_type (*Func)();
+    typedef Array<> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func) const
@@ -270,177 +381,175 @@ struct nullary_function<void>
     }
 };
 
-template<typename R, typename U>
-struct unary_function
+
+template<typename CodomainType, typename A>
+struct function_wrapper<CodomainType, Array<A, ArrayNoArg>, false_type>
 {
-    typedef unary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef Array<U> input_types;
-    typedef R codomain_type;
-    typedef codomain_type(*Func)(U);
+    typedef CodomainType codomain_type;
+    typedef Array<A> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
-    operator()(Func func, U a) const
+    operator()(Func func, A a) const
     {
         return (*func)(a);
     }
 };
 
-template<typename U>
-struct unary_function<void, U>
+template<typename A>
+struct function_wrapper<void, Array<A, ArrayNoArg>, false_type>
 {
-    typedef unary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef Array<U> input_types;
     typedef void codomain_type;
-    typedef codomain_type (*Func)(U);
+    typedef Array<A> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
-    operator()(Func func, U a) const
+    operator()(Func func, A a) const
     {
         (*func)(a);
     }
 };
 
-template<typename R, typename U, typename V>
-struct binary_function
+template<typename CodomainType, typename A, typename B>
+struct function_wrapper<CodomainType, Array<A, B, ArrayNoArg>, false_type>
 {
-    typedef binary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef Array<U, V> input_types;
-    typedef R codomain_type;
-    typedef codomain_type (*Func)(U, V);
+    typedef CodomainType codomain_type;
+    typedef Array<A, B> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
-    operator()(Func func, U a, V b) const
+    operator()(Func func, A a, B b) const
     {
         return (*func)(a, b);
     }
 };
 
-template<typename U, typename V>
-struct binary_function<void, U, V>
+template<typename A, typename B>
+struct function_wrapper<void, Array<A, B, ArrayNoArg>, false_type>
 {
-    typedef binary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef Array<U, V> input_types;
     typedef void codomain_type;
-    typedef codomain_type (*Func)(U, V);
+    typedef Array<A, B> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
-    operator()(Func func, U a, V b) const
+    operator()(Func func, A a, B b) const
     {
         (*func)(a, b);
     }
 };
 
-
-template<typename R, typename U, typename V, typename W>
-struct trinary_function
+template<typename CodomainType, typename A, typename B, typename C>
+struct function_wrapper<CodomainType, Array<A, B, C, ArrayNoArg>, false_type>
 {
-    typedef trinary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef Array<U, V, W> input_types;
-    typedef R codomain_type;
-    typedef codomain_type (*Func)(U, V, W);
+    typedef CodomainType codomain_type;
+    typedef Array<A, B, C> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
-    operator()(Func func, U a, V b, W c) const
+    operator()(Func func, A a, B b, C c) const
     {
         return (*func)(a, b, c);
     }
 };
 
-template<typename U, typename V, typename W>
-struct trinary_function<void, U, V, W>
+template<typename A, typename B, typename C>
+struct function_wrapper<void, Array<A, B, C, ArrayNoArg>, false_type>
 {
-    typedef trinary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef Array<U, V, W> input_types;
     typedef void codomain_type;
-    typedef codomain_type (*Func)(U, V, W);
+    typedef Array<A, B, C> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
-    operator()(Func func, U a, V b, W c) const
+    operator()(Func func, A a, B b, C c) const
     {
         (*func)(a, b, c);
     }
 };
 
-template<typename R, typename U, typename V, typename W, typename X>
-struct quaternary_function
+template<typename CodomainType, typename A, typename B, typename C, typename D>
+struct function_wrapper<CodomainType, Array<A, B, C, D, ArrayNoArg>, false_type>
 {
-    typedef quaternary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef Array<U, V, W, X> input_types;
-    typedef R codomain_type;
-    typedef codomain_type (*Func)(U, V, W, X);
+    typedef CodomainType codomain_type;
+    typedef Array<A, B, C, D> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
-    operator()(Func func, U a, V b, W c, X d) const
+    operator()(Func func, A a, B b, C c, D d) const
     {
         return (*func)(a, b, c, d);
     }
 };
 
-template<typename U, typename V, typename W, typename X>
-struct quaternary_function<void, U, V, W, X>
+template<typename A, typename B, typename C, typename D>
+struct function_wrapper<void, Array<A, B, C, D, ArrayNoArg>, false_type>
 {
-    typedef quaternary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef Array<U, V, W, X> input_types;
     typedef void codomain_type;
-    typedef codomain_type (*Func)(U, V, W, X);
+    typedef Array<A, B, C, D> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
-    operator()(Func func, U a, V b, W c, X d) const
+    operator()(Func func, A a, B b, C c, D d) const
     {
         (*func)(a, b, c, d);
     }
 };
 
-
-template<typename R, typename U, typename V, typename W, typename X, typename Y>
-struct quinternary_function
+template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
+struct function_wrapper<CodomainType, Array<A, B, C, D, E, ArrayNoArg>, false_type>
 {
-    typedef quinternary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef Array<U, V, W, X, Y> input_types;
-    typedef R codomain_type;
-    typedef codomain_type (*Func)(U, V, W, X, Y);
+    typedef CodomainType codomain_type;
+    typedef Array<A, B, C, D, E> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
-    operator()(Func func, U a, V b, W c, X d, Y e) const
+    operator()(Func func, A a, B b, C c, D d, E e) const
     {
-        return (*func)(a, b, c, d, e);
+      return (*func)(a, b, c, d, e);
     }
 };
 
-template<typename U, typename V, typename W, typename X, typename Y>
-struct quinternary_function<void, U, V, W, X, Y>
+template<typename A, typename B, typename C, typename D, typename E>
+struct function_wrapper<void, Array<A, B, C, D, E, ArrayNoArg>, false_type>
 {
-    typedef quinternary_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
-    typedef Array<U, V, W, X, Y> input_types;
     typedef void codomain_type;
-    typedef codomain_type (*Func)(U, V, W, X, Y);
+    typedef Array<A, B, C, D, E> input_types;
+    typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
-    operator()(Func func, U a, V b, W c, X d, Y e) const
+    operator()(Func func, A a, B b, C c, D d, E e) const
     {
         (*func)(a, b, c, d, e);
     }
 };
 
-
-template<typename R, typename C, typename Signature>
-struct nullary_member_function
+template<typename R, typename C>
+struct function_wrapper<R, Array<C, ArrayNoArg>, true_type>
 {
-    typedef nullary_member_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef Array<C> input_types;
     typedef R codomain_type;
-    typedef Signature Func;
+    typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func, C c) const
@@ -449,14 +558,14 @@ struct nullary_member_function
     }
 };
 
-template<typename C, typename Signature>
-struct nullary_member_function<void, C, Signature>
+template<typename C>
+struct function_wrapper<void, Array<C, ArrayNoArg>, true_type>
 {
-    typedef nullary_member_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef Array<C> input_types;
     typedef void codomain_type;
-    typedef Signature Func;
+    typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func, C c) const
@@ -466,14 +575,14 @@ struct nullary_member_function<void, C, Signature>
 };
 
 
-template<typename R, typename C, typename U, typename Signature>
-struct unary_member_function
+template<typename R, typename C, typename U>
+struct function_wrapper<R, Array<C, U, ArrayNoArg>, true_type>
 {
-    typedef unary_member_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef Array<C, U> input_types;
     typedef R codomain_type;
-    typedef Signature Func;
+    typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func, C c, U u) const
@@ -482,14 +591,14 @@ struct unary_member_function
     }
 };
 
-template<typename C, typename U, typename Signature>
-struct unary_member_function<void, C, U, Signature>
+template<typename C, typename U>
+struct function_wrapper<void, Array<C, U, ArrayNoArg>, true_type>
 {
-    typedef unary_member_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef Array<C, U> input_types;
     typedef void codomain_type;
-    typedef Signature Func;
+    typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func, C c, U u) const
@@ -499,14 +608,14 @@ struct unary_member_function<void, C, U, Signature>
 };
 
 
-template<typename R, typename C, typename U, typename V, typename Signature>
-struct binary_member_function
+template<typename R, typename C, typename U, typename V>
+struct function_wrapper<R, Array<C, U, V, ArrayNoArg>, true_type>
 {
-    typedef binary_member_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef Array<C, U, V> input_types;
     typedef R codomain_type;
-    typedef Signature Func;
+    typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func, C c, U u, V v) const
@@ -515,14 +624,14 @@ struct binary_member_function
     }
 };
 
-template<typename C, typename U, typename V, typename Signature>
-struct binary_member_function<void, C, U, V, Signature>
+template<typename C, typename U, typename V>
+struct function_wrapper<void, Array<C, U, V, ArrayNoArg>, true_type>
 {
-    typedef binary_member_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef Array<C, U, V> input_types;
     typedef void codomain_type;
-    typedef Signature Func;
+    typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func, C c, U u, V v) const
@@ -532,14 +641,14 @@ struct binary_member_function<void, C, U, V, Signature>
 };
 
 
-template<typename R, typename C, typename U, typename V, typename W, typename Signature>
-struct ternary_member_function
+template<typename R, typename C, typename U, typename V, typename W>
+struct function_wrapper<R, Array<C, U, V, W, ArrayNoArg>, true_type>
 {
-    typedef ternary_member_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef Array<C, U, V, W> input_types;
     typedef R codomain_type;
-    typedef Signature Func;
+    typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func, C c, U u, V v, W w) const
@@ -548,14 +657,14 @@ struct ternary_member_function
     }
 };
 
-template<typename C, typename U, typename V, typename W, typename Signature>
-struct ternary_member_function<void, C, U, V, W, Signature>
+template<typename C, typename U, typename V, typename W>
+struct function_wrapper<void, Array<C, U, V, W, ArrayNoArg>, true_type>
 {
-    typedef ternary_member_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef Array<C, U, V, W> input_types;
     typedef void codomain_type;
-    typedef Signature Func;
+    typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func, C c, U u, V v, W w) const
@@ -565,14 +674,14 @@ struct ternary_member_function<void, C, U, V, W, Signature>
 };
 
 
-template<typename R, typename C, typename U, typename V, typename W, typename X, typename Signature>
-struct quaternary_member_function
+template<typename R, typename C, typename U, typename V, typename W, typename X>
+struct function_wrapper<R, Array<C, U, V, W, X, ArrayNoArg>, true_type>
 {
-    typedef quaternary_member_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef Array<C, U, V, W, X> input_types;
     typedef R codomain_type;
-    typedef Signature Func;
+    typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func, C c, U u, V v, W w, X x) const
@@ -581,14 +690,14 @@ struct quaternary_member_function
     }
 };
 
-template<typename C, typename U, typename V, typename W, typename X, typename Signature>
-struct quaternary_member_function<void, C, U, V, W, X, Signature>
+template<typename C, typename U, typename V, typename W, typename X>
+struct function_wrapper<void, Array<C, U, V, W, X, ArrayNoArg>, true_type>
 {
-    typedef quaternary_member_function type;
+    typedef function_wrapper type;
     typedef true_type introspection_enabled;
     typedef Array<C, U, V, W, X> input_types;
     typedef void codomain_type;
-    typedef Signature Func;
+    typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     inline codomain_type
     operator()(Func func, C c, U u, V v, W w, X x) const
@@ -601,87 +710,87 @@ struct quaternary_member_function<void, C, U, V, W, X, Signature>
  
 template<typename R>
 struct ResolveFunctionSignatureType<R(*)()> :
-    impl::nullary_function<R>
+    impl::function_wrapper<R, Array<>, false_type>
 {};
 
 template<typename R, typename U>
 struct ResolveFunctionSignatureType<R(*)(U)> :
-    impl::unary_function<R, U>
+    impl::function_wrapper<R, Array<U>, false_type>
 {};
 
 template<typename R, typename U, typename V>
 struct ResolveFunctionSignatureType<R(*)(U, V)> :
-    impl::binary_function<R, U, V>
+    impl::function_wrapper<R, Array<U, V>, false_type>
 {};
 
 template<typename R, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(*)(U, V, W)> :
-    impl::trinary_function<R, U, V, W>
+    impl::function_wrapper<R, Array<U, V, W>, false_type>
 {};
 
 template<typename R, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(*)(U, V, W, X)> :
-    impl::quaternary_function<R, U, V, W, X>
+    impl::function_wrapper<R, Array<U, V, W, X>, false_type>
 {};
 
 template<typename R, typename U, typename V, typename W, typename X, typename Y>
 struct ResolveFunctionSignatureType<R(*)(U, V, W, X, Y)> :
-    impl::quinternary_function<R, U, V, W, X, Y>
+    impl::function_wrapper<R, Array<U, V, W, X, Y>, false_type>
 {};
 
 
 template<typename R, typename C>
 struct ResolveFunctionSignatureType<R(C::*)()> :
-    impl::nullary_member_function<R, C&, R(C::*)()>
+    impl::function_wrapper<R, Array<C&>, true_type>
 {};
 
 template<typename R, typename C>
 struct ResolveFunctionSignatureType<R(C::*)() const> :
-    impl::nullary_member_function<R, C const&, R(C::*)() const>
+    impl::function_wrapper<R, Array<C const&>, true_type>
 {};
 
 
 template<typename R, typename C, typename U>
 struct ResolveFunctionSignatureType<R(C::*)(U)> :
-    impl::unary_member_function<R, C&, U, R(C::*)(U)>
+    impl::function_wrapper<R, Array<C&, U>, true_type>
 {};
 
 template<typename R, typename C, typename U>
 struct ResolveFunctionSignatureType<R(C::*)(U) const> :
-    impl::unary_member_function<R, C const&, U, R(C::*)(U) const>
+    impl::function_wrapper<R, Array<C const&, U>, true_type>
 {};
 
 
 template<typename R, typename C, typename U, typename V>
 struct ResolveFunctionSignatureType<R(C::*)(U, V)> :
-    impl::binary_member_function<R, C&, U, V,R(C::*)(U, V)>
+    impl::function_wrapper<R, Array<C&, U, V>, true_type>
 {};
 
 template<typename R, typename C, typename U, typename V>
 struct ResolveFunctionSignatureType<R(C::*)(U, V) const> :
-    impl::binary_member_function<R, C const&, U, V, R(C::*)(U, V) const>
+    impl::function_wrapper<R, Array<C const&, U, V>, true_type>
 {};
 
 
 template<typename R, typename C, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W)> :
-    impl::ternary_member_function<R, C&, U, V, W, R(C::*)(U, V, W)>
+    impl::function_wrapper<R, Array<C&, U, V, W>, true_type>
 {};
 
 template<typename R, typename C, typename U, typename V, typename W>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W) const> :
-    impl::ternary_member_function<R, C const&, U, V, W, R(C::*)(U, V, W) const>
+    impl::function_wrapper<R, Array<C const&, U, V, W>, true_type>
 {};
 
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X)> :
-    impl::quaternary_member_function<R, C&, U, V, W, X, R(C::*)(U, V, W, X)>
+    impl::function_wrapper<R, Array<C&, U, V, W, X>, true_type>
 {};
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
 struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X) const> :
-    impl::quaternary_member_function<R, C const&, U, V, W, X, R(C::*)(U, V, W, X) const>
+    impl::function_wrapper<R, Array<C const&, U, V, W, X>, true_type>
 {};
 
 } // namespace intro
