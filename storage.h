@@ -286,7 +286,8 @@ GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem5)
 GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem6)
 GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem7)
 GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem8)
-GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem9)
+GENERATE_HAS_AND_GET_MEMBER_TYPE
+(IntrospectionItem9)
 
 
 namespace impl {
@@ -334,6 +335,9 @@ template<typename T, typename Index>
 struct HasArrayIntrospectionItem :
     not_<is_same<ArrayNoArg, typename ArrayIndex<typename GetMemberType_IntrospectionItems<T>::type, Index>::type > >
 {};
+
+template<typename T>
+struct HasArrayIntrospectionItem<T, Integer<10> > : false_type {};
 
 } // namespace HasItem
 

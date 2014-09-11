@@ -370,86 +370,27 @@ void test_metaprogramming()
   test_array_zip();
 
   test_apply();
-
 }
-
-GENERATE_HAS_AND_GET_MEMBER_TYPE(TestTypedef)
-
-struct TestTrue
-{
-    typedef int TestTypedef;
-};
-
-struct TestFalse {};
-
-struct TestTrue2 : TestTrue {};
-
-struct TestFalseDueToRef
-{
-    typedef int& TestTypedef;
-};
-
-void test_detect_traits()
-{
-  TEST((HasMemberType_TestTypedef<TestTrue>::type()));
-  TEST((is_same<int, GetMemberType_TestTypedef<TestTrue>::type >::type()));
-
-  TEST(!(HasMemberType_TestTypedef<bool>::type()));
-  TEST(!(HasMemberType_TestTypedef<TestFalse>::type()));
-
-  TEST((HasMemberType_TestTypedef<TestTrue2>::type()));
-  TEST((is_same<int, GetMemberType_TestTypedef<TestTrue2>::type >::type()));
-
-  TEST(!(HasMemberType_TestTypedef<TestFalseDueToRef>::type()));
-}
-
-template<typename T>
-struct TestTypedef : and_<HasMemberType_TestTypedef<T>, GetMemberType_TestTypedef<T> > {};
-
-GENERATE_HAS_AND_GET_MEMBER_TYPE2(TestTypedef2, TestTypedef)
-
-struct Test2False
-{
-  typedef false_type TestTypedef;
-};
-
-struct Test2False2
-{
-    typedef false_type TestTypedef;
-    typedef int TestTypedef2;
-};
-
-struct Test2True
-{
-    typedef true_type TestTypedef;
-    typedef int TestTypedef2;
-};
-
-struct Test2True2
-{
-    typedef true_type TestTypedef;
-    typedef int volatile const& TestTypedef2;
-};
 
 struct AStruct {};
 class AClass {};
 union AUnion { int a; };
 
-GENERATE_HAS_AND_GET_MEMBER_TYPE3(TestTypedef3)
+GENERATE_HAS_AND_GET_MEMBER_TYPE(TestTypedef)
 
-struct Test3False {};
+struct TestFalse {};
 
-struct Test3True
+struct TestTrue
 {
-  typedef int TestTypedef3;
+  typedef int TestTypedef;
 };
 
-struct Test3True2
+struct TestTrue2
 {
-  typedef int const volatile& TestTypedef3;
+  typedef int const volatile& TestTypedef;
 };
 
-void test_detect_traits_complex()
+void test_detect_traits()
 {
   TEST((IsStructClassOrUnion<AStruct>::type()));
   TEST((IsStructClassOrUnion<AClass>::type()));
@@ -465,25 +406,15 @@ void test_detect_traits_complex()
   TEST(!(IsStructClassOrUnion<void(AUnion::*)()>::type()));
   TEST(!(IsStructClassOrUnion<void(AUnion::*)(int)const>::type()));
 
-  TEST(!(HasMemberType_TestTypedef2<Test2False>::type()));
-  TEST(!(HasMemberType_TestTypedef2<Test2False2>::type()));
+  TEST(!(HasMemberType_TestTypedef<TestFalse>::type()));
+  TEST(!(HasMemberType_TestTypedef<void>::type()));
+  TEST(!(HasMemberType_TestTypedef<void*>::type()));
 
-  // Check the enabling typedef
-  TEST((GetMemberType_TestTypedef<Test2True>::type()));
-  TEST((HasMemberType_TestTypedef2<Test2True>::type()));
-  TEST((is_same<int, GetMemberType_TestTypedef2<Test2True>::type>::type()));
+  TEST((HasMemberType_TestTypedef<TestTrue>::type()));
+  TEST((is_same<int, GetMemberType_TestTypedef<TestTrue>::type>::type()));
 
-  TEST((HasMemberType_TestTypedef2<Test2True2>::type()));
-  TEST((is_same<int volatile const&, GetMemberType_TestTypedef2<Test2True2>::type>::type()));
-
-
-  TEST(!(HasMemberType_TestTypedef3<Test3False>::type()));
-
-  TEST((HasMemberType_TestTypedef3<Test3True>::type()));
-  TEST((is_same<int, GetMemberType_TestTypedef3<Test3True>::type>::type()));
-
-  TEST((HasMemberType_TestTypedef3<Test3True2>::type()));
-  TEST((is_same<int volatile const&, GetMemberType_TestTypedef3<Test3True2>::type>::type()));
+  TEST((HasMemberType_TestTypedef<TestTrue2>::type()));
+  TEST((is_same<int volatile const&, GetMemberType_TestTypedef<TestTrue2>::type>::type()));
 }
 
 void test_empty()
@@ -573,6 +504,9 @@ void test_singleton()
     TEST(1 == x.m0);
 
     test_generated_operations(x, y);
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<1> >::type()));
 }
 
 void test_pair()
@@ -588,6 +522,10 @@ void test_pair()
     // Differ in the m1 value
     type z = {1, 4.0f};
     test_generated_operations(x, z);
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<1> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<2> >::type()));
 }
 
 void test_triple()
@@ -608,6 +546,11 @@ void test_triple()
     // Differ in the m2 value
     type a = {1, 3.5f, 'b'};
     test_generated_operations(x, a);
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<1> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<2> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<3> >::type()));
 }
 
 void test_quadruple()
@@ -633,6 +576,12 @@ void test_quadruple()
     // Differ in the m3 value
     type b = {1, 3.5f, 'a', true};
     test_generated_operations(x, b);
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<1> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<2> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<3> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<4> >::type()));
 }
 
 void test_quintuple()
@@ -663,6 +612,13 @@ void test_quintuple()
     // Differ in the m4 value
     type c = {1, 3.5f, 'a', true, 4U};
     test_generated_operations(x, c);
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<1> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<2> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<3> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<4> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<5> >::type()));
 }
 
 void test_sextuple()
@@ -698,6 +654,14 @@ void test_sextuple()
     // Differ in the m5 value
     type d = {1, 3.5f, 'a', true, 4U, 100LL};
     test_generated_operations(x, d);
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<1> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<2> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<3> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<4> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<5> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<6> >::type()));
 }
 
 void test_septuple()
@@ -738,6 +702,15 @@ void test_septuple()
     // Differ in the m6 value
     type e = {1, 3.5f, 'a', true, 4U, 100LL, 2.0};
     test_generated_operations(x, e);
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<1> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<2> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<3> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<4> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<5> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<6> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<7> >::type()));
 }
 
 void test_octuple()
@@ -783,6 +756,16 @@ void test_octuple()
     // Differ in the m7 value
     type f = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL};
     test_generated_operations(x, f);
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<1> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<2> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<3> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<4> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<5> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<6> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<7> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<8> >::type()));
 }
 
 void test_nonuple()
@@ -833,11 +816,22 @@ void test_nonuple()
     // Differ in the m8 value
     type g = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, true};
     test_generated_operations(x, g);
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<1> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<2> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<3> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<4> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<5> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<6> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<7> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<8> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<9> >::type()));
 }
 
 void test_decuple()
 {
-  typedef decuple<int, float, char, bool, unsigned, long long, double, unsigned long, bool, int, DefaultTag> type;
+    typedef decuple<int, float, char, bool, unsigned, long long, double, unsigned long, bool, int, DefaultTag> type;
     // Differed in the m0 value
     type x = {1, 3.5f, 'a', false, 3U, 99LL, 1.0, 3UL, false, 88};
     type y = {2, 3.5f, 'a', false, 3U, 99LL, 1.0, 3UL, false, 88};
@@ -888,6 +882,18 @@ void test_decuple()
     // Differ in the m9 value
     type h = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, true, 89};
     test_generated_operations(x, h);
+
+    TEST((HasIntrospectionItem<type, Integer<0> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<1> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<2> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<3> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<4> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<5> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<6> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<7> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<8> >::type()));
+    TEST((HasIntrospectionItem<type, Integer<9> >::type()));
+    TEST(!(HasIntrospectionItem<type, Integer<10> >::type()));
 }
 typedef triple<int, long, char> VisitorTestType;
 
@@ -1294,8 +1300,6 @@ using namespace intro;
 int main()
 {
     test_metaprogramming();
-    test_detect_traits();
-    test_detect_traits_complex();
     test_detect_traits();
     test_empty();
     test_singleton();

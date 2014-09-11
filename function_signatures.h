@@ -31,7 +31,7 @@ struct CodomainDeduction { typedef CodomainDeduction type; };
 // Generates the non-impl functions to forward onto the impl, via the ResolveFunctionSignatureType metafunction.
 #define GENERATE_FUNCTION_SIGNATURE_GETTERS(x)\
 namespace impl{\
-GENERATE_HAS_AND_GET_MEMBER_TYPE3(x)\
+GENERATE_HAS_AND_GET_MEMBER_TYPE(x)\
 }\
 template<typename T> struct Get_##x : impl::GetMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {}; \
 template<typename T> struct Has_##x : impl::HasMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {};\
@@ -334,7 +334,7 @@ struct member_function_pointer_signature<CodomainType, Array<A&, B, C, D, ArrayN
 template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
 struct member_function_pointer_signature<CodomainType, Array<A const&, B, C, D, E, ArrayNoArg> >
 {
-  typedef CodomainType(A::*type)(B, C, D, E) const;
+    typedef CodomainType(A::*type)(B, C, D, E) const;
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
