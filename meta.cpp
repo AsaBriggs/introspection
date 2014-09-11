@@ -46,9 +46,9 @@ void test_array_concat2()
   typedef typename Min<Integer<10>, typename Add<LHSIndex, RHSIndex>::type>::type ConcatArrayLength;
   typedef typename eval_if<is_same<Integer<10>, ConcatArrayLength>, Bool10, ArrayIndex<BoolArray, ConcatArrayLength> >::type ExpectedArray;
 
-  TEST((typename is_same< ExpectedArray,
-            typename ArrayConcat<typename ArrayIndex<BoolArray, LHSIndex>::type,
-                                 typename ArrayIndex<BoolArray, RHSIndex>::type>::type>::type()));
+  TEST((typename is_same<ExpectedArray,
+                         typename ArrayConcat<typename ArrayIndex<BoolArray, LHSIndex>::type,
+	                 typename ArrayIndex<BoolArray, RHSIndex>::type>::type>::type() ));
 }
 
 template<typename LHSIndex>
@@ -198,6 +198,25 @@ void test_apply()
   TEST((is_same<Integer<3>, Apply<AddTogether, Integer<1>, Integer<2> >::type>::type()));
 }
 
+struct Parent {};
+struct Child : Parent {};
+
+void test_is_convertible()
+{
+  TEST((is_convertible<int, long>::type()));
+  TEST((is_convertible<int&, int const&>::type()));
+  TEST((is_convertible<float, double>::type()));
+  TEST(!(is_convertible<float, double&>::type()));
+
+  TEST((is_convertible<float (&)[10], float*>::type()));
+  TEST((is_convertible<float (&)[], float*>::type()));
+  TEST((is_convertible<float (&)[], float const*>::type()));
+
+  TEST(!(is_convertible<Parent*, Child*>::type()));
+  TEST((is_convertible<Child*, Parent*>::type()));
+  TEST((is_convertible<Child*, Parent const*>::type()));
+}
+
 void test_metaprogramming()
 {
   TEST(true_type());
@@ -326,6 +345,8 @@ void test_metaprogramming()
   TEST((is_same<decay_ref<Ref<int const> >::type, int const&>::type()));
 
   TEST((is_same<TestArray, TestArray::type>::type()));
+
+  test_is_convertible();
 
 #define ARRAY_INDEX_TEST(n, X) TEST((is_same<ArrayIndex<TestArray, Integer<n> >::type, X>::type()))
   ARRAY_INDEX_TEST(0, bool);

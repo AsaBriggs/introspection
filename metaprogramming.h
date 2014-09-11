@@ -256,6 +256,29 @@ struct decay_ref_impl<Ref<T> >
     typedef T& type;
 };
 
+// Similar type to ValueToTrueFalse
+template<bool value>
+struct BoolToTrueFalse;
+
+template<>
+struct BoolToTrueFalse<0> : false_type {};
+
+template<>
+struct BoolToTrueFalse<1> : true_type {};
+
+template<typename From, typename To>
+struct is_convertible_impl
+{
+private:
+  typedef char Yes;
+  struct No { char a[2]; };
+  static No test(...);
+  static Yes test(To);
+  static From get();
+public:
+  typedef typename BoolToTrueFalse<sizeof(test(get())) ==1>::type type;
+};
+
 } // namespace impl
 
 
@@ -396,6 +419,9 @@ struct equal : OperatorEquals<T> {};
 
 template<typename T>
 struct decay_ref : impl::decay_ref_impl<T> {};
+
+template<typename From, typename To>
+struct is_convertible : impl::is_convertible_impl<From, To> {};
 
 
 struct ArrayNoArg { typedef ArrayNoArg type; };
