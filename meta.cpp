@@ -373,6 +373,118 @@ void test_metaprogramming()
 
 }
 
+GENERATE_HAS_AND_GET_MEMBER_TYPE(TestTypedef)
+
+struct TestTrue
+{
+    typedef int TestTypedef;
+};
+
+struct TestFalse {};
+
+struct TestTrue2 : TestTrue {};
+
+struct TestFalseDueToRef
+{
+    typedef int& TestTypedef;
+};
+
+void test_detect_traits()
+{
+  TEST((HasMemberType_TestTypedef<TestTrue>::type()));
+  TEST((is_same<int, GetMemberType_TestTypedef<TestTrue>::type >::type()));
+
+  TEST(!(HasMemberType_TestTypedef<bool>::type()));
+  TEST(!(HasMemberType_TestTypedef<TestFalse>::type()));
+
+  TEST((HasMemberType_TestTypedef<TestTrue2>::type()));
+  TEST((is_same<int, GetMemberType_TestTypedef<TestTrue2>::type >::type()));
+
+  TEST(!(HasMemberType_TestTypedef<TestFalseDueToRef>::type()));
+}
+
+template<typename T>
+struct TestTypedef : and_<HasMemberType_TestTypedef<T>, GetMemberType_TestTypedef<T> > {};
+
+GENERATE_HAS_AND_GET_MEMBER_TYPE2(TestTypedef2, TestTypedef)
+
+struct Test2False
+{
+  typedef false_type TestTypedef;
+};
+
+struct Test2False2
+{
+    typedef false_type TestTypedef;
+    typedef int TestTypedef2;
+};
+
+struct Test2True
+{
+    typedef true_type TestTypedef;
+    typedef int TestTypedef2;
+};
+
+struct Test2True2
+{
+    typedef true_type TestTypedef;
+    typedef int volatile const& TestTypedef2;
+};
+
+struct AStruct {};
+class AClass {};
+union AUnion { int a; };
+
+GENERATE_HAS_AND_GET_MEMBER_TYPE3(TestTypedef3)
+
+struct Test3False {};
+
+struct Test3True
+{
+  typedef int TestTypedef3;
+};
+
+struct Test3True2
+{
+  typedef int const volatile& TestTypedef3;
+};
+
+void test_detect_traits_complex()
+{
+  TEST((IsStructClassOrUnion<AStruct>::type()));
+  TEST((IsStructClassOrUnion<AClass>::type()));
+  TEST((IsStructClassOrUnion<AUnion>::type()));
+  TEST(!(IsStructClassOrUnion<bool>::type()));
+  TEST(!(IsStructClassOrUnion<double>::type()));
+  TEST(!(IsStructClassOrUnion<double&>::type()));
+  TEST(!(IsStructClassOrUnion<double&>::type()));
+  TEST(!(IsStructClassOrUnion<double*>::type()));
+  TEST(!(IsStructClassOrUnion<int AUnion::*>::type()));
+  TEST(!(IsStructClassOrUnion<void(*)()>::type()));
+  TEST(!(IsStructClassOrUnion<void(AUnion::*)()>::type()));
+  TEST(!(IsStructClassOrUnion<void(AUnion::*)(int)const>::type()));
+
+  TEST(!(HasMemberType_TestTypedef2<Test2False>::type()));
+  TEST(!(HasMemberType_TestTypedef2<Test2False2>::type()));
+
+  // Check the enabling typedef
+  TEST((GetMemberType_TestTypedef<Test2True>::type()));
+  TEST((HasMemberType_TestTypedef2<Test2True>::type()));
+  TEST((is_same<int, GetMemberType_TestTypedef2<Test2True>::type>::type()));
+
+  TEST((HasMemberType_TestTypedef2<Test2True2>::type()));
+  TEST((is_same<int volatile const&, GetMemberType_TestTypedef2<Test2True2>::type>::type()));
+
+
+  TEST(!(HasMemberType_TestTypedef3<Test3False>::type()));
+
+  TEST((HasMemberType_TestTypedef3<Test3True>::type()));
+  TEST((is_same<int, GetMemberType_TestTypedef3<Test3True>::type>::type()));
+
+  TEST((HasMemberType_TestTypedef3<Test3True2>::type()));
+  TEST((is_same<int volatile const&, GetMemberType_TestTypedef3<Test3True2>::type>::type()));
+}
+
 void test_empty()
 {
   empty_type<DefaultTag> a;
@@ -1176,6 +1288,9 @@ using namespace intro;
 int main()
 {
     test_metaprogramming();
+    test_detect_traits();
+    test_detect_traits_complex();
+    test_detect_traits();
     test_empty();
     test_singleton();
     test_pair();
