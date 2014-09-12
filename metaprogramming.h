@@ -715,13 +715,17 @@ typedef Placeholder<Integer<1> > _1;
 typedef Placeholder<Integer<2> > _2;
 typedef Placeholder<Integer<3> > _3;
 typedef Placeholder<Integer<4> > _4;
-
+typedef Placeholder<Integer<5> > _5;
+typedef Placeholder<Integer<6> > _6;
+typedef Placeholder<Integer<7> > _7;
+typedef Placeholder<Integer<8> > _8;
+typedef Placeholder<Integer<9> > _9;
 }
 
 namespace impl {
 
 // Type deliberately distinct from ArrayNoArgs so that
-// applying < 5 arguments is distinguishable.
+// applying < 10 arguments is distinguishable.
 struct apply_ignore { typedef apply_ignore type; };
 
 // Check performed on looking up the value of a placeholder in the current
@@ -753,23 +757,37 @@ template<typename T>
 struct EnvironmentArity;
 
 template<>
-struct EnvironmentArity<Array<apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<0> {};
+struct EnvironmentArity<Array<apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<0> {};
 
 template<typename T0>
-struct EnvironmentArity<Array<T0, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<1> {};
+struct EnvironmentArity<Array<T0, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<1> {};
 
 template<typename T0, typename T1>
-struct EnvironmentArity<Array<T0, T1, apply_ignore, apply_ignore, apply_ignore> > : Integer<2> {};
+struct EnvironmentArity<Array<T0, T1, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<2> {};
 
 template<typename T0, typename T1, typename T2>
-struct EnvironmentArity<Array<T0, T1, T2, apply_ignore, apply_ignore> > : Integer<3> {};
+struct EnvironmentArity<Array<T0, T1, T2, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<3> {};
 
 template<typename T0, typename T1, typename T2, typename T3>
-struct EnvironmentArity<Array<T0, T1, T2, T3, apply_ignore> > : Integer<4> {};
+struct EnvironmentArity<Array<T0, T1, T2, T3, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<4> {};
 
 template<typename T0, typename T1, typename T2, typename T3, typename T4>
-struct EnvironmentArity<Array<T0, T1, T2, T3, T4> > : Integer<5> {};
+struct EnvironmentArity<Array<T0, T1, T2, T3, T4, apply_ignore, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<5> {};
 
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5>
+struct EnvironmentArity<Array<T0, T1, T2, T3, T4, T5, apply_ignore, apply_ignore, apply_ignore, apply_ignore> > : Integer<6> {};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+struct EnvironmentArity<Array<T0, T1, T2, T3, T4, T5, T6, apply_ignore, apply_ignore, apply_ignore> > : Integer<7> {};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+struct EnvironmentArity<Array<T0, T1, T2, T3, T4, T5, T6, T7, apply_ignore, apply_ignore> > : Integer<8> {};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8>
+struct EnvironmentArity<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, apply_ignore> > : Integer<9> {};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct EnvironmentArity<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> > : Integer<10> {};
 
 
 template<typename T, typename Environment>
@@ -811,6 +829,66 @@ struct BindArguments<T<P0, P1, P2, P3, P4>, Environment> :
       typename LookupPlaceholder<P2, Environment>::type,
       typename LookupPlaceholder<P3, Environment>::type,
       typename LookupPlaceholder<P4, Environment>::type>
+{};
+
+template<template<typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename Environment>
+struct BindArguments<T<P0, P1, P2, P3, P4, P5>, Environment> :
+    T<typename LookupPlaceholder<P0, Environment>::type,
+      typename LookupPlaceholder<P1, Environment>::type,
+      typename LookupPlaceholder<P2, Environment>::type,
+      typename LookupPlaceholder<P3, Environment>::type,
+      typename LookupPlaceholder<P4, Environment>::type,
+      typename LookupPlaceholder<P5, Environment>::type>
+{};
+
+template<template<typename, typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Environment>
+struct BindArguments<T<P0, P1, P2, P3, P4, P5, P6>, Environment> :
+    T<typename LookupPlaceholder<P0, Environment>::type,
+      typename LookupPlaceholder<P1, Environment>::type,
+      typename LookupPlaceholder<P2, Environment>::type,
+      typename LookupPlaceholder<P3, Environment>::type,
+      typename LookupPlaceholder<P4, Environment>::type,
+      typename LookupPlaceholder<P5, Environment>::type,
+      typename LookupPlaceholder<P6, Environment>::type>
+{};
+
+template<template<typename, typename, typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename Environment>
+struct BindArguments<T<P0, P1, P2, P3, P4, P5, P6, P7>, Environment> :
+    T<typename LookupPlaceholder<P0, Environment>::type,
+      typename LookupPlaceholder<P1, Environment>::type,
+      typename LookupPlaceholder<P2, Environment>::type,
+      typename LookupPlaceholder<P3, Environment>::type,
+      typename LookupPlaceholder<P4, Environment>::type,
+      typename LookupPlaceholder<P5, Environment>::type,
+      typename LookupPlaceholder<P6, Environment>::type,
+      typename LookupPlaceholder<P7, Environment>::type>
+{};
+
+template<template<typename, typename, typename, typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename Environment>
+struct BindArguments<T<P0, P1, P2, P3, P4, P5, P6, P7, P8>, Environment> :
+    T<typename LookupPlaceholder<P0, Environment>::type,
+      typename LookupPlaceholder<P1, Environment>::type,
+      typename LookupPlaceholder<P2, Environment>::type,
+      typename LookupPlaceholder<P3, Environment>::type,
+      typename LookupPlaceholder<P4, Environment>::type,
+      typename LookupPlaceholder<P5, Environment>::type,
+      typename LookupPlaceholder<P6, Environment>::type,
+      typename LookupPlaceholder<P7, Environment>::type,
+      typename LookupPlaceholder<P8, Environment>::type>
+{};
+
+template<template<typename, typename, typename, typename, typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9, typename Environment>
+struct BindArguments<T<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9>, Environment> :
+    T<typename LookupPlaceholder<P0, Environment>::type,
+      typename LookupPlaceholder<P1, Environment>::type,
+      typename LookupPlaceholder<P2, Environment>::type,
+      typename LookupPlaceholder<P3, Environment>::type,
+      typename LookupPlaceholder<P4, Environment>::type,
+      typename LookupPlaceholder<P5, Environment>::type,
+      typename LookupPlaceholder<P6, Environment>::type,
+      typename LookupPlaceholder<P7, Environment>::type,
+      typename LookupPlaceholder<P8, Environment>::type,
+      typename LookupPlaceholder<P9, Environment>::type>
 {};
 
 // This is the magic of the Apply mechanism. The assumption is that the Airty of the
@@ -855,6 +933,41 @@ struct AddPlaceholders<T, Integer<5> >
     typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4> type;
 };
 
+template<typename T>
+struct AddPlaceholders<T, Integer<6> >
+{
+    typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4,
+      placeholders::_5> type;
+};
+
+template<typename T>
+struct AddPlaceholders<T, Integer<7> >
+{
+    typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4,
+      placeholders::_5, placeholders::_6> type;
+};
+
+template<typename T>
+struct AddPlaceholders<T, Integer<8> >
+{
+    typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4,
+      placeholders::_5, placeholders::_6, placeholders::_7> type;
+};
+
+template<typename T>
+struct AddPlaceholders<T, Integer<9> >
+{
+    typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4,
+      placeholders::_5, placeholders::_6, placeholders::_7, placeholders::_8> type;
+};
+
+template<typename T>
+struct AddPlaceholders<T, Integer<10> >
+{
+    typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4,
+      placeholders::_5, placeholders::_6, placeholders::_7, placeholders::_8, placeholders::_9> type;
+};
+
 // Metafunction Class passed in, so add placeholders to nested template class apply
 // and bind the Environment. Note Apply_Impl and BindArguments are different metafunctions to prevent
 // an infinte loop when the Environment is empty
@@ -883,11 +996,37 @@ template<template<typename, typename, typename, typename, typename> class T, typ
 struct Apply_Impl<T<P0, P1, P2, P3, P4>, Environment> : BindArguments<T<P0, P1, P2, P3, P4>, Environment>
 {};
 
+template<template<typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename Environment>
+struct Apply_Impl<T<P0, P1, P2, P3, P4, P5>, Environment> : BindArguments<T<P0, P1, P2, P3, P4, P5>, Environment>
+{};
+
+template<template<typename, typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Environment>
+struct Apply_Impl<T<P0, P1, P2, P3, P4, P5, P6>, Environment> : BindArguments<T<P0, P1, P2, P3, P4, P5, P6>, Environment>
+{};
+
+template<template<typename, typename, typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename Environment>
+struct Apply_Impl<T<P0, P1, P2, P3, P4, P5, P6, P7>, Environment> : BindArguments<T<P0, P1, P2, P3, P4, P5, P6, P7>, Environment>
+{};
+
+
+template<template<typename, typename, typename, typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename Environment>
+struct Apply_Impl<T<P0, P1, P2, P3, P4, P5, P6, P7, P8>, Environment> : BindArguments<T<P0, P1, P2, P3, P4, P5, P6, P7, P8>, Environment>
+{};
+
+
+template<template<typename, typename, typename, typename, typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9, typename Environment>
+struct Apply_Impl<T<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9>, Environment> : BindArguments<T<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9>, Environment>
+{};
+
 } // namespace impl
 
-template<typename T, typename P0=impl::apply_ignore, typename P1=impl::apply_ignore, typename P2=impl::apply_ignore, typename P3=impl::apply_ignore, typename P4=impl::apply_ignore>
-struct Apply : impl::Apply_Impl<T, Array<P0, P1, P2, P3, P4> > {};
+template<typename T, typename P0=impl::apply_ignore, typename P1=impl::apply_ignore, typename P2=impl::apply_ignore, typename P3=impl::apply_ignore, typename P4=impl::apply_ignore, typename P5=impl::apply_ignore, typename P6=impl::apply_ignore, typename P7=impl::apply_ignore, typename P8=impl::apply_ignore, typename P9=impl::apply_ignore>
+struct Apply : impl::Apply_Impl<T, Array<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9> > {};
 
+// Environment must be in the fom of an array where 0..N are parameters and the rest are apply_ignore
+// See RationaliseApplyArray for how to remove ArrayNoArg and the like.
+template<typename T, typename Environment>
+struct Apply_Environment : impl::Apply_Impl<T, Environment> {};
 
 
 namespace impl {
@@ -978,7 +1117,12 @@ struct RationaliseApplyArray
                   typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<1> >::type, ToRemove, impl::apply_ignore>::type,
                   typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<2> >::type, ToRemove, impl::apply_ignore>::type,
                   typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<3> >::type, ToRemove, impl::apply_ignore>::type,
-                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<4> >::type, ToRemove, impl::apply_ignore>::type> type;
+                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<4> >::type, ToRemove, impl::apply_ignore>::type,
+                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<5> >::type, ToRemove, impl::apply_ignore>::type,
+                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<6> >::type, ToRemove, impl::apply_ignore>::type,
+                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<7> >::type, ToRemove, impl::apply_ignore>::type,
+                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<8> >::type, ToRemove, impl::apply_ignore>::type,
+                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<9> >::type, ToRemove, impl::apply_ignore>::type> type;
 };
 
 } // namespace impl

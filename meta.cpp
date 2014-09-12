@@ -238,6 +238,14 @@ void test_array_zip()
   STATIC_ASSERT2(( is_same<ArrayZip<Integers, MoreIntegers, Add<placeholders::_0, placeholders::_1> >::type, Expected> ));
 }
 
+typedef Array<placeholders::_9, placeholders::_8, placeholders::_7, placeholders::_6, placeholders::_5, placeholders::_4, placeholders::_3, placeholders::_2, placeholders::_1, placeholders::_0> ReversingArray;
+
+struct ArrayReverser
+{
+  template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+  struct apply : Array<T9, T8, T7, T6, T5, T4, T3, T2, T1, T0> {};
+};
+
 void test_Apply()
 {
   STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<int> >::type> ));
@@ -250,6 +258,21 @@ void test_Apply()
   STATIC_ASSERT2(( is_same<empty_type<short>, Apply<empty_type<placeholders::_4>, bool, int, long, float, short>::type> ));
 
   STATIC_ASSERT2(( is_same<Integer<3>, Apply<AddTogether, Integer<1>, Integer<2> >::type> ));
+
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<> >::type> ));
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int>::type> ));
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int>::type> ));
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int>::type> ));
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int>::type> ));
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int>::type> ));
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int>::type> ));
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int>::type> ));
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int, int>::type> ));
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int, int, int>::type> ));
+  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int, int, int, int>::type> ));
+
+  STATIC_ASSERT2(( is_same<ReversedTestArray, Apply_Environment<ReversingArray, TestArray>::type> ));
+  STATIC_ASSERT2(( is_same<ReversedTestArray, Apply_Environment<ArrayReverser, TestArray>::type> ));
 
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
   typedef Apply<empty_type<placeholders::_0> >::type insufficientArguments0;
