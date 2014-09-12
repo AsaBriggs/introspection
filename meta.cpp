@@ -68,6 +68,7 @@ STATIC_ASSERT2((true_type));
 
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
 STATIC_ASSERT2((false_type));
+STATIC_ASSERT_NOT2((true_type));
 #endif
 
 #define TEST(x) assert((x))
@@ -249,6 +250,28 @@ void test_Apply()
   STATIC_ASSERT2(( is_same<empty_type<short>, Apply<empty_type<placeholders::_4>, bool, int, long, float, short>::type> ));
 
   STATIC_ASSERT2(( is_same<Integer<3>, Apply<AddTogether, Integer<1>, Integer<2> >::type> ));
+
+#ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
+  typedef Apply<empty_type<placeholders::_0> >::type insufficientArguments0;
+  typedef Apply<empty_type<placeholders::_1> >::type insufficientArguments1;
+  typedef Apply<empty_type<placeholders::_2> >::type insufficientArguments2;
+  typedef Apply<empty_type<placeholders::_3> >::type insufficientArguments3;
+  typedef Apply<empty_type<placeholders::_4> >::type insufficientArguments4;
+
+  typedef Apply<empty_type<placeholders::_1>, int>::type insufficientArguments5;
+  typedef Apply<empty_type<placeholders::_2>, int>::type insufficientArguments6;
+  typedef Apply<empty_type<placeholders::_3>, int>::type insufficientArguments7;
+  typedef Apply<empty_type<placeholders::_4>, int>::type insufficientArguments8;
+
+  typedef Apply<empty_type<placeholders::_2>, int, int>::type insufficientArguments9;
+  typedef Apply<empty_type<placeholders::_3>, int, int>::type insufficientArguments10;
+  typedef Apply<empty_type<placeholders::_4>, int, int>::type insufficientArguments11;
+
+  typedef Apply<empty_type<placeholders::_3>, int, int, int>::type insufficientArguments12;
+  typedef Apply<empty_type<placeholders::_4>, int, int, int>::type insufficientArguments13;
+
+  typedef Apply<empty_type<placeholders::_4>, int, int, int, int>::type insufficientArguments14;
+#endif
 }
 
 struct Parent {};
