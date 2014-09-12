@@ -5,6 +5,10 @@
 #include "compiler_specifics.h"
 #endif
 
+#ifndef INCLUDED_INTROSPECTION_ASSERT
+#include "introspection_assert.h"
+#endif
+
 namespace intro {
 
 struct TYPE_DEFAULT_VISIBILITY true_type
@@ -406,8 +410,7 @@ template<typename T>
 struct TYPE_HIDDEN_VISIBILITY get_underlying_type
 {
     typedef typename underlying_type<T>::type type;
-    // Purpose of this metafunction is to check the types have the same size
-    static char arr[sizeof(T) == sizeof(type) ? 1 : 0];
+    INTROSPECTION_STATIC_ASSERT(( typename impl::ValueToTrueFalse_impl<sizeof(T) == sizeof(type)>::type ));
 };
 
 template<typename T>
