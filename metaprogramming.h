@@ -188,20 +188,36 @@ template<typename Test, typename T, typename F>
 struct TYPE_HIDDEN_VISIBILITY if_impl;
 
 template<typename T, typename F>
-struct TYPE_HIDDEN_VISIBILITY if_impl<true_type, T, F> { typedef T type; METAPROGRAMMING_ONLY(if_impl)};
+struct TYPE_HIDDEN_VISIBILITY if_impl<true_type, T, F>
+{
+    typedef T type;
+    METAPROGRAMMING_ONLY(if_impl)
+};
 
 template<typename T, typename F>
-struct TYPE_HIDDEN_VISIBILITY if_impl<false_type, T, F> { typedef F type; METAPROGRAMMING_ONLY(if_impl)};
+struct TYPE_HIDDEN_VISIBILITY if_impl<false_type, T, F>
+{
+    typedef F type;
+    METAPROGRAMMING_ONLY(if_impl)
+};
 
 
 template<typename Test, typename T, typename F>
 struct TYPE_HIDDEN_VISIBILITY eval_if_impl;
 
 template<typename T, typename F>
-struct TYPE_HIDDEN_VISIBILITY eval_if_impl<true_type, T, F> { typedef typename T::type type; METAPROGRAMMING_ONLY(eval_if_impl)};
+struct TYPE_HIDDEN_VISIBILITY eval_if_impl<true_type, T, F>
+{
+    typedef typename T::type type;
+    METAPROGRAMMING_ONLY(eval_if_impl)
+};
 
 template<typename T, typename F>
-struct TYPE_HIDDEN_VISIBILITY eval_if_impl<false_type, T, F> { typedef typename F::type type; METAPROGRAMMING_ONLY(eval_if_impl)};
+struct TYPE_HIDDEN_VISIBILITY eval_if_impl<false_type, T, F>
+{
+    typedef typename F::type type;
+    METAPROGRAMMING_ONLY(eval_if_impl)
+};
 
 
 template<typename T, typename U>
@@ -297,7 +313,7 @@ public:
 };
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY IsStructClassOrUnion_impl
+struct TYPE_HIDDEN_VISIBILITY is_struct_class_or_union_impl
 {
 private:
     typedef char Yes;
@@ -308,7 +324,7 @@ private:
     static HIDDEN No test(...);
 public:
     typedef typename ValueToTrueFalse_impl<sizeof(test<T>(0)) == 1>::type type;
-    METAPROGRAMMING_ONLY(IsStructClassOrUnion_impl)
+    METAPROGRAMMING_ONLY(is_struct_class_or_union_impl)
 };
 
 
@@ -461,11 +477,17 @@ template<typename From, typename To>
 struct TYPE_HIDDEN_VISIBILITY is_convertible : impl::is_convertible_impl<From, To> {METAPROGRAMMING_ONLY(is_convertible)};
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY IsStructClassOrUnion : impl::IsStructClassOrUnion_impl<T> {METAPROGRAMMING_ONLY(IsStructClassOrUnion)};
+struct TYPE_HIDDEN_VISIBILITY is_struct_class_or_union : impl::is_struct_class_or_union_impl<T> {METAPROGRAMMING_ONLY(is_struct_class_or_union)};
 
 
-struct TYPE_HIDDEN_VISIBILITY ArrayNoArg { typedef ArrayNoArg type; METAPROGRAMMING_ONLY(ArrayNoArg)};
+struct TYPE_HIDDEN_VISIBILITY ArrayNoArg
+{
+    typedef ArrayNoArg type;
+    METAPROGRAMMING_ONLY(ArrayNoArg)
+};
 
+// Note that Array has as many types as Apply can handle with placeholder expressions.
+// Attempting to expand the interface would destroy the ability of Apply to handle all Arrays passed to it.
 template<typename T0=ArrayNoArg, typename T1=ArrayNoArg, typename T2=ArrayNoArg, typename T3=ArrayNoArg, typename T4=ArrayNoArg, typename T5=ArrayNoArg, typename T6=ArrayNoArg, typename T7=ArrayNoArg, typename T8=ArrayNoArg, typename T9=ArrayNoArg>
 struct TYPE_HIDDEN_VISIBILITY Array
 {
@@ -772,13 +794,21 @@ typedef Placeholder<Integer<6> > _6;
 typedef Placeholder<Integer<7> > _7;
 typedef Placeholder<Integer<8> > _8;
 typedef Placeholder<Integer<9> > _9;
+// Thinking about the processing required to get placeholder _ to work
+// I don't consider it worthwhile; either we need to loop over the placeholder expression
+// replacing _ with numberered placeholders one-by-one or there has to be a big
+// "match all possible placeholder combinations" which would be hideous to write.
 }
 
 namespace impl {
 
 // Type deliberately distinct from ArrayNoArgs so that
-// applying < 10 arguments is distinguishable.
-struct TYPE_HIDDEN_VISIBILITY apply_ignore { typedef apply_ignore type; METAPROGRAMMING_ONLY(apply_ignore)};
+// applying < 10 arguments is distinguishable from wanting to apply ArrayNoArgs at that position.
+struct TYPE_HIDDEN_VISIBILITY apply_ignore
+{
+    typedef apply_ignore type;
+    METAPROGRAMMING_ONLY(apply_ignore)
+};
 
 // Check performed on looking up the value of a placeholder in the current
 // Apply application parameters
@@ -1005,7 +1035,7 @@ struct TYPE_HIDDEN_VISIBILITY AddPlaceholders<T, Integer<3> >
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY AddPlaceholders<T, Integer<4> >
 {
-  typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2, placeholders::_3> type;
+    typedef typename T::template apply<placeholders::_0, placeholders::_1, placeholders::_2, placeholders::_3> type;
     METAPROGRAMMING_ONLY(AddPlaceholders)
 };
 
@@ -1114,13 +1144,11 @@ struct TYPE_HIDDEN_VISIBILITY Apply_impl<T<P0, P1, P2, P3, P4, P5, P6, P7>, Envi
     METAPROGRAMMING_ONLY(Apply_impl)
 };
 
-
 template<template<typename, typename, typename, typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename Environment>
 struct TYPE_HIDDEN_VISIBILITY Apply_impl<T<P0, P1, P2, P3, P4, P5, P6, P7, P8>, Environment> : BindArguments<T<P0, P1, P2, P3, P4, P5, P6, P7, P8>, Environment>
 {
     METAPROGRAMMING_ONLY(Apply_impl)
 };
-
 
 template<template<typename, typename, typename, typename, typename, typename, typename, typename, typename, typename> class T, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9, typename Environment>
 struct TYPE_HIDDEN_VISIBILITY Apply_impl<T<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9>, Environment> : BindArguments<T<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9>, Environment>

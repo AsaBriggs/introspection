@@ -307,19 +307,19 @@ union AUnion { int a; };
 
 void test_is_struct_class_or_union()
 {
-  INTROSPECTION_STATIC_ASSERT2(( IsStructClassOrUnion<AStruct> ));
-  INTROSPECTION_STATIC_ASSERT2(( IsStructClassOrUnion<AClass> ));
-  INTROSPECTION_STATIC_ASSERT2(( IsStructClassOrUnion<AUnion> ));
-  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void> ));
-  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<bool> ));
-  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double> ));
-  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double&> ));
-  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double&> ));
-  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double*> ));
-  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<int AUnion::*> ));
-  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(*)()> ));
-  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(AUnion::*)()> ));
-  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(AUnion::*)(int)const> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_struct_class_or_union<AStruct> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_struct_class_or_union<AClass> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_struct_class_or_union<AUnion> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_struct_class_or_union<void> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_struct_class_or_union<bool> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_struct_class_or_union<double> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_struct_class_or_union<double&> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_struct_class_or_union<double&> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_struct_class_or_union<double*> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_struct_class_or_union<int AUnion::*> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_struct_class_or_union<void(*)()> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_struct_class_or_union<void(AUnion::*)()> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_struct_class_or_union<void(AUnion::*)(int)const> ));
 }
 
 void test_boolean_types()

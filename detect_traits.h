@@ -40,14 +40,14 @@ public:					                                         \
 };                                                                               \
 } // namespace detect_traits_impl
 
-#define GENERATE_HAS_MEMBER_TYPE(Type)                 \
-GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                \
-template<typename T>                                   \
-struct TYPE_HIDDEN_VISIBILITY HasMemberType_##Type :   \
-    ::intro::and_< ::intro::IsStructClassOrUnion<T>,   \
-    detect_traits_impl::HasMemberType_Impl##Type<T> >  \
-{                                                      \
-    METAPROGRAMMING_ONLY(HasMemberType_##Type)         \
+#define GENERATE_HAS_MEMBER_TYPE(Type)                   \
+GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                  \
+template<typename T>                                     \
+struct TYPE_HIDDEN_VISIBILITY HasMemberType_##Type :     \
+    ::intro::and_< ::intro::is_struct_class_or_union<T>, \
+    detect_traits_impl::HasMemberType_Impl##Type<T> >    \
+{                                                        \
+    METAPROGRAMMING_ONLY(HasMemberType_##Type)           \
 };
 
 #define GENERATE_HAS_AND_GET_MEMBER_TYPE(Type) \
