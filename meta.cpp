@@ -1291,9 +1291,6 @@ void test_visit()
   TEST(v.visit2);
 }
 
-int fun0() { return 0; }
-void voidfun0() {}
-
 void testfun0()
 {
   typedef int(*type)();
@@ -1303,13 +1300,7 @@ void testfun0()
   STATIC_ASSERT_NOT2(( HasInputType<type, Integer<0> > ));
   STATIC_ASSERT2(( is_same<Integer<0>, GetFunctionArity<type>::type> ));
   STATIC_ASSERT2(( is_same<Array<>, GetInputTypeArray<type>::type> ));
-
-  //TEST(( 0 == ResolveFunctionSignatureType<type>::type()(&fun0)));
-  //ResolveFunctionSignatureType<void(*)()>::type()(&voidfun0);
 }
-
-int fun1(long) { return 0; }
-void voidfun1(long) {}
 
 void testfun1()
 {
@@ -1322,13 +1313,7 @@ void testfun1()
   STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
   STATIC_ASSERT2(( is_same<Integer<1>, GetFunctionArity<type>::type> ));
   STATIC_ASSERT2(( is_same<Array<long>, GetInputTypeArray<type>::type> ));
-
-  //TEST(( 0 == ResolveFunctionSignatureType<type>::type()(&fun1, 1)));
-  //ResolveFunctionSignatureType<void(*)(long)>::type()(&voidfun1, 0);
 }
-
-int fun2(long, float) { return 0; }
-void voidfun2(long, float) {}
 
 void testfun2()
 {
@@ -1343,13 +1328,7 @@ void testfun2()
   STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
   STATIC_ASSERT2(( is_same<Integer<2>, GetFunctionArity<type>::type> ));
   STATIC_ASSERT2(( is_same<Array<long, float>, GetInputTypeArray<type>::type> ));
-
-  //TEST(( 0 == ResolveFunctionSignatureType<type>::type()(&fun2, 1, 2.0f)));
-  //ResolveFunctionSignatureType<void(*)(long, float)>::type()(&voidfun2, 0, 2.0f);
 }
-
-int fun3(long, float, short&) { return 0; }
-void voidfun3(long, float, short&) {}
 
 void testfun3()
 {
@@ -1366,14 +1345,7 @@ void testfun3()
   STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
   STATIC_ASSERT2(( is_same<Integer<3>, GetFunctionArity<type>::type> ));
   STATIC_ASSERT2(( is_same<Array<long, float, short&>, GetInputTypeArray<type>::type> ));
-
-  //short tmp = 0;
-  //TEST(( 0 == ResolveFunctionSignatureType<type>::type()(&fun3, 1, 2.0f, tmp)));
-  //ResolveFunctionSignatureType<void(*)(long, float, short&)>::type()(&voidfun3, 0, 2.0f, tmp);
 }
-
-int fun4(long, float, short&, int const&) { return 0; }
-void voidfun4(long, float, short&, int const&) {}
 
 void testfun4()
 {
@@ -1392,15 +1364,7 @@ void testfun4()
   STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
   STATIC_ASSERT2(( is_same<Integer<4>, GetFunctionArity<type>::type> ));
   STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&>, GetInputTypeArray<type>::type> ));
-
-  //short tmp = 0;
-  //int tmp2 = 1;
-  //TEST(( 0 == ResolveFunctionSignatureType<type>::type()(&fun4, 1, 2.0f, tmp, tmp2)));
-  //ResolveFunctionSignatureType<void(*)(long, float, short&, int const&)>::type()(&voidfun4, 0, 2.0f, tmp, tmp2);
 }
-
-int fun5(long, float, short&, int const&, bool) { return 0; }
-void voidfun5(long, float, short&, int const&, bool) {}
 
 void testfun5()
 {
@@ -1421,11 +1385,141 @@ void testfun5()
   STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
   STATIC_ASSERT2(( is_same<Integer<5>, GetFunctionArity<type>::type> ));
   STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool>, GetInputTypeArray<type>::type> ));
+}
 
-  //short tmp = 0;
-  //int tmp2 = 1;
-  //TEST((0 == ResolveFunctionSignatureType<type>::type()(&fun5, 1, 2.0f, tmp, tmp2, true)));
-  //ResolveFunctionSignatureType<void(*)(long, float, short&, int const&, bool)>::type()(&voidfun5, 0, 2.0f, tmp, tmp2, true);
+void testfun6()
+{
+  typedef int(*type)(long, float, short&, int const&, bool, int volatile*&);
+  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
+  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<6> > ));
+  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
+  STATIC_ASSERT2(( is_same<Integer<6>, GetFunctionArity<type>::type> ));
+  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&>, GetInputTypeArray<type>::type> ));
+}
+
+void testfun7()
+{
+  typedef int(*type)(long, float, short&, int const&, bool, int volatile*&, true_type&);
+  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
+  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<7> > ));
+  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
+  STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
+  STATIC_ASSERT2(( is_same<Integer<7>, GetFunctionArity<type>::type> ));
+  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&>, GetInputTypeArray<type>::type> ));
+}
+
+void testfun8()
+{
+  typedef int(*type)(long, float, short&, int const&, bool, int volatile*&, true_type&, void*);
+  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<7> > ));
+  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<8> > ));
+  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
+  STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
+  STATIC_ASSERT2(( is_same<void*, GetInputType<type, Integer<7> >::type> ));
+  STATIC_ASSERT2(( is_same<Integer<8>, GetFunctionArity<type>::type> ));
+  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&, void*>, GetInputTypeArray<type>::type> ));
+}
+
+void testfun9()
+{
+  typedef int(*type)(long, float, short&, int const&, bool, int volatile*&, true_type&, void*, char(&)[10]);
+  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<7> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<8> > ));
+  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<9> > ));
+  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
+  STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
+  STATIC_ASSERT2(( is_same<void*, GetInputType<type, Integer<7> >::type> ));
+  STATIC_ASSERT2(( is_same<char(&)[10], GetInputType<type, Integer<8> >::type> ));
+  STATIC_ASSERT2(( is_same<Integer<9>, GetFunctionArity<type>::type> ));
+  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&, void*, char(&)[10]>, GetInputTypeArray<type>::type> ));
+}
+
+void testfun10()
+{
+  typedef int(*type)(long, float, short&, int const&, bool, int volatile*&, true_type&, void*, char(&)[10], void(*)());
+  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<7> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<8> > ));
+  STATIC_ASSERT2(( HasInputType<type, Integer<9> > ));
+  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<10> > ));
+  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
+  STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
+  STATIC_ASSERT2(( is_same<void*, GetInputType<type, Integer<7> >::type> ));
+  STATIC_ASSERT2(( is_same<char(&)[10], GetInputType<type, Integer<8> >::type> ));
+  STATIC_ASSERT2(( is_same<void(*)(), GetInputType<type, Integer<9> >::type> ));
+  STATIC_ASSERT2(( is_same<Integer<10>, GetFunctionArity<type>::type> ));
+  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&, void*, char(&)[10], void(*)()>, GetInputTypeArray<type>::type> ));
 }
 
 struct MyFunctionObject
@@ -1559,6 +1653,22 @@ struct MemberFunctionTest
 
   void voidFun4(int, char&, double (&)[], int const volatile (&)[10]) const {}
   int intFun4(int, char&, double (&)[], int const volatile (&)[10]) { return 0; }
+
+  void voidFun5(int, char&, double (&)[], int const volatile (&)[10], void(*)()) const {}
+  int intFun5(int, char&, double (&)[], int const volatile (&)[10], void(*)()) { return 0; }
+
+  void voidFun6(int, char&, double (&)[], int const volatile (&)[10], void(*)(), long) const {}
+  int intFun6(int, char&, double (&)[], int const volatile (&)[10], void(*)(), long) { return 0; }
+
+  void voidFun7(int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float) const {}
+  int intFun7(int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float) { return 0; }
+
+  void voidFun8(int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool) const {}
+  int intFun8(int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool) { return 0; }
+
+  void voidFun9(int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool, int) const {}
+  int intFun9(int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool, int) { return 0; }
+
 };
 
 template<typename ReturnType, typename Input0, typename T>
@@ -1572,9 +1682,6 @@ void testMemberFun0(T func)
   STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
   STATIC_ASSERT(( is_same<Integer<1>, typename GetFunctionArity<T>::type > ));
   STATIC_ASSERT(( is_same<Array<Input0>, typename GetInputTypeArray<T>::type> ));
-
-  //MemberFunctionTest a;
-  //typename ResolveFunctionSignatureType<T>::type()(func, a);
 }
 
 template<typename ReturnType, typename Input0, typename T>
@@ -1590,9 +1697,6 @@ void testMemberFun1(T func)
   STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
   STATIC_ASSERT(( is_same<Integer<2>, typename GetFunctionArity<T>::type > ));
   STATIC_ASSERT(( is_same<Array<Input0, int>, typename GetInputTypeArray<T>::type> ));
-
-  //MemberFunctionTest a;
-  //typename ResolveFunctionSignatureType<T>::type()(func, a, 1);
 }
 
 template<typename ReturnType, typename Input0, typename T>
@@ -1610,10 +1714,6 @@ void testMemberFun2(T func)
   STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
   STATIC_ASSERT(( is_same<Integer<3>, typename GetFunctionArity<T>::type > ));
   STATIC_ASSERT(( is_same<Array<Input0, int, char&>, typename GetInputTypeArray<T>::type> ));
-
-  //char tmp = 'a';
-  //MemberFunctionTest a;
-  //typename ResolveFunctionSignatureType<T>::type()(func, a, 1, tmp);
 }
 
 extern double TEST_DOUBLE_ARRAY[];
@@ -1635,10 +1735,6 @@ void testMemberFun3(T func)
   STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
   STATIC_ASSERT(( is_same<Integer<4>, typename GetFunctionArity<T>::type > ));
   STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[]>, typename GetInputTypeArray<T>::type> ));
-
-  //char tmp = 'a';
-  //MemberFunctionTest a;
-  //typename ResolveFunctionSignatureType<T>::type()(func, a, 1, tmp, TEST_DOUBLE_ARRAY);
 }
 
 template<typename ReturnType, typename Input0, typename T>
@@ -1660,11 +1756,141 @@ void testMemberFun4(T func)
   STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
   STATIC_ASSERT(( is_same<Integer<5>, typename GetFunctionArity<T>::type > ));
   STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10]>, typename GetInputTypeArray<T>::type> ));
+}
 
-  //char tmp = 'a';
-  //int volatile const tmp2[10] = {};
-  //MemberFunctionTest a;
-  //typename ResolveFunctionSignatureType<T>::type()(func, a, 1, tmp, TEST_DOUBLE_ARRAY, tmp2);
+template<typename ReturnType, typename Input0, typename T>
+void testMemberFun5(T func)
+{
+  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
+  STATIC_ASSERT_NOT(( HasInputType<T, Integer<6> > ));
+  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
+  STATIC_ASSERT(( is_same<Integer<6>, typename GetFunctionArity<T>::type > ));
+  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)()>, typename GetInputTypeArray<T>::type> ));
+}
+
+template<typename ReturnType, typename Input0, typename T>
+void testMemberFun6(T func)
+{
+  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
+  STATIC_ASSERT_NOT(( HasInputType<T, Integer<7> > ));
+  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
+  STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
+  STATIC_ASSERT(( is_same<Integer<7>, typename GetFunctionArity<T>::type > ));
+  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long>, typename GetInputTypeArray<T>::type> ));
+}
+
+template<typename ReturnType, typename Input0, typename T>
+void testMemberFun7(T func)
+{
+  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<7> > ));
+  STATIC_ASSERT_NOT(( HasInputType<T, Integer<8> > ));
+  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
+  STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
+  STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
+  STATIC_ASSERT(( is_same<Integer<8>, typename GetFunctionArity<T>::type > ));
+  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float>, typename GetInputTypeArray<T>::type> ));
+}
+
+template<typename ReturnType, typename Input0, typename T>
+void testMemberFun8(T func)
+{
+  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<7> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<8> > ));
+  STATIC_ASSERT_NOT(( HasInputType<T, Integer<9> > ));
+  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
+  STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
+  STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
+  STATIC_ASSERT(( is_same<bool, typename GetInputType<T, Integer<8> >::type> ));
+  STATIC_ASSERT(( is_same<Integer<9>, typename GetFunctionArity<T>::type > ));
+  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool>, typename GetInputTypeArray<T>::type> ));
+}
+
+template<typename ReturnType, typename Input0, typename T>
+void testMemberFun9(T func)
+{
+  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<7> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<8> > ));
+  STATIC_ASSERT(( HasInputType<T, Integer<9> > ));
+  STATIC_ASSERT_NOT(( HasInputType<T, Integer<10> > ));
+  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
+  STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
+  STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
+  STATIC_ASSERT(( is_same<bool, typename GetInputType<T, Integer<8> >::type> ));
+  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<9> >::type> ));
+  STATIC_ASSERT(( is_same<Integer<10>, typename GetFunctionArity<T>::type > ));
+  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool, int>, typename GetInputTypeArray<T>::type> ));
 }
 
 double TEST_DOUBLE_ARRAY[1] = {};
@@ -1677,6 +1903,11 @@ void test_function_signatures()
   testfun3();
   testfun4();
   testfun5();
+  testfun6();
+  testfun7();
+  testfun8();
+  testfun9();
+  testfun10();
 
   MyFunctionObject::test();
   MyRefFunctionObject::test();
@@ -1697,6 +1928,21 @@ void test_function_signatures()
 
   testMemberFun4<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun4);
   testMemberFun4<int, MemberFunctionTest&>(&MemberFunctionTest::intFun4);
+
+  testMemberFun5<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun5);
+  testMemberFun5<int, MemberFunctionTest&>(&MemberFunctionTest::intFun5);
+
+  testMemberFun6<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun6);
+  testMemberFun6<int, MemberFunctionTest&>(&MemberFunctionTest::intFun6);
+
+  testMemberFun7<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun7);
+  testMemberFun7<int, MemberFunctionTest&>(&MemberFunctionTest::intFun7);
+
+  testMemberFun8<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun8);
+  testMemberFun8<int, MemberFunctionTest&>(&MemberFunctionTest::intFun8);
+
+  testMemberFun9<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun9);
+  testMemberFun9<int, MemberFunctionTest&>(&MemberFunctionTest::intFun9);
 }
 
 } // unnamed namespace
