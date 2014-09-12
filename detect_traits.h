@@ -23,7 +23,7 @@ struct TYPE_HIDDEN_VISIBILITY GetMemberType_##Type \
 #define GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                                  \
 namespace detect_traits_impl {                                                   \
 template<typename T>                                                             \
-struct TYPE_HIDDEN_VISIBILITY HasMemberType_Impl##Type 	                         \
+struct TYPE_HIDDEN_VISIBILITY HasMemberType_impl##Type 	                         \
 {                                                                                \
 private:                                                                         \
     typedef char Yes;				   	                         \
@@ -36,7 +36,7 @@ private:                                                                        
     struct TYPE_HIDDEN_VISIBILITY Derived : T, Fallback {};			 \
 public:					                                         \
     typedef typename ::intro::ValueToTrueFalse<sizeof(test<Derived>(0)) == 1>::type type; \
-    METAPROGRAMMING_ONLY(HasMemberType_Impl##Type)                               \
+    METAPROGRAMMING_ONLY(HasMemberType_impl##Type)                               \
 };                                                                               \
 } // namespace detect_traits_impl
 
@@ -45,7 +45,7 @@ GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                  \
 template<typename T>                                     \
 struct TYPE_HIDDEN_VISIBILITY HasMemberType_##Type :     \
     ::intro::and_< ::intro::is_struct_class_or_union<T>, \
-    detect_traits_impl::HasMemberType_Impl##Type<T> >    \
+    detect_traits_impl::HasMemberType_impl##Type<T> >    \
 {                                                        \
     METAPROGRAMMING_ONLY(HasMemberType_##Type)           \
 };
