@@ -5,6 +5,59 @@
 namespace intro {
 namespace {
 
+// Done a copy-paste job of the essence of the Boost static assert scheme.
+// Note design of the static assert mechanism copied from BOOST MPL which carries the
+// following copyright
+//
+// Copyright Aleksey Gurtovoy 2000-2006
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+struct failed {};
+
+// The trick of the assert scheme is to use this type to extract the Predicate type.
+template<typename Pred>
+struct extract_assert_pred;
+
+template<typename Pred>
+struct extract_assert_pred<void(Pred)> { typedef Pred type; };
+
+template<bool C> struct assert { typedef assert type; };
+
+template<typename Pred>
+struct eval_assert {
+    typedef typename extract_assert_pred<Pred>::type P;
+    typedef typename if_<typename P::type,
+        assert<false>,
+        failed ************ not_<P>::************
+    >::type type;
+};
+
+template<typename T>
+T make_T();
+
+template< bool C >
+int assertion_failed( typename assert<C>::type );
+
+#define CAT(x, y) CAT_(x, y)
+#define CAT_(x, y) x ## y
+
+// Note that this mechanism is limited to just one assert per line, for simplicity.
+#define STATIC_ASSERT(Pred) enum { CAT(TEST,__LINE__) = sizeof(assertion_failed<false>(make_T<typename eval_assert<void Pred>::type>())) }
+#define STATIC_ASSERT_NO_TYPENAME(Pred) enum { CAT(TEST, __LINE__) = sizeof(assertion_failed<false>(make_T<eval_assert<void Pred>::type>())) }
+
+// End of Boost MPL code.
+
+STATIC_ASSERT_NO_TYPENAME((true_type));
+
+#ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
+STATIC_ASSERT_NO_TYPENAME((false_type));
+#endif
+
 #define TEST(x) assert((x))
 
 const char EXPECTED_VALUE = 'a';
@@ -34,9 +87,9 @@ void test_array_concat2()
   typedef typename Min<Integer<10>, typename Add<LHSIndex, RHSIndex>::type>::type ConcatArrayLength;
   typedef typename eval_if<is_same<Integer<10>, ConcatArrayLength>, Bool10, ArrayIndex<BoolArray, ConcatArrayLength> >::type ExpectedArray;
 
-  TEST((typename is_same<ExpectedArray,
+  STATIC_ASSERT(( is_same<ExpectedArray,
                          typename ArrayConcat<typename ArrayIndex<BoolArray, LHSIndex>::type,
-	                 typename ArrayIndex<BoolArray, RHSIndex>::type>::type>::type() ));
+	                 typename ArrayIndex<BoolArray, RHSIndex>::type>::type> ));
 }
 
 template<typename LHSIndex>
@@ -57,49 +110,49 @@ void test_array_concat()
 void test_array_split()
 {
   // Use TestArray as at all indices have different types
-  TEST((is_same<Array<Array<>,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<Array<>,
                       TestArray>,
-        ArraySplit<TestArray, Integer<0> >::type>()));
+			     ArraySplit<TestArray, Integer<0> >::type> ));
 
-  TEST((is_same<Array<Array<bool>,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<Array<bool>,
                       Array<unsigned char, signed char, char, short, unsigned short, int, unsigned int, long, unsigned long> >,
-        ArraySplit<TestArray, Integer<1> >::type>()));
+        ArraySplit<TestArray, Integer<1> >::type> ));
 
-  TEST((is_same<Array<Array<bool, unsigned char>,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<Array<bool, unsigned char>,
                 Array<signed char, char, short, unsigned short, int, unsigned int, long, unsigned long> >,
-        ArraySplit<TestArray, Integer<2> >::type>()));
+        ArraySplit<TestArray, Integer<2> >::type> ));
 
-  TEST((is_same<Array<Array<bool, unsigned char, signed char>,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<Array<bool, unsigned char, signed char>,
                       Array<char, short, unsigned short, int, unsigned int, long, unsigned long> >,
-        ArraySplit<TestArray, Integer<3> >::type>()));
+        ArraySplit<TestArray, Integer<3> >::type> ));
 
-  TEST((is_same<Array<Array<bool, unsigned char, signed char, char>,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<Array<bool, unsigned char, signed char, char>,
                       Array<short, unsigned short, int, unsigned int, long, unsigned long> >,
-        ArraySplit<TestArray, Integer<4> >::type>()));
+        ArraySplit<TestArray, Integer<4> >::type> ));
 
-  TEST((is_same<Array<Array<bool, unsigned char, signed char, char,short>,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<Array<bool, unsigned char, signed char, char,short>,
                       Array<unsigned short, int, unsigned int, long, unsigned long> >,
-        ArraySplit<TestArray, Integer<5> >::type>()));
+        ArraySplit<TestArray, Integer<5> >::type> ));
 
-  TEST((is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short>,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short>,
                       Array<int, unsigned int, long, unsigned long> >,
-        ArraySplit<TestArray, Integer<6> >::type>()));
+        ArraySplit<TestArray, Integer<6> >::type> ));
 
-  TEST((is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int>,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int>,
                       Array<unsigned int, long, unsigned long> >,
-        ArraySplit<TestArray, Integer<7> >::type>()));
+        ArraySplit<TestArray, Integer<7> >::type> ));
 
-  TEST((is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int>,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int>,
                       Array<long, unsigned long> >,
-        ArraySplit<TestArray, Integer<8> >::type>()));
+        ArraySplit<TestArray, Integer<8> >::type> ));
 
-  TEST((is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, long>,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, long>,
                       Array<unsigned long> >,
-        ArraySplit<TestArray, Integer<9> >::type>()));
+        ArraySplit<TestArray, Integer<9> >::type> ));
 
-  TEST((is_same<Array<TestArray,
+  STATIC_ASSERT_NO_TYPENAME(( is_same<Array<TestArray,
                       Array<> >,
-        ArraySplit<TestArray, Integer<10> >::type>()));
+        ArraySplit<TestArray, Integer<10> >::type> ));
 }
 
 template<typename Length>
