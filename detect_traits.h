@@ -1,26 +1,11 @@
 #ifndef INCLUDED_DETECT_TRAITS
 #define INCLUDED_DETECT_TRAITS
 
+#ifndef INCLUDED_METAPROGRAMMING
+#include "metaprogramming.h"
+#endif
+
 namespace intro {
-
-struct true_type;
-
-struct false_type;
-
-template<bool value>
-struct ValueToTrueFalse;
-
-template<>
-struct ValueToTrueFalse<0>
-{
-    typedef false_type type;
-};
-
-template<>
-struct ValueToTrueFalse<1> 
-{
-    typedef true_type type;
-};
 
 #define GENERATE_GET_MEMBER_TYPE(Type) \
 template<typename T>                   \
@@ -52,20 +37,6 @@ public:					                                         \
     typedef typename ValueToTrueFalse<sizeof(test<Derived>(0)) == 1>::type type; \
 };                                                                               \
 } // namespace detect_traits_impl
-
-template<typename T>
-struct IsStructClassOrUnion
-{
-private:
-    typedef char Yes;
-    struct No { char x[2]; };
-    template<typename U>
-    static Yes test(char U::*);
-    template<typename U>
-    static No test(...);
-public:
-    typedef typename ValueToTrueFalse<sizeof(test<T>(0)) == 1>::type type;
-};
 
 #define GENERATE_HAS_MEMBER_TYPE(Type)                                     \
 GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                                    \

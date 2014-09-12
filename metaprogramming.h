@@ -62,6 +62,16 @@ inline Ref<T> make_ref(T& x)
 
 namespace impl {
 
+template<bool value>
+struct ValueToTrueFalse_Impl;
+
+template<>
+struct ValueToTrueFalse_Impl<false> : false_type {};
+
+template<>
+struct ValueToTrueFalse_Impl<true> : true_type {};
+
+
 template<typename T>
 struct Successor_impl;
 
@@ -256,16 +266,6 @@ struct decay_ref_impl<Ref<T> >
     typedef T& type;
 };
 
-// Similar type to ValueToTrueFalse
-template<bool value>
-struct BoolToTrueFalse;
-
-template<>
-struct BoolToTrueFalse<0> : false_type {};
-
-template<>
-struct BoolToTrueFalse<1> : true_type {};
-
 template<typename From, typename To>
 struct is_convertible_impl
 {
@@ -276,11 +276,28 @@ private:
   static Yes test(To);
   static From get();
 public:
-  typedef typename BoolToTrueFalse<sizeof(test(get())) ==1>::type type;
+  typedef typename ValueToTrueFalse_Impl<sizeof(test(get())) ==1>::type type;
 };
+
+template<typename T>
+struct IsStructClassOrUnion_Impl
+{
+private:
+    typedef char Yes;
+    struct No { char x[2]; };
+    template<typename U>
+    static Yes test(char U::*);
+    template<typename U>
+    static No test(...);
+public:
+    typedef typename ValueToTrueFalse_Impl<sizeof(test<T>(0)) == 1>::type type;
+};
+
 
 } // namespace impl
 
+template<bool value>
+struct ValueToTrueFalse : impl::ValueToTrueFalse_Impl<value> {};
 
 template<typename T>
 struct Successor : impl::Successor_impl<T> {};
@@ -422,6 +439,9 @@ struct decay_ref : impl::decay_ref_impl<T> {};
 
 template<typename From, typename To>
 struct is_convertible : impl::is_convertible_impl<From, To> {};
+
+template<typename T>
+struct IsStructClassOrUnion : impl::IsStructClassOrUnion_Impl<T> {};
 
 
 struct ArrayNoArg { typedef ArrayNoArg type; };

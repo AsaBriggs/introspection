@@ -1,12 +1,12 @@
 #ifndef INCLUDED_STORAGE
 #define INCLUDED_STORAGE
 
-#ifndef INCLUDED_DETECT_TRAITS
-#include "detect_traits.h"
-#endif
-
 #ifndef INCLUDED_METAPROGRAMMING
 #include "metaprogramming.h"
+#endif
+
+#ifndef INCLUDED_DETECT_TRAITS
+#include "detect_traits.h"
 #endif
 
 namespace intro {

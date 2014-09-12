@@ -351,6 +351,27 @@ void test_is_convertible()
   STATIC_ASSERT_NOT2(( is_convertible<int, ExplicitConvertingConstructor> ));
 }
 
+struct AStruct {};
+class AClass {};
+union AUnion { int a; };
+
+void test_is_struct_class_or_union()
+{
+  STATIC_ASSERT2(( IsStructClassOrUnion<AStruct> ));
+  STATIC_ASSERT2(( IsStructClassOrUnion<AClass> ));
+  STATIC_ASSERT2(( IsStructClassOrUnion<AUnion> ));
+  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void> ));
+  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<bool> ));
+  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double> ));
+  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double&> ));
+  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double&> ));
+  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double*> ));
+  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<int AUnion::*> ));
+  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(*)()> ));
+  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(AUnion::*)()> ));
+  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(AUnion::*)(int)const> ));
+}
+
 void test_boolean_types()
 {
   STATIC_ASSERT2(( true_type ));
@@ -594,13 +615,10 @@ void test_metaprogramming()
   test_logical_operations();
   test_decay_ref();
   test_is_convertible();
+  test_is_struct_class_or_union();
   test_Array();
   test_Apply();
 }
-
-struct AStruct {};
-class AClass {};
-union AUnion { int a; };
 
 GENERATE_HAS_AND_GET_MEMBER_TYPE(TestTypedef)
 
@@ -618,20 +636,6 @@ struct TestTrue2
 
 void test_detect_traits()
 {
-  STATIC_ASSERT2(( IsStructClassOrUnion<AStruct> ));
-  STATIC_ASSERT2(( IsStructClassOrUnion<AClass> ));
-  STATIC_ASSERT2(( IsStructClassOrUnion<AUnion> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<bool> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double&> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double&> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double*> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<int AUnion::*> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(*)()> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(AUnion::*)()> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(AUnion::*)(int)const> ));
-
   STATIC_ASSERT_NOT2(( HasMemberType_TestTypedef<TestFalse> ));
   STATIC_ASSERT_NOT2(( HasMemberType_TestTypedef<void> ));
   STATIC_ASSERT_NOT2(( HasMemberType_TestTypedef<void*> ));
