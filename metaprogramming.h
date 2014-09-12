@@ -911,10 +911,10 @@ struct BindArguments<T<P0, P1, P2, P3, P4, P5, P6, P7, P8, P9>, Environment> :
       typename LookupPlaceholder<P9, Environment>::type>
 {};
 
-// This is the magic of the Apply mechanism. The assumption is that the Airty of the
+// This is the magic of the Apply mechanism. The assumption is that the Arity of the
 // environment is the arity of the metafunction class passed into it. Through this
 // binding we obtain a placeholder expression that can be passed to BindArguments.
-template<typename T, typename EnvironmentAirty>
+template<typename T, typename EnvironmentArity>
 struct AddPlaceholders;
 
 template<typename T>
