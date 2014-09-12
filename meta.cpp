@@ -1,11 +1,13 @@
 #include <cassert>
 #include "storage.h"
+#include "storage_io.h"
 #include "function_signatures.h"
 #include "introspection_assert.h"
 
+#include <iostream>
+
 namespace intro {
 namespace {
-
 
 INTROSPECTION_STATIC_ASSERT2((true_type));
 
@@ -464,7 +466,7 @@ void test_underlying_ref_swap()
 
   INTROSPECTION_STATIC_ASSERT2(( is_same<get_underlying_type<int>::type, int> ));
   {
-    int a = 0 ;
+    int a = 0;
     TEST(&a == &get_underlying_ref(a));
   }
 
@@ -717,6 +719,10 @@ void test_pair()
 
     INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
+
+    std::cout << x << '\n';
+    std::cout << y << '\n';
+    std::cout << z << '\n';
 }
 
 void test_triple()
@@ -746,6 +752,11 @@ void test_triple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
+
+    std::cout << x << '\n';
+    std::cout << y << '\n';
+    std::cout << z << '\n';
+    std::cout << a << '\n';
 }
 
 void test_quadruple()
@@ -782,6 +793,12 @@ void test_quadruple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
+
+    std::cout << x << '\n';
+    std::cout << y << '\n';
+    std::cout << z << '\n';
+    std::cout << a << '\n';
+    std::cout << b << '\n';
 }
 
 void test_quintuple()
@@ -825,6 +842,13 @@ void test_quintuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
+
+    std::cout << x << '\n';
+    std::cout << y << '\n';
+    std::cout << z << '\n';
+    std::cout << a << '\n';
+    std::cout << b << '\n';
+    std::cout << c << '\n';
 }
 
 void test_sextuple()
@@ -875,6 +899,14 @@ void test_sextuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
+
+    std::cout << x << '\n';
+    std::cout << y << '\n';
+    std::cout << z << '\n';
+    std::cout << a << '\n';
+    std::cout << b << '\n';
+    std::cout << c << '\n';
+    std::cout << d << '\n';
 }
 
 void test_septuple()
@@ -932,6 +964,15 @@ void test_septuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
+
+    std::cout << x << '\n';
+    std::cout << y << '\n';
+    std::cout << z << '\n';
+    std::cout << a << '\n';
+    std::cout << b << '\n';
+    std::cout << c << '\n';
+    std::cout << d << '\n';
+    std::cout << e << '\n';
 }
 
 void test_octuple()
@@ -996,6 +1037,16 @@ void test_octuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
+
+    std::cout << x << '\n';
+    std::cout << y << '\n';
+    std::cout << z << '\n';
+    std::cout << a << '\n';
+    std::cout << b << '\n';
+    std::cout << c << '\n';
+    std::cout << d << '\n';
+    std::cout << e << '\n';
+    std::cout << f << '\n';
 }
 
 void test_nonuple()
@@ -1067,6 +1118,17 @@ void test_nonuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<8> >::type> ));
+
+    std::cout << x << '\n';
+    std::cout << y << '\n';
+    std::cout << z << '\n';
+    std::cout << a << '\n';
+    std::cout << b << '\n';
+    std::cout << c << '\n';
+    std::cout << d << '\n';
+    std::cout << e << '\n';
+    std::cout << f << '\n';
+    std::cout << g << '\n';
 }
 
 void test_decuple()
@@ -1145,6 +1207,18 @@ void test_decuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<8> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<9> >::type> ));
+
+    std::cout << x << '\n';
+    std::cout << y << '\n';
+    std::cout << z << '\n';
+    std::cout << a << '\n';
+    std::cout << b << '\n';
+    std::cout << c << '\n';
+    std::cout << d << '\n';
+    std::cout << e << '\n';
+    std::cout << f << '\n';
+    std::cout << g << '\n';
+    std::cout << h << '\n';
 }
 
 void test_storage_reference_types()
