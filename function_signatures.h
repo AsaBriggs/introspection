@@ -357,12 +357,13 @@ struct function_wrapper<CodomainType, Array<ArrayNoArg>, false_type>
     typedef CodomainType codomain_type;
     typedef Array<> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
-
+    /*
     inline codomain_type
     operator()(Func func) const
     {
         return (*func)();
     }
+    */
 };
 
 template<>
@@ -374,11 +375,13 @@ struct function_wrapper<void, Array<ArrayNoArg>, false_type>
     typedef Array<> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func) const
     {
         (*func)();
     }
+    */
 };
 
 
@@ -391,11 +394,13 @@ struct function_wrapper<CodomainType, Array<A, ArrayNoArg>, false_type>
     typedef Array<A> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, A a) const
     {
         return (*func)(a);
     }
+    */
 };
 
 template<typename A>
@@ -407,11 +412,13 @@ struct function_wrapper<void, Array<A, ArrayNoArg>, false_type>
     typedef Array<A> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, A a) const
     {
         (*func)(a);
     }
+    */
 };
 
 template<typename CodomainType, typename A, typename B>
@@ -423,11 +430,13 @@ struct function_wrapper<CodomainType, Array<A, B, ArrayNoArg>, false_type>
     typedef Array<A, B> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, A a, B b) const
     {
         return (*func)(a, b);
     }
+    */
 };
 
 template<typename A, typename B>
@@ -439,11 +448,13 @@ struct function_wrapper<void, Array<A, B, ArrayNoArg>, false_type>
     typedef Array<A, B> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, A a, B b) const
     {
         (*func)(a, b);
     }
+    */
 };
 
 template<typename CodomainType, typename A, typename B, typename C>
@@ -455,11 +466,13 @@ struct function_wrapper<CodomainType, Array<A, B, C, ArrayNoArg>, false_type>
     typedef Array<A, B, C> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, A a, B b, C c) const
     {
         return (*func)(a, b, c);
     }
+    */
 };
 
 template<typename A, typename B, typename C>
@@ -471,11 +484,13 @@ struct function_wrapper<void, Array<A, B, C, ArrayNoArg>, false_type>
     typedef Array<A, B, C> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, A a, B b, C c) const
     {
         (*func)(a, b, c);
     }
+    */
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D>
@@ -487,11 +502,13 @@ struct function_wrapper<CodomainType, Array<A, B, C, D, ArrayNoArg>, false_type>
     typedef Array<A, B, C, D> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, A a, B b, C c, D d) const
     {
         return (*func)(a, b, c, d);
     }
+    */
 };
 
 template<typename A, typename B, typename C, typename D>
@@ -503,11 +520,13 @@ struct function_wrapper<void, Array<A, B, C, D, ArrayNoArg>, false_type>
     typedef Array<A, B, C, D> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, A a, B b, C c, D d) const
     {
         (*func)(a, b, c, d);
     }
+    */
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
@@ -519,11 +538,13 @@ struct function_wrapper<CodomainType, Array<A, B, C, D, E, ArrayNoArg>, false_ty
     typedef Array<A, B, C, D, E> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, A a, B b, C c, D d, E e) const
     {
       return (*func)(a, b, c, d, e);
     }
+    */
 };
 
 template<typename A, typename B, typename C, typename D, typename E>
@@ -535,11 +556,13 @@ struct function_wrapper<void, Array<A, B, C, D, E, ArrayNoArg>, false_type>
     typedef Array<A, B, C, D, E> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, A a, B b, C c, D d, E e) const
     {
         (*func)(a, b, c, d, e);
     }
+    */
 };
 
 template<typename R, typename C>
@@ -551,11 +574,13 @@ struct function_wrapper<R, Array<C, ArrayNoArg>, true_type>
     typedef R codomain_type;
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, C c) const
     {
         return (c.*func)();
     }
+    */
 };
 
 template<typename C>
@@ -567,11 +592,13 @@ struct function_wrapper<void, Array<C, ArrayNoArg>, true_type>
     typedef void codomain_type;
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, C c) const
     {
         (c.*func)();
     }
+    */
 };
 
 
@@ -584,11 +611,13 @@ struct function_wrapper<R, Array<C, U, ArrayNoArg>, true_type>
     typedef R codomain_type;
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, C c, U u) const
     {
         return (c.*func)(u);
     }
+    */
 };
 
 template<typename C, typename U>
@@ -600,11 +629,13 @@ struct function_wrapper<void, Array<C, U, ArrayNoArg>, true_type>
     typedef void codomain_type;
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, C c, U u) const
     {
         (c.*func)(u);
     }
+    */
 };
 
 
@@ -617,11 +648,13 @@ struct function_wrapper<R, Array<C, U, V, ArrayNoArg>, true_type>
     typedef R codomain_type;
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, C c, U u, V v) const
     {
         return (c.*func)(u, v);
     }
+    */
 };
 
 template<typename C, typename U, typename V>
@@ -633,11 +666,13 @@ struct function_wrapper<void, Array<C, U, V, ArrayNoArg>, true_type>
     typedef void codomain_type;
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, C c, U u, V v) const
     {
         (c.*func)(u, v);
     }
+    */
 };
 
 
@@ -650,11 +685,13 @@ struct function_wrapper<R, Array<C, U, V, W, ArrayNoArg>, true_type>
     typedef R codomain_type;
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, C c, U u, V v, W w) const
     {
         return (c.*func)(u, v, w);
     }
+    */
 };
 
 template<typename C, typename U, typename V, typename W>
@@ -666,11 +703,13 @@ struct function_wrapper<void, Array<C, U, V, W, ArrayNoArg>, true_type>
     typedef void codomain_type;
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, C c, U u, V v, W w) const
     {
         (c.*func)(u, v, w);
     }
+    */
 };
 
 
@@ -683,11 +722,13 @@ struct function_wrapper<R, Array<C, U, V, W, X, ArrayNoArg>, true_type>
     typedef R codomain_type;
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, C c, U u, V v, W w, X x) const
     {
         return (c.*func)(u, v, w, x);
     }
+    */
 };
 
 template<typename C, typename U, typename V, typename W, typename X>
@@ -699,11 +740,13 @@ struct function_wrapper<void, Array<C, U, V, W, X, ArrayNoArg>, true_type>
     typedef void codomain_type;
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
+    /*
     inline codomain_type
     operator()(Func func, C c, U u, V v, W w, X x) const
     {
         (c.*func)(u, v, w, x);
     }
+    */
 };
 
 } // namespace impl
