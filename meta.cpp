@@ -392,6 +392,12 @@ void test_integer_operations()
 {
   TEST( Integer<123>() == 123 );
 
+  STATIC_ASSERT2(( ValueToTrueFalse<true> ));
+  STATIC_ASSERT2(( ValueToTrueFalse<1> ));
+
+  STATIC_ASSERT_NOT2(( ValueToTrueFalse<false> ));
+  STATIC_ASSERT_NOT2(( ValueToTrueFalse<0> ));
+
   STATIC_ASSERT2(( is_same<Integer<1>, Successor<Integer<0> >::type > ));
   STATIC_ASSERT2(( is_same<Integer<4>, Successor<Integer<3> >::type > ));
   STATIC_ASSERT2(( is_same<Integer<-2>, Successor<Integer<-3> >::type > ));
