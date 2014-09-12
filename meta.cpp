@@ -1,74 +1,17 @@
 #include <cassert>
 #include "storage.h"
 #include "function_signatures.h"
+#include "introspection_assert.h"
 
 namespace intro {
 namespace {
 
-// Done a copy-paste job of the essence of the Boost static assert scheme.
-// Note design of the static assert mechanism copied from BOOST MPL which carries the
-// following copyright
-//
-// Copyright Aleksey Gurtovoy 2000-2006
-//
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
-// http://www.boost.org/LICENSE_1_0.txt)
-//
-// See http://www.boost.org/libs/mpl for documentation.
 
-struct failed {};
-
-// The trick of the assert scheme is to use this type to extract the Predicate type.
-template<typename Pred>
-struct extract_assert_pred;
-
-template<typename Pred>
-struct extract_assert_pred<void(Pred)> { typedef Pred type; };
-
-template<bool C> struct assert { typedef assert type; };
-
-template<typename Pred>
-struct eval_assert {
-    typedef typename extract_assert_pred<Pred>::type P;
-    typedef typename if_<typename P::type,
-        assert<false>,
-        failed ************ not_<P>::************
-    >::type type;
-};
-
-template<typename Pred>
-struct eval_assert_not {
-    typedef typename extract_assert_pred<Pred>::type P;
-    typedef typename if_<typename not_<typename P::type>::type,
-        assert<false>,
-        failed ************ not_<P>::************
-    >::type type;
-};
-
-template<typename T>
-T make_T();
-
-template< bool C >
-int assertion_failed( typename assert<C>::type );
-
-#define CAT(x, y) CAT_(x, y)
-#define CAT_(x, y) x ## y
-
-// Note that this mechanism is limited to just one assert per line, for simplicity.
-#define STATIC_ASSERT(Pred) enum { CAT(TEST,__LINE__) = sizeof(assertion_failed<false>(make_T<typename eval_assert<void Pred>::type>())) }
-#define STATIC_ASSERT2(Pred) enum { CAT(TEST, __LINE__) = sizeof(assertion_failed<false>(make_T<eval_assert<void Pred>::type>())) }
-
-#define STATIC_ASSERT_NOT(Pred) enum { CAT(TEST,__LINE__) = sizeof(assertion_failed<false>(make_T<typename eval_assert_not<void Pred>::type>())) }
-#define STATIC_ASSERT_NOT2(Pred) enum { CAT(TEST, __LINE__) = sizeof(assertion_failed<false>(make_T<eval_assert_not<void Pred>::type>())) }
-
-// End of Boost MPL code.
-
-STATIC_ASSERT2((true_type));
+INTROSPECTION_STATIC_ASSERT2((true_type));
 
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
-STATIC_ASSERT2((false_type));
-STATIC_ASSERT_NOT2((true_type));
+INTROSPECTION_STATIC_ASSERT2((false_type));
+INTROSPECTION_STATIC_ASSERT_NOT2((true_type));
 
 struct Test_METAPROGRAMMING_ONLY
 {
@@ -107,7 +50,7 @@ void test_array_concat2()
   typedef typename Min<Integer<10>, typename Add<LHSIndex, RHSIndex>::type>::type ConcatArrayLength;
   typedef typename eval_if<is_same<Integer<10>, ConcatArrayLength>, Bool10, ArrayIndex<BoolArray, ConcatArrayLength> >::type ExpectedArray;
 
-  STATIC_ASSERT(( is_same<ExpectedArray,
+  INTROSPECTION_STATIC_ASSERT(( is_same<ExpectedArray,
                          typename ArrayConcat<typename ArrayIndex<BoolArray, LHSIndex>::type,
 	                 typename ArrayIndex<BoolArray, RHSIndex>::type>::type> ));
 }
@@ -130,47 +73,47 @@ void test_array_concat()
 void test_array_split()
 {
   // Use TestArray as at all indices have different types
-  STATIC_ASSERT2(( is_same<Array<Array<>,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Array<>,
                       TestArray>,
 			     ArraySplit<TestArray, Integer<0> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<Array<bool>,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Array<bool>,
                       Array<unsigned char, signed char, char, short, unsigned short, int, unsigned int, long, unsigned long> >,
         ArraySplit<TestArray, Integer<1> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char>,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char>,
                 Array<signed char, char, short, unsigned short, int, unsigned int, long, unsigned long> >,
         ArraySplit<TestArray, Integer<2> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char>,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char>,
                       Array<char, short, unsigned short, int, unsigned int, long, unsigned long> >,
         ArraySplit<TestArray, Integer<3> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char>,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char>,
                       Array<short, unsigned short, int, unsigned int, long, unsigned long> >,
         ArraySplit<TestArray, Integer<4> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char,short>,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char,short>,
                       Array<unsigned short, int, unsigned int, long, unsigned long> >,
         ArraySplit<TestArray, Integer<5> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short>,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short>,
                       Array<int, unsigned int, long, unsigned long> >,
         ArraySplit<TestArray, Integer<6> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int>,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int>,
                       Array<unsigned int, long, unsigned long> >,
         ArraySplit<TestArray, Integer<7> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int>,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int>,
                       Array<long, unsigned long> >,
         ArraySplit<TestArray, Integer<8> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, long>,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, long>,
                       Array<unsigned long> >,
         ArraySplit<TestArray, Integer<9> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<TestArray,
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<TestArray,
                       Array<> >,
         ArraySplit<TestArray, Integer<10> >::type> ));
 }
@@ -182,7 +125,7 @@ void test_array_reverse2()
   typedef typename ArrayReverse<typename ArrayIndex<SplitArray, Integer<0> >::type>::type ReversedFirst;
   typedef typename ArrayReverse<typename ArrayIndex<SplitArray, Integer<1> >::type>::type ReversedSecond;
   typedef typename ArrayConcat<ReversedSecond, ReversedFirst>::type Result;
-  STATIC_ASSERT(( is_same<ReversedTestArray, Result> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<ReversedTestArray, Result> ));
 }
 
 void test_array_reverse()
@@ -206,11 +149,11 @@ void test_array_rotate()
   // F = 1
   // M = 3
   // L = 6
-  STATIC_ASSERT2(( is_same<Expected, ArrayRotate<TestArray, Integer<1>, Integer<3>, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Expected, ArrayRotate<TestArray, Integer<1>, Integer<3>, Integer<6> >::type> ));
 
   typedef Array<unsigned short, int, unsigned int, long, unsigned long, bool, unsigned char, signed char, char, short> Expected2;
   // rotate test array about index 5, i.e. from bool up to but not including unsigned short is rotated
-  STATIC_ASSERT2(( is_same<Expected2, ArrayRotateDefault<TestArray, Integer<5> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Expected2, ArrayRotateDefault<TestArray, Integer<5> >::type > ));
 }
 
 struct AddOne
@@ -225,8 +168,8 @@ void test_array_transform()
 
   typedef Array<Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9>, Integer<10> > Expected;
 
-  STATIC_ASSERT2(( is_same<ArrayTransform<Integers, AddOne>::type, Expected> ));
-  STATIC_ASSERT2(( is_same<ArrayTransform<Integers, Add<placeholders::_0, Integer<1> > >::type, Expected> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayTransform<Integers, AddOne>::type, Expected> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayTransform<Integers, Add<placeholders::_0, Integer<1> > >::type, Expected> ));
 }
 
 struct AddTogether
@@ -241,8 +184,8 @@ void test_array_zip()
   typedef Array<Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9>, Integer<10> > MoreIntegers;
   typedef Array<Integer<1>, Integer<3>, Integer<5>, Integer<7>, Integer<9>, Integer<11>, Integer<13>, Integer<15>, Integer<17>, Integer<19> > Expected;
 
-  STATIC_ASSERT2(( is_same<ArrayZip<Integers, MoreIntegers, AddTogether>::type, Expected> ));
-  STATIC_ASSERT2(( is_same<ArrayZip<Integers, MoreIntegers, Add<placeholders::_0, placeholders::_1> >::type, Expected> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayZip<Integers, MoreIntegers, AddTogether>::type, Expected> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayZip<Integers, MoreIntegers, Add<placeholders::_0, placeholders::_1> >::type, Expected> ));
 }
 
 typedef Array<placeholders::_9, placeholders::_8, placeholders::_7, placeholders::_6, placeholders::_5, placeholders::_4, placeholders::_3, placeholders::_2, placeholders::_1, placeholders::_0> ReversingArray;
@@ -255,31 +198,31 @@ struct ArrayReverser
 
 void test_Apply()
 {
-  STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<int> >::type> ));
-  STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<int>, short, double, char, float, void >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<int> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<int>, short, double, char, float, void >::type> ));
 
-  STATIC_ASSERT2(( is_same<empty_type<bool>, Apply<empty_type<placeholders::_0>, bool, int, long, float, short>::type> ));
-  STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<placeholders::_1>, bool, int, long, float, short>::type> ));
-  STATIC_ASSERT2(( is_same<empty_type<long>, Apply<empty_type<placeholders::_2>, bool, int, long, float, short>::type> ));
-  STATIC_ASSERT2(( is_same<empty_type<float>, Apply<empty_type<placeholders::_3>, bool, int, long, float, short>::type> ));
-  STATIC_ASSERT2(( is_same<empty_type<short>, Apply<empty_type<placeholders::_4>, bool, int, long, float, short>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<bool>, Apply<empty_type<placeholders::_0>, bool, int, long, float, short>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<placeholders::_1>, bool, int, long, float, short>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<long>, Apply<empty_type<placeholders::_2>, bool, int, long, float, short>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<float>, Apply<empty_type<placeholders::_3>, bool, int, long, float, short>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<short>, Apply<empty_type<placeholders::_4>, bool, int, long, float, short>::type> ));
 
-  STATIC_ASSERT2(( is_same<Integer<3>, Apply<AddTogether, Integer<1>, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<3>, Apply<AddTogether, Integer<1>, Integer<2> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<> >::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int>::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int>::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int>::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int>::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int>::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int>::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int>::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int, int>::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int, int, int>::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int, int, int, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int, int, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, Apply<Array<>, int, int, int, int, int, int, int, int, int, int>::type> ));
 
-  STATIC_ASSERT2(( is_same<ReversedTestArray, Apply_Environment<ReversingArray, TestArray>::type> ));
-  STATIC_ASSERT2(( is_same<ReversedTestArray, Apply_Environment<ArrayReverser, TestArray>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<ReversedTestArray, Apply_Environment<ReversingArray, TestArray>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<ReversedTestArray, Apply_Environment<ArrayReverser, TestArray>::type> ));
 
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
   typedef Apply<empty_type<placeholders::_0> >::type insufficientArguments0;
@@ -331,31 +274,31 @@ struct ExplicitConvertingConstructor
 
 void test_is_convertible()
 {
-  STATIC_ASSERT2(( is_convertible<int, long> ));
-  STATIC_ASSERT2(( is_convertible<int&, int const&> ));
-  STATIC_ASSERT2(( is_convertible<float, double> ));
-  STATIC_ASSERT_NOT2((is_convertible<float, double&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<int, long> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<int&, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<float, double> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2((is_convertible<float, double&> ));
 
-  STATIC_ASSERT2(( is_convertible<float (&)[10], float*> ));
-  STATIC_ASSERT2(( is_convertible<float (&)[], float*> ));
-  STATIC_ASSERT2(( is_convertible<float (&)[], float const*> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<float (&)[10], float*> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<float (&)[], float*> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<float (&)[], float const*> ));
 
-  STATIC_ASSERT_NOT2(( is_convertible<Parent*, Child*> ));
-  STATIC_ASSERT2(( is_convertible<Child*, Parent*> ));
-  STATIC_ASSERT2(( is_convertible<Child*, Parent const*> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_convertible<Parent*, Child*> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<Child*, Parent*> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<Child*, Parent const*> ));
 
-  STATIC_ASSERT2(( is_convertible<FromType, ToType> ));
-  STATIC_ASSERT2(( is_convertible<FromType, ToType const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<FromType, ToType> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<FromType, ToType const&> ));
 
-  STATIC_ASSERT2(( is_convertible<FromType2, ToType> ));
-  STATIC_ASSERT_NOT2(( is_convertible<FromType2, ToType&> ));
-  STATIC_ASSERT2(( is_convertible<FromType2, ToType const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<FromType2, ToType> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_convertible<FromType2, ToType&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<FromType2, ToType const&> ));
 
-  STATIC_ASSERT2(( is_convertible<int, ImplicitConvertingConstructor> ));
-  STATIC_ASSERT2(( is_convertible<int const&, ImplicitConvertingConstructor> ));
-  STATIC_ASSERT2(( is_convertible<int const volatile&, ImplicitConvertingConstructor> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<int, ImplicitConvertingConstructor> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<int const&, ImplicitConvertingConstructor> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_convertible<int const volatile&, ImplicitConvertingConstructor> ));
 
-  STATIC_ASSERT_NOT2(( is_convertible<int, ExplicitConvertingConstructor> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_convertible<int, ExplicitConvertingConstructor> ));
 }
 
 struct AStruct {};
@@ -364,25 +307,25 @@ union AUnion { int a; };
 
 void test_is_struct_class_or_union()
 {
-  STATIC_ASSERT2(( IsStructClassOrUnion<AStruct> ));
-  STATIC_ASSERT2(( IsStructClassOrUnion<AClass> ));
-  STATIC_ASSERT2(( IsStructClassOrUnion<AUnion> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<bool> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double&> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double&> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double*> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<int AUnion::*> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(*)()> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(AUnion::*)()> ));
-  STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(AUnion::*)(int)const> ));
+  INTROSPECTION_STATIC_ASSERT2(( IsStructClassOrUnion<AStruct> ));
+  INTROSPECTION_STATIC_ASSERT2(( IsStructClassOrUnion<AClass> ));
+  INTROSPECTION_STATIC_ASSERT2(( IsStructClassOrUnion<AUnion> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<bool> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double&> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double&> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<double*> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<int AUnion::*> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(*)()> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(AUnion::*)()> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( IsStructClassOrUnion<void(AUnion::*)(int)const> ));
 }
 
 void test_boolean_types()
 {
-  STATIC_ASSERT2(( true_type ));
-  STATIC_ASSERT_NOT2(( false_type ));
+  INTROSPECTION_STATIC_ASSERT2(( true_type ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( false_type ));
   // Tst runtime value
   TEST(true_type());
   TEST(!false_type());
@@ -399,58 +342,58 @@ void test_integer_operations()
 {
   TEST( Integer<123>() == 123 );
 
-  STATIC_ASSERT2(( ValueToTrueFalse<true> ));
-  STATIC_ASSERT2(( ValueToTrueFalse<1> ));
+  INTROSPECTION_STATIC_ASSERT2(( ValueToTrueFalse<true> ));
+  INTROSPECTION_STATIC_ASSERT2(( ValueToTrueFalse<1> ));
 
-  STATIC_ASSERT_NOT2(( ValueToTrueFalse<false> ));
-  STATIC_ASSERT_NOT2(( ValueToTrueFalse<0> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( ValueToTrueFalse<false> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( ValueToTrueFalse<0> ));
 
-  STATIC_ASSERT2(( is_same<Integer<1>, Successor<Integer<0> >::type > ));
-  STATIC_ASSERT2(( is_same<Integer<4>, Successor<Integer<3> >::type > ));
-  STATIC_ASSERT2(( is_same<Integer<-2>, Successor<Integer<-3> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<1>, Successor<Integer<0> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<4>, Successor<Integer<3> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-2>, Successor<Integer<-3> >::type > ));
 
-  STATIC_ASSERT2(( is_same<Integer<-1>, Predecessor<Integer<0> >::type > ));
-  STATIC_ASSERT2(( is_same<Integer<2>, Predecessor<Integer<3> >::type > ));
-  STATIC_ASSERT2(( is_same<Integer<-4>, Predecessor<Integer<-3> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-1>, Predecessor<Integer<0> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<2>, Predecessor<Integer<3> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-4>, Predecessor<Integer<-3> >::type > ));
 
-  STATIC_ASSERT2(( is_same<Integer<0>, Min<Integer<0>, Integer<2> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<3>, Min<Integer<4>, Integer<3> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<-5>, Min<Integer<-5>, Integer<-3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Min<Integer<0>, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<3>, Min<Integer<4>, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Min<Integer<-5>, Integer<-3> >::type> ));
 
-  STATIC_ASSERT2(( is_same<Integer<-5>, Subtract<Integer<0>, Integer<5> >::type > ));
-  STATIC_ASSERT2(( is_same<Integer<42>, Subtract<Integer<47>, Integer<5> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Subtract<Integer<0>, Integer<5> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Subtract<Integer<47>, Integer<5> >::type > ));
 
-  STATIC_ASSERT2(( is_same<Integer<-5>, Add<Integer<0>, Integer<-5> >::type > ));
-  STATIC_ASSERT2(( is_same<Integer<42>, Add<Integer<37>, Integer<5> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Add<Integer<0>, Integer<-5> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Add<Integer<37>, Integer<5> >::type > ));
 }
 
 void test_boolean_operations()
 {
-  STATIC_ASSERT_NOT2(( not_<true_type> ));
-  STATIC_ASSERT2(( not_<false_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( not_<true_type> ));
+  INTROSPECTION_STATIC_ASSERT2(( not_<false_type> ));
 
-  STATIC_ASSERT_NOT2(( or_<false_type, false_type> ));
-  STATIC_ASSERT2(( or_<false_type, true_type> ));
-  STATIC_ASSERT2(( or_<true_type, false_type> ));
-  STATIC_ASSERT2(( or_<true_type, true_type> ));
-  STATIC_ASSERT_NOT2(( or_<false_type, false_type, false_type> ));
-  STATIC_ASSERT2(( or_<false_type, true_type, true_type> ));
-  STATIC_ASSERT2(( or_<true_type, false_type, true_type> ));
-  STATIC_ASSERT2(( or_<true_type, true_type, false_type> ));
-  STATIC_ASSERT2(( or_<true_type, true_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( or_<false_type, false_type> ));
+  INTROSPECTION_STATIC_ASSERT2(( or_<false_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT2(( or_<true_type, false_type> ));
+  INTROSPECTION_STATIC_ASSERT2(( or_<true_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( or_<false_type, false_type, false_type> ));
+  INTROSPECTION_STATIC_ASSERT2(( or_<false_type, true_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT2(( or_<true_type, false_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT2(( or_<true_type, true_type, false_type> ));
+  INTROSPECTION_STATIC_ASSERT2(( or_<true_type, true_type, true_type> ));
 
-  STATIC_ASSERT_NOT2(( and_<false_type, false_type> ));
-  STATIC_ASSERT_NOT2(( and_<false_type, true_type> ));
-  STATIC_ASSERT_NOT2(( and_<true_type, false_type> ));
-  STATIC_ASSERT2(( and_<true_type, true_type> ));
-  STATIC_ASSERT_NOT2(( and_<false_type, false_type, false_type> ));
-  STATIC_ASSERT_NOT2(( and_<false_type, false_type, true_type> ));
-  STATIC_ASSERT_NOT2(( and_<false_type, true_type, false_type> ));
-  STATIC_ASSERT_NOT2(( and_<true_type, false_type, false_type> ));
-  STATIC_ASSERT_NOT2(( and_<false_type, true_type, true_type> ));
-  STATIC_ASSERT_NOT2(( and_<true_type, false_type, true_type> ));
-  STATIC_ASSERT_NOT2(( and_<true_type, true_type, false_type> ));
-  STATIC_ASSERT2(( and_<true_type, true_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( and_<false_type, false_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( and_<false_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( and_<true_type, false_type> ));
+  INTROSPECTION_STATIC_ASSERT2(( and_<true_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( and_<false_type, false_type, false_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( and_<false_type, false_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( and_<false_type, true_type, false_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( and_<true_type, false_type, false_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( and_<false_type, true_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( and_<true_type, false_type, true_type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( and_<true_type, true_type, false_type> ));
+  INTROSPECTION_STATIC_ASSERT2(( and_<true_type, true_type, true_type> ));
 }
 
 template<typename T>
@@ -475,51 +418,51 @@ void test_enable_disable_if()
 }
 void test_is_reference()
 {
-  STATIC_ASSERT_NOT2(( is_reference<int> ));
-  STATIC_ASSERT2(( is_reference<int&> ));
-  STATIC_ASSERT2(( is_reference<int(&)[2]> ));
-  STATIC_ASSERT2(( is_reference<int(&)[]> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( is_reference<int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_reference<int&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_reference<int(&)[2]> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_reference<int(&)[]> ));
 }
 
 void test_is_same()
 {
-  STATIC_ASSERT2(( is_same<int, identity_type<identity_type<int> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int, identity_type<identity_type<int> >::type > ));
 
-  STATIC_ASSERT2(( is_same<if_<true_type, int, void>::type, int> ));
-  STATIC_ASSERT2(( is_same<if_<false_type, void, int>::type, int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<if_<true_type, int, void>::type, int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<if_<false_type, void, int>::type, int> ));
 
-  STATIC_ASSERT2(( is_same<eval_if<true_type, identity_type<int>, void>::type, int> ));
-  STATIC_ASSERT2(( is_same<eval_if<false_type, void, identity_type<int> >::type, int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<eval_if<true_type, identity_type<int>, void>::type, int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<eval_if<false_type, void, identity_type<int> >::type, int> ));
 
-  STATIC_ASSERT2(( is_same<make_const_ref<int>::type, int const&> ));
-  STATIC_ASSERT2(( is_same<make_const_ref<int const>::type, int const&> ));
-  STATIC_ASSERT2(( is_same<make_const_ref<int const&>::type, int const&> ));
-  STATIC_ASSERT2(( is_same<make_const_ref<int &>::type, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int>::type, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int const>::type, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int const&>::type, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int &>::type, int const&> ));
 
-  STATIC_ASSERT2(( is_same<make_const_ref<int volatile >::type, int volatile const&> ));
-  STATIC_ASSERT2(( is_same<make_const_ref<int volatile const>::type, int volatile const&> ));
-  STATIC_ASSERT2(( is_same<make_const_ref<int volatile const&>::type, int volatile const&> ));
-  STATIC_ASSERT2(( is_same<make_const_ref<int volatile &>::type, int volatile const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int volatile >::type, int volatile const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int volatile const>::type, int volatile const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int volatile const&>::type, int volatile const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int volatile &>::type, int volatile const&> ));
 }
 
 void test_deduce_input_type()
 {
-  STATIC_ASSERT2(( is_same<int&, deduce_input_type<int&>::type > ));
-  STATIC_ASSERT2(( is_same<int, deduce_input_type<int const&>::type > ));
-  STATIC_ASSERT2(( is_same<int, deduce_input_type<int>::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int&, deduce_input_type<int&>::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int, deduce_input_type<int const&>::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int, deduce_input_type<int>::type > ));
 }
 
 void test_parameter_type()
 {
-  STATIC_ASSERT2(( is_same<parameter_type<int>::type, int const&> ));
-  STATIC_ASSERT2(( is_same<parameter_type<int&>::type, int&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<parameter_type<int>::type, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<parameter_type<int&>::type, int&> ));
 }
 
 void test_underlying_ref_swap()
 {
-  STATIC_ASSERT2(( is_same<underlying_type<int>::type, int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<underlying_type<int>::type, int> ));
 
-  STATIC_ASSERT2(( is_same<get_underlying_type<int>::type, int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<get_underlying_type<int>::type, int> ));
   {
     int a = 0 ;
     TEST(&a == &get_underlying_ref(a));
@@ -558,18 +501,18 @@ void test_logical_operations()
 
 void test_decay_ref()
 {
-  STATIC_ASSERT2(( is_same<decay_ref<int>::type, int> ));
-  STATIC_ASSERT2(( is_same<decay_ref<int&>::type, int&> ));
-  STATIC_ASSERT2(( is_same<decay_ref<int const&>::type, int const&> ));
-  STATIC_ASSERT2(( is_same<decay_ref<Ref<int> >::type, int&> ));
-  STATIC_ASSERT2(( is_same<decay_ref<Ref<int const> >::type, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<int>::type, int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<int&>::type, int&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<int const&>::type, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<Ref<int> >::type, int&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<Ref<int const> >::type, int const&> ));
 }
 void test_Array()
 {
   // Tests the array is self-evaluating
-  STATIC_ASSERT2(( is_same<TestArray, TestArray::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<TestArray, TestArray::type> ));
 
-#define ARRAY_INDEX_TEST(n, X) STATIC_ASSERT2(( is_same<ArrayIndex<TestArray, Integer<n> >::type, X> ))
+#define ARRAY_INDEX_TEST(n, X) INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayIndex<TestArray, Integer<n> >::type, X> ))
   ARRAY_INDEX_TEST(0, bool);
   ARRAY_INDEX_TEST(1, unsigned char);
   ARRAY_INDEX_TEST(2, signed char);
@@ -582,17 +525,17 @@ void test_Array()
   ARRAY_INDEX_TEST(9, unsigned long);
 #undef ARRAY_INDEX_TEST
 
-  STATIC_ASSERT2(( is_same<Integer<0>, ArraySize<Bool0>::type> ));
-  STATIC_ASSERT2(( is_same<Integer<1>, ArraySize<Bool1>::type> ));
-  STATIC_ASSERT2(( is_same<Integer<2>, ArraySize<Bool2>::type> ));
-  STATIC_ASSERT2(( is_same<Integer<3>, ArraySize<Bool3>::type> ));
-  STATIC_ASSERT2(( is_same<Integer<4>, ArraySize<Bool4>::type> ));
-  STATIC_ASSERT2(( is_same<Integer<5>, ArraySize<Bool5>::type> ));
-  STATIC_ASSERT2(( is_same<Integer<6>, ArraySize<Bool6>::type> ));
-  STATIC_ASSERT2(( is_same<Integer<7>, ArraySize<Bool7>::type> ));
-  STATIC_ASSERT2(( is_same<Integer<8>, ArraySize<Bool8>::type> ));
-  STATIC_ASSERT2(( is_same<Integer<9>, ArraySize<Bool9>::type> ));
-  STATIC_ASSERT2(( is_same<Integer<10>, ArraySize<Bool10>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, ArraySize<Bool0>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<1>, ArraySize<Bool1>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<2>, ArraySize<Bool2>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<3>, ArraySize<Bool3>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<4>, ArraySize<Bool4>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<5>, ArraySize<Bool5>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<6>, ArraySize<Bool6>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<7>, ArraySize<Bool7>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<8>, ArraySize<Bool8>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<9>, ArraySize<Bool9>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<10>, ArraySize<Bool10>::type> ));
 
   test_array_concat<Integer<0> >();
   test_array_concat<Integer<1> >();
@@ -649,15 +592,15 @@ struct TestTrue2
 
 void test_detect_traits()
 {
-  STATIC_ASSERT_NOT2(( HasMemberType_TestTypedef<TestFalse> ));
-  STATIC_ASSERT_NOT2(( HasMemberType_TestTypedef<void> ));
-  STATIC_ASSERT_NOT2(( HasMemberType_TestTypedef<void*> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasMemberType_TestTypedef<TestFalse> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasMemberType_TestTypedef<void> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasMemberType_TestTypedef<void*> ));
 
-  STATIC_ASSERT2(( HasMemberType_TestTypedef<TestTrue> ));
-  STATIC_ASSERT2(( is_same<int, GetMemberType_TestTypedef<TestTrue>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasMemberType_TestTypedef<TestTrue> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetMemberType_TestTypedef<TestTrue>::type> ));
 
-  STATIC_ASSERT2(( HasMemberType_TestTypedef<TestTrue2> ));
-  STATIC_ASSERT2(( is_same<int volatile const&, GetMemberType_TestTypedef<TestTrue2>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasMemberType_TestTypedef<TestTrue2> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int volatile const&, GetMemberType_TestTypedef<TestTrue2>::type> ));
 }
 
 void test_empty()
@@ -748,10 +691,10 @@ void test_singleton()
 
     test_generated_operations(x, y);
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<1> > ));
 
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
 }
 
 void test_pair()
@@ -768,12 +711,12 @@ void test_pair()
     type z = {1, 4.0f};
     test_generated_operations(x, z);
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<2> > ));
 
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
 }
 
 void test_triple()
@@ -795,14 +738,14 @@ void test_triple()
     type a = {1, 3.5f, 'b'};
     test_generated_operations(x, a);
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<3> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<3> > ));
 
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
-    STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
 }
 
 void test_quadruple()
@@ -829,16 +772,16 @@ void test_quadruple()
     type b = {1, 3.5f, 'a', true};
     test_generated_operations(x, b);
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<4> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<4> > ));
 
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
-    STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
-    STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
 }
 
 void test_quintuple()
@@ -870,18 +813,18 @@ void test_quintuple()
     type c = {1, 3.5f, 'a', true, 4U};
     test_generated_operations(x, c);
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<5> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<5> > ));
 
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
-    STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
-    STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
-    STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
 }
 
 void test_sextuple()
@@ -918,20 +861,20 @@ void test_sextuple()
     type d = {1, 3.5f, 'a', true, 4U, 100LL};
     test_generated_operations(x, d);
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<6> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<6> > ));
 
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
-    STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
-    STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
-    STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
-    STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
 }
 
 void test_septuple()
@@ -973,22 +916,22 @@ void test_septuple()
     type e = {1, 3.5f, 'a', true, 4U, 100LL, 2.0};
     test_generated_operations(x, e);
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<7> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<7> > ));
 
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
-    STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
-    STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
-    STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
-    STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
-    STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
 }
 
 void test_octuple()
@@ -1035,24 +978,24 @@ void test_octuple()
     type f = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL};
     test_generated_operations(x, f);
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<7> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<8> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<7> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<8> > ));
 
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
-    STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
-    STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
-    STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
-    STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
-    STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
-    STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
 }
 
 void test_nonuple()
@@ -1104,26 +1047,26 @@ void test_nonuple()
     type g = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, true};
     test_generated_operations(x, g);
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<7> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<8> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<9> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<7> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<8> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<9> > ));
 
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
-    STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
-    STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
-    STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
-    STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
-    STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
-    STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
-    STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<8> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<8> >::type> ));
 }
 
 void test_decuple()
@@ -1180,28 +1123,28 @@ void test_decuple()
     type h = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, true, 89};
     test_generated_operations(x, h);
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<7> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<8> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<9> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<10> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<7> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<8> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<9> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<10> > ));
 
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
-    STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
-    STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
-    STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
-    STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
-    STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
-    STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
-    STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<8> >::type> ));
-    STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<9> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<8> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<9> >::type> ));
 }
 
 void test_storage_reference_types()
@@ -1213,10 +1156,10 @@ void test_storage_reference_types()
     (void) x;
     (void) y;
 
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<1> > ));
 
-    STATIC_ASSERT2(( is_same<int&, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<int&, GetIntrospectionItem<type, Integer<0> >::type> ));
 }
 
 struct NumberedStorageType
@@ -1238,30 +1181,30 @@ struct NumberedStorageType
 void test_numbered_introspection()
 {
     typedef NumberedStorageType type;
-    STATIC_ASSERT2(( is_same<Integer<10>, IntrospectionArity<type>::type> ));
-    STATIC_ASSERT2(( is_same<Array<Integer<0>, Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9> >, GenerateIntrospectionItems<type>::type> ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<7> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<8> > ));
-    STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<9> > ));
-    STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<10> > ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<10>, IntrospectionArity<type>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Integer<0>, Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9> >, GenerateIntrospectionItems<type>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<7> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<8> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<9> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<10> > ));
 
-    STATIC_ASSERT2(( is_same<Integer<0>, GetIntrospectionItem<type, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<1>, GetIntrospectionItem<type, Integer<1> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<2>, GetIntrospectionItem<type, Integer<2> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<3>, GetIntrospectionItem<type, Integer<3> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<4>, GetIntrospectionItem<type, Integer<4> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<5>, GetIntrospectionItem<type, Integer<5> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<6>, GetIntrospectionItem<type, Integer<6> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<7>, GetIntrospectionItem<type, Integer<7> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<8>, GetIntrospectionItem<type, Integer<8> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<9>, GetIntrospectionItem<type, Integer<9> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, GetIntrospectionItem<type, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<1>, GetIntrospectionItem<type, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<2>, GetIntrospectionItem<type, Integer<2> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<3>, GetIntrospectionItem<type, Integer<3> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<4>, GetIntrospectionItem<type, Integer<4> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<5>, GetIntrospectionItem<type, Integer<5> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<6>, GetIntrospectionItem<type, Integer<6> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<7>, GetIntrospectionItem<type, Integer<7> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<8>, GetIntrospectionItem<type, Integer<8> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<9>, GetIntrospectionItem<type, Integer<9> >::type> ));
 
 }
 
@@ -1294,232 +1237,232 @@ void test_visit()
 void testfun0()
 {
   typedef int(*type)();
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT2(( is_same<Integer<0>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, GetInputTypeArray<type>::type> ));
 }
 
 void testfun1()
 {
   typedef int(*type)(long);
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<1> > ));
-  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<1>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<long>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<1>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long>, GetInputTypeArray<type>::type> ));
 }
 
 void testfun2()
 {
   typedef int(*type)(long, float);
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<2> > ));
-  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
-  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<2>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<long, float>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<2>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long, float>, GetInputTypeArray<type>::type> ));
 }
 
 void testfun3()
 {
   typedef int(*type)(long, float, short&);
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<3> > ));
-  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
-  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
-  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<3>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<long, float, short&>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<3>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long, float, short&>, GetInputTypeArray<type>::type> ));
 }
 
 void testfun4()
 {
   typedef int(*type)(long, float, short&, int const&);
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<4> > ));
-  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
-  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
-  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
-  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<4>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<4>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&>, GetInputTypeArray<type>::type> ));
 }
 
 void testfun5()
 {
   typedef int(*type)(long, float, short&, int const&, bool);
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<5> > ));
-  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
-  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
-  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
-  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
-  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<5>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<5>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool>, GetInputTypeArray<type>::type> ));
 }
 
 void testfun6()
 {
   typedef int(*type)(long, float, short&, int const&, bool, int volatile*&);
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<6> > ));
-  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
-  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
-  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
-  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
-  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
-  STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<6>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<6> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<6>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&>, GetInputTypeArray<type>::type> ));
 }
 
 void testfun7()
 {
   typedef int(*type)(long, float, short&, int const&, bool, int volatile*&, true_type&);
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<7> > ));
-  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
-  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
-  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
-  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
-  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
-  STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
-  STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<7>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<7> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<7>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&>, GetInputTypeArray<type>::type> ));
 }
 
 void testfun8()
 {
   typedef int(*type)(long, float, short&, int const&, bool, int volatile*&, true_type&, void*);
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<7> > ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<8> > ));
-  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
-  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
-  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
-  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
-  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
-  STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
-  STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
-  STATIC_ASSERT2(( is_same<void*, GetInputType<type, Integer<7> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<8>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&, void*>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<7> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<8> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<void*, GetInputType<type, Integer<7> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<8>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&, void*>, GetInputTypeArray<type>::type> ));
 }
 
 void testfun9()
 {
   typedef int(*type)(long, float, short&, int const&, bool, int volatile*&, true_type&, void*, char(&)[10]);
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<7> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<8> > ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<9> > ));
-  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
-  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
-  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
-  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
-  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
-  STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
-  STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
-  STATIC_ASSERT2(( is_same<void*, GetInputType<type, Integer<7> >::type> ));
-  STATIC_ASSERT2(( is_same<char(&)[10], GetInputType<type, Integer<8> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<9>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&, void*, char(&)[10]>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<7> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<8> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<9> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<void*, GetInputType<type, Integer<7> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<char(&)[10], GetInputType<type, Integer<8> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<9>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&, void*, char(&)[10]>, GetInputTypeArray<type>::type> ));
 }
 
 void testfun10()
 {
   typedef int(*type)(long, float, short&, int const&, bool, int volatile*&, true_type&, void*, char(&)[10], void(*)());
-  STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
-  STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<7> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<8> > ));
-  STATIC_ASSERT2(( HasInputType<type, Integer<9> > ));
-  STATIC_ASSERT_NOT2(( HasInputType<type, Integer<10> > ));
-  STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
-  STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
-  STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
-  STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
-  STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
-  STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
-  STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
-  STATIC_ASSERT2(( is_same<void*, GetInputType<type, Integer<7> >::type> ));
-  STATIC_ASSERT2(( is_same<char(&)[10], GetInputType<type, Integer<8> >::type> ));
-  STATIC_ASSERT2(( is_same<void(*)(), GetInputType<type, Integer<9> >::type> ));
-  STATIC_ASSERT2(( is_same<Integer<10>, GetFunctionArity<type>::type> ));
-  STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&, void*, char(&)[10], void(*)()>, GetInputTypeArray<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<type>::type,int> ));
+  INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<type> ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<6> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<7> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<8> > ));
+  INTROSPECTION_STATIC_ASSERT2(( HasInputType<type, Integer<9> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<type, Integer<10> > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<type, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetInputType<type, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<short&, GetInputType<type, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int const&, GetInputType<type, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetInputType<type, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int volatile*&, GetInputType<type, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<true_type&, GetInputType<type, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<void*, GetInputType<type, Integer<7> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<char(&)[10], GetInputType<type, Integer<8> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<void(*)(), GetInputType<type, Integer<9> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<10>, GetFunctionArity<type>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long, float, short&, int const&, bool, int volatile*&, true_type&, void*, char(&)[10], void(*)()>, GetInputTypeArray<type>::type> ));
 }
 
 struct MyFunctionObject
@@ -1530,14 +1473,14 @@ struct MyFunctionObject
 
   static void test()
   {
-    STATIC_ASSERT2(( is_same<GetCodomainType<MyFunctionObject>::type,int> ));
-    STATIC_ASSERT2(( is_same<DeduceCodomainType<MyFunctionObject>::type,int> ));
-    STATIC_ASSERT2(( FunctionSignatureEnabled<MyFunctionObject> ));
-    STATIC_ASSERT2(( HasInputType<MyFunctionObject, Integer<0> > ));
-    STATIC_ASSERT_NOT2(( HasInputType<MyFunctionObject, Integer<1> > ));
-    STATIC_ASSERT2(( is_same<long, GetInputType<MyFunctionObject, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<1>, GetFunctionArity<MyFunctionObject>::type> ));
-    STATIC_ASSERT2(( is_same<Array<long>, GetInputTypeArray<MyFunctionObject>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<MyFunctionObject>::type,int> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<MyFunctionObject>::type,int> ));
+    INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<MyFunctionObject> ));
+    INTROSPECTION_STATIC_ASSERT2(( HasInputType<MyFunctionObject, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<MyFunctionObject, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetInputType<MyFunctionObject, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<1>, GetFunctionArity<MyFunctionObject>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long>, GetInputTypeArray<MyFunctionObject>::type> ));
   }
 };
 
@@ -1550,14 +1493,14 @@ struct MyRefFunctionObject
 
   static void test()
   {
-    STATIC_ASSERT2(( is_same<GetCodomainType<MyRefFunctionObject>::type,int&> ));
-    STATIC_ASSERT2(( is_same<DeduceCodomainType<MyRefFunctionObject>::type,int&> ));
-    STATIC_ASSERT2(( FunctionSignatureEnabled<MyRefFunctionObject> ));
-    STATIC_ASSERT2(( HasInputType<MyRefFunctionObject, Integer<0> > ));
-    STATIC_ASSERT_NOT2(( HasInputType<MyRefFunctionObject, Integer<1> > ));
-    STATIC_ASSERT2(( is_same<long const&, GetInputType<MyRefFunctionObject, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<1>, GetFunctionArity<MyRefFunctionObject>::type> ));
-    STATIC_ASSERT2(( is_same<Array<long const&>, GetInputTypeArray<MyRefFunctionObject>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<MyRefFunctionObject>::type,int&> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<MyRefFunctionObject>::type,int&> ));
+    INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<MyRefFunctionObject> ));
+    INTROSPECTION_STATIC_ASSERT2(( HasInputType<MyRefFunctionObject, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<MyRefFunctionObject, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long const&, GetInputType<MyRefFunctionObject, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<1>, GetFunctionArity<MyRefFunctionObject>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long const&>, GetInputTypeArray<MyRefFunctionObject>::type> ));
   }
 };
 int MyRefFunctionObject::aValue = 0;
@@ -1590,14 +1533,14 @@ struct MyGenericFunctionObject
   static void test()
   {
     // OK, test out the generic codomain deduction mechanism
-    STATIC_ASSERT2(( is_same<GetCodomainType<MyGenericFunctionObject>::type,CodomainDeduction<ReturnFirstValue<placeholders::_0> > > ));
-    STATIC_ASSERT2(( is_same<DeduceCodomainType<MyGenericFunctionObject, int>::type,int> ));
-    STATIC_ASSERT2(( FunctionSignatureEnabled<MyGenericFunctionObject> ));
-    STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject, Integer<0> > ));
-    STATIC_ASSERT_NOT2(( HasInputType<MyGenericFunctionObject, Integer<1> > ));
-    STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<1>, GetFunctionArity<MyGenericFunctionObject>::type> ));
-    STATIC_ASSERT2(( is_same<Array<template_param>, GetInputTypeArray<MyGenericFunctionObject>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<MyGenericFunctionObject>::type,CodomainDeduction<ReturnFirstValue<placeholders::_0> > > ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<MyGenericFunctionObject, int>::type,int> ));
+    INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<MyGenericFunctionObject> ));
+    INTROSPECTION_STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<MyGenericFunctionObject, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<1>, GetFunctionArity<MyGenericFunctionObject>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Array<template_param>, GetInputTypeArray<MyGenericFunctionObject>::type> ));
   }
 };
 
@@ -1618,22 +1561,22 @@ struct MyGenericFunctionObject2
   static void test()
   {
     // OK, test out the generic codomain deduction mechanism with 5 parameters
-    STATIC_ASSERT2(( is_same<GetCodomainType<MyGenericFunctionObject2>::type,CodomainDeduction<ReturnThirdValue> > ));
-    STATIC_ASSERT2(( is_same<DeduceCodomainType<MyGenericFunctionObject2, char, short, int, float, void*>::type,int> ));
-    STATIC_ASSERT2(( FunctionSignatureEnabled<MyGenericFunctionObject2> ));
-    STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject2, Integer<0> > ));
-    STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject2, Integer<1> > ));
-    STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject2, Integer<2> > ));
-    STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject2, Integer<3> > ));
-    STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject2, Integer<4> > ));
-    STATIC_ASSERT_NOT2(( HasInputType<MyGenericFunctionObject2, Integer<5> > ));
-    STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<0> >::type> ));
-    STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<1> >::type> ));
-    STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<2> >::type> ));
-    STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<3> >::type> ));
-    STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<4> >::type> ));
-    STATIC_ASSERT2(( is_same<Integer<5>, GetFunctionArity<MyGenericFunctionObject2>::type> ));
-    STATIC_ASSERT2(( is_same<Array<template_param, template_param, template_param, template_param, template_param>, GetInputTypeArray<MyGenericFunctionObject2>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<GetCodomainType<MyGenericFunctionObject2>::type,CodomainDeduction<ReturnThirdValue> > ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<DeduceCodomainType<MyGenericFunctionObject2, char, short, int, float, void*>::type,int> ));
+    INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<MyGenericFunctionObject2> ));
+    INTROSPECTION_STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject2, Integer<0> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject2, Integer<1> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject2, Integer<2> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject2, Integer<3> > ));
+    INTROSPECTION_STATIC_ASSERT2(( HasInputType<MyGenericFunctionObject2, Integer<4> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasInputType<MyGenericFunctionObject2, Integer<5> > ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<0> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<1> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<2> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<3> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<template_param, GetInputType<MyGenericFunctionObject2, Integer<4> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<5>, GetFunctionArity<MyGenericFunctionObject2>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Array<template_param, template_param, template_param, template_param, template_param>, GetInputTypeArray<MyGenericFunctionObject2>::type> ));
   }
 };
 
@@ -1674,46 +1617,46 @@ struct MemberFunctionTest
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun0(T func)
 {
-  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
-  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
-  STATIC_ASSERT_NOT(( HasInputType<T, Integer<1> > ));
-  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  STATIC_ASSERT(( is_same<Integer<1>, typename GetFunctionArity<T>::type > ));
-  STATIC_ASSERT(( is_same<Array<Input0>, typename GetInputTypeArray<T>::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<1>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0>, typename GetInputTypeArray<T>::type> ));
 }
 
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun1(T func)
 {
-  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
-  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
-  STATIC_ASSERT_NOT(( HasInputType<T, Integer<2> > ));
-  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
-  STATIC_ASSERT(( is_same<Integer<2>, typename GetFunctionArity<T>::type > ));
-  STATIC_ASSERT(( is_same<Array<Input0, int>, typename GetInputTypeArray<T>::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int>, typename GetInputTypeArray<T>::type> ));
 }
 
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun2(T func)
 {
-  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
-  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
-  STATIC_ASSERT_NOT(( HasInputType<T, Integer<3> > ));
-  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
-  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
-  STATIC_ASSERT(( is_same<Integer<3>, typename GetFunctionArity<T>::type > ));
-  STATIC_ASSERT(( is_same<Array<Input0, int, char&>, typename GetInputTypeArray<T>::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&>, typename GetInputTypeArray<T>::type> ));
 }
 
 extern double TEST_DOUBLE_ARRAY[];
@@ -1721,176 +1664,176 @@ extern double TEST_DOUBLE_ARRAY[];
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun3(T func)
 {
-  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
-  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
-  STATIC_ASSERT_NOT(( HasInputType<T, Integer<4> > ));
-  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
-  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
-  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
-  STATIC_ASSERT(( is_same<Integer<4>, typename GetFunctionArity<T>::type > ));
-  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[]>, typename GetInputTypeArray<T>::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<4>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[]>, typename GetInputTypeArray<T>::type> ));
 }
 
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun4(T func)
 {
-  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
-  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
-  STATIC_ASSERT_NOT(( HasInputType<T, Integer<5> > ));
-  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
-  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
-  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
-  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
-  STATIC_ASSERT(( is_same<Integer<5>, typename GetFunctionArity<T>::type > ));
-  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10]>, typename GetInputTypeArray<T>::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<5>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10]>, typename GetInputTypeArray<T>::type> ));
 }
 
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun5(T func)
 {
-  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
-  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
-  STATIC_ASSERT_NOT(( HasInputType<T, Integer<6> > ));
-  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
-  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
-  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
-  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
-  STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
-  STATIC_ASSERT(( is_same<Integer<6>, typename GetFunctionArity<T>::type > ));
-  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)()>, typename GetInputTypeArray<T>::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<6> > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)()>, typename GetInputTypeArray<T>::type> ));
 }
 
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun6(T func)
 {
-  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
-  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
-  STATIC_ASSERT_NOT(( HasInputType<T, Integer<7> > ));
-  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
-  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
-  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
-  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
-  STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
-  STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
-  STATIC_ASSERT(( is_same<Integer<7>, typename GetFunctionArity<T>::type > ));
-  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long>, typename GetInputTypeArray<T>::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<7> > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long>, typename GetInputTypeArray<T>::type> ));
 }
 
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun7(T func)
 {
-  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
-  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<7> > ));
-  STATIC_ASSERT_NOT(( HasInputType<T, Integer<8> > ));
-  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
-  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
-  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
-  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
-  STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
-  STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
-  STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
-  STATIC_ASSERT(( is_same<Integer<8>, typename GetFunctionArity<T>::type > ));
-  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float>, typename GetInputTypeArray<T>::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<7> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<8> > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float>, typename GetInputTypeArray<T>::type> ));
 }
 
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun8(T func)
 {
-  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
-  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<7> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<8> > ));
-  STATIC_ASSERT_NOT(( HasInputType<T, Integer<9> > ));
-  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
-  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
-  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
-  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
-  STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
-  STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
-  STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
-  STATIC_ASSERT(( is_same<bool, typename GetInputType<T, Integer<8> >::type> ));
-  STATIC_ASSERT(( is_same<Integer<9>, typename GetFunctionArity<T>::type > ));
-  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool>, typename GetInputTypeArray<T>::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<7> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<8> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<9> > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<bool, typename GetInputType<T, Integer<8> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool>, typename GetInputTypeArray<T>::type> ));
 }
 
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun9(T func)
 {
-  STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
-  STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
-  STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<7> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<8> > ));
-  STATIC_ASSERT(( HasInputType<T, Integer<9> > ));
-  STATIC_ASSERT_NOT(( HasInputType<T, Integer<10> > ));
-  STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
-  STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
-  STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
-  STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
-  STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
-  STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
-  STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
-  STATIC_ASSERT(( is_same<bool, typename GetInputType<T, Integer<8> >::type> ));
-  STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<9> >::type> ));
-  STATIC_ASSERT(( is_same<Integer<10>, typename GetFunctionArity<T>::type > ));
-  STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool, int>, typename GetInputTypeArray<T>::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename GetCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<typename DeduceCodomainType<T>::type,ReturnType> ));
+  INTROSPECTION_STATIC_ASSERT(( FunctionSignatureEnabled<T> ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<1> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<2> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<3> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<4> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<5> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<6> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<7> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<8> > ));
+  INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<9> > ));
+  INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<10> > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<bool, typename GetInputType<T, Integer<8> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<9> >::type> ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool, int>, typename GetInputTypeArray<T>::type> ));
 }
 
 double TEST_DOUBLE_ARRAY[1] = {};

@@ -5,11 +5,6 @@
 #include "compiler_specifics.h"
 #endif
 
-// Place this just before the closing brace of the metaprogramming class
-// passing in the class name as the parameter. This prevents accidental
-// construction of a metaprogramming only class.
-#define METAPROGRAMMING_ONLY(x) private: x(); ~x();
-
 namespace intro {
 
 struct TYPE_DEFAULT_VISIBILITY true_type
