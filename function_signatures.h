@@ -9,6 +9,10 @@
 #include "metaprogramming.h"
 #endif
 
+#ifndef INCLUDED_COMPILER_SPECIFICS
+#include "compiler_specifics.h"
+#endif
+
 namespace intro {
 
 // This is the metafunction by which function pointers become associated with a metafunction
@@ -17,24 +21,24 @@ namespace intro {
 // It is assumed that all types using within namespace impl have been passed through this metafunction first
 // to get the appropriate information.
 template<typename T>
-struct ResolveFunctionSignatureType
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType
 {
     typedef T type;
 };
 
-struct no_template_argument { typedef no_template_argument type; };
-struct template_param { typedef template_param type; };
+struct TYPE_HIDDEN_VISIBILITY no_template_argument { typedef no_template_argument type; };
+struct TYPE_HIDDEN_VISIBILITY template_param { typedef template_param type; };
 
 template<typename T>
-struct CodomainDeduction { typedef CodomainDeduction type; };
+struct TYPE_HIDDEN_VISIBILITY CodomainDeduction { typedef CodomainDeduction type; };
 
 // Generates the non-impl functions to forward onto the impl, via the ResolveFunctionSignatureType metafunction.
 #define GENERATE_FUNCTION_SIGNATURE_GETTERS(x)\
 namespace impl{\
 GENERATE_HAS_AND_GET_MEMBER_TYPE(x)\
 }\
-template<typename T> struct Get_##x : impl::GetMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {}; \
-template<typename T> struct Has_##x : impl::HasMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {};\
+template<typename T> struct TYPE_HIDDEN_VISIBILITY Get_##x : impl::GetMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {}; \
+template<typename T> struct TYPE_HIDDEN_VISIBILITY Has_##x : impl::HasMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {};\
 
 GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_0)
 GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_1)
@@ -50,42 +54,42 @@ GENERATE_FUNCTION_SIGNATURE_GETTERS(input_types)
 #undef GENERATE_FUNCTION_SIGNATURE_GETTERS
 
 template<typename T>
-struct GetCodomainType : Get_codomain_type<T> {};
+struct TYPE_HIDDEN_VISIBILITY GetCodomainType : Get_codomain_type<T> {};
 
 template<typename T>
-struct FunctionSignatureEnabled : Has_codomain_type<T> {};
+struct TYPE_HIDDEN_VISIBILITY FunctionSignatureEnabled : Has_codomain_type<T> {};
 
 namespace impl {
 
 template<typename T, typename Index>
-struct HasNumberedInputType;
+struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType;
 
 template<typename T>
-struct HasNumberedInputType<T, Integer<0> > : Has_input_type_0<T> {};
+struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType<T, Integer<0> > : Has_input_type_0<T> {};
 
 template<typename T>
-struct HasNumberedInputType<T, Integer<1> > : Has_input_type_1<T> {};
+struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType<T, Integer<1> > : Has_input_type_1<T> {};
 
 template<typename T>
-struct HasNumberedInputType<T, Integer<2> > : Has_input_type_2<T> {};
+struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType<T, Integer<2> > : Has_input_type_2<T> {};
 
 template<typename T>
-struct HasNumberedInputType<T, Integer<3> > : Has_input_type_3<T> {};
+struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType<T, Integer<3> > : Has_input_type_3<T> {};
 
 template<typename T>
-struct HasNumberedInputType<T, Integer<4> > : Has_input_type_4<T> {};
+struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType<T, Integer<4> > : Has_input_type_4<T> {};
 
 template<typename T>
-struct HasNumberedInputType<T, Integer<5> > : false_type {};
+struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType<T, Integer<5> > : false_type {};
 
 
 template<typename T, typename Index>
-struct HasArrayInputItem :
+struct TYPE_HIDDEN_VISIBILITY HasArrayInputItem :
     not_<is_same<ArrayNoArg, typename ArrayIndex<typename GetMemberType_input_types<T>::type, Index>::type > >
 {};
 
 template<typename T, typename Index>
-struct HasInputType_Impl :
+struct TYPE_HIDDEN_VISIBILITY HasInputType_Impl :
      eval_if<HasMemberType_input_types<T>,
              HasArrayInputItem<T, Index>,
              HasNumberedInputType<T, Index> >
@@ -94,36 +98,36 @@ struct HasInputType_Impl :
 } // namespace impl
 
 template<typename T, typename Index>
-struct HasInputType : impl::HasInputType_Impl<typename ResolveFunctionSignatureType<T>::type, Index>
+struct TYPE_HIDDEN_VISIBILITY HasInputType : impl::HasInputType_Impl<typename ResolveFunctionSignatureType<T>::type, Index>
 {};
 
 
 namespace impl {
 
 template<typename T, typename Index>
-struct GetNumberedInputType_Impl;
+struct TYPE_HIDDEN_VISIBILITY GetNumberedInputType_Impl;
 
 template<typename T>
-struct GetNumberedInputType_Impl<T, Integer<0> > : Get_input_type_0<T> {};
+struct TYPE_HIDDEN_VISIBILITY GetNumberedInputType_Impl<T, Integer<0> > : Get_input_type_0<T> {};
 
 template<typename T>
-struct GetNumberedInputType_Impl<T, Integer<1> > : Get_input_type_1<T> {};
+struct TYPE_HIDDEN_VISIBILITY GetNumberedInputType_Impl<T, Integer<1> > : Get_input_type_1<T> {};
 
 template<typename T>
-struct GetNumberedInputType_Impl<T, Integer<2> > : Get_input_type_2<T> {};
+struct TYPE_HIDDEN_VISIBILITY GetNumberedInputType_Impl<T, Integer<2> > : Get_input_type_2<T> {};
 
 template<typename T>
-struct GetNumberedInputType_Impl<T, Integer<3> > : Get_input_type_3<T> {};
+struct TYPE_HIDDEN_VISIBILITY GetNumberedInputType_Impl<T, Integer<3> > : Get_input_type_3<T> {};
 
 template<typename T>
-struct GetNumberedInputType_Impl<T, Integer<4> > : Get_input_type_4<T> {};
+struct TYPE_HIDDEN_VISIBILITY GetNumberedInputType_Impl<T, Integer<4> > : Get_input_type_4<T> {};
 
 template<typename T, typename Index>
-struct GetArrayInputType_Impl : ArrayIndex<typename GetMemberType_input_types<T>::type, Index>
+struct TYPE_HIDDEN_VISIBILITY GetArrayInputType_Impl : ArrayIndex<typename GetMemberType_input_types<T>::type, Index>
 {};
 
 template<typename T, typename Index>
-struct GetInputType_Impl : eval_if<HasMemberType_input_types<T>,
+struct TYPE_HIDDEN_VISIBILITY GetInputType_Impl : eval_if<HasMemberType_input_types<T>,
     GetArrayInputType_Impl<T, Index>,
     GetNumberedInputType_Impl<T, Index> >
 {};
@@ -131,7 +135,7 @@ struct GetInputType_Impl : eval_if<HasMemberType_input_types<T>,
 } // namespace impl
 
 template<typename T, typename Index>
-struct GetInputType : impl::GetInputType_Impl<typename ResolveFunctionSignatureType<T>::type, Index>
+struct TYPE_HIDDEN_VISIBILITY GetInputType : impl::GetInputType_Impl<typename ResolveFunctionSignatureType<T>::type, Index>
 {};
 
 namespace impl {
@@ -139,17 +143,17 @@ namespace impl {
 // Count upwards; higher Arity is less likely.
 // Note that Indexing is zero based, and that CurrentArity suggests 0..CurrentArity-1(inclusive) are available
 template<typename T, typename CurrentArity>
-struct GetFunctionArityLoop : eval_if<HasNumberedInputType<T, CurrentArity>,
+struct TYPE_HIDDEN_VISIBILITY GetFunctionArityLoop : eval_if<HasNumberedInputType<T, CurrentArity>,
                                       GetFunctionArityLoop<T, typename Successor<CurrentArity>::type>,
                                       CurrentArity>
 {};
 
 template<typename T>
-struct GetFunctionArityArray : ArraySize<typename GetMemberType_input_types<T>::type>
+struct TYPE_HIDDEN_VISIBILITY GetFunctionArityArray : ArraySize<typename GetMemberType_input_types<T>::type>
 {};
 
 template<typename T>
-struct GetFunctionArity_Impl : eval_if<HasMemberType_input_types<T>,
+struct TYPE_HIDDEN_VISIBILITY GetFunctionArity_Impl : eval_if<HasMemberType_input_types<T>,
   GetFunctionArityArray<T>,
   GetFunctionArityLoop<T, Integer<0> > >
 {};
@@ -157,26 +161,26 @@ struct GetFunctionArity_Impl : eval_if<HasMemberType_input_types<T>,
 } // namespace impl
 
 template<typename T>
-struct GetFunctionArity : impl::GetFunctionArity_Impl<typename ResolveFunctionSignatureType<T>::type>
+struct TYPE_HIDDEN_VISIBILITY GetFunctionArity : impl::GetFunctionArity_Impl<typename ResolveFunctionSignatureType<T>::type>
 {};
 
 namespace impl {
 
 template<typename T, typename AccumulatedArray, typename CurrentIndex, typename Arity>
-struct GetInputTypeArrayNumbered;
+struct TYPE_HIDDEN_VISIBILITY GetInputTypeArrayNumbered;
 
 template<typename T, typename AccumulatedArray, typename Arity>
-struct GetInputTypeArrayNumbered<T, AccumulatedArray, Arity, Arity> : AccumulatedArray
+struct TYPE_HIDDEN_VISIBILITY GetInputTypeArrayNumbered<T, AccumulatedArray, Arity, Arity> : AccumulatedArray
 {};
 
 template<typename T, typename AccumulatedArray, typename CurrentIndex, typename Arity>
-struct GetInputTypeArrayNumbered :
+struct TYPE_HIDDEN_VISIBILITY GetInputTypeArrayNumbered :
     GetInputTypeArrayNumbered<T, typename ArrayConcat<AccumulatedArray, Array<typename GetInputType<T, CurrentIndex>::type> >::type, typename Successor<CurrentIndex>::type, Arity>
 {};
 
 
 template<typename T>
-struct GetInputTypeArray_Impl : eval_if<HasMemberType_input_types<T>,
+struct TYPE_HIDDEN_VISIBILITY GetInputTypeArray_Impl : eval_if<HasMemberType_input_types<T>,
     GetMemberType_input_types<T>,
     GetInputTypeArrayNumbered<T, Array<>, Integer<0>, typename GetFunctionArity<T>::type> >
 {};
@@ -184,37 +188,37 @@ struct GetInputTypeArray_Impl : eval_if<HasMemberType_input_types<T>,
 }
 
 template<typename T>
-struct GetInputTypeArray : impl::GetInputTypeArray_Impl<typename ResolveFunctionSignatureType<T>::type> {};
+struct TYPE_HIDDEN_VISIBILITY GetInputTypeArray : impl::GetInputTypeArray_Impl<typename ResolveFunctionSignatureType<T>::type> {};
 
 namespace impl {
 
 template<typename InputType, typename ParamArrayItem>
-struct UseTemplateParamWhereNeeded;
+struct TYPE_HIDDEN_VISIBILITY UseTemplateParamWhereNeeded;
 
 template<>
-struct UseTemplateParamWhereNeeded<template_param, no_template_argument>
+struct TYPE_HIDDEN_VISIBILITY UseTemplateParamWhereNeeded<template_param, no_template_argument>
 {}; // typedef type not defined as this situation is unexpected; a parameter was expected
 
 template<typename ParamArrayItem>
-struct UseTemplateParamWhereNeeded<template_param, ParamArrayItem>
+struct TYPE_HIDDEN_VISIBILITY UseTemplateParamWhereNeeded<template_param, ParamArrayItem>
 {
     typedef ParamArrayItem type;
 };
 
 template<typename InputType>
-struct UseTemplateParamWhereNeeded<InputType, no_template_argument>
+struct TYPE_HIDDEN_VISIBILITY UseTemplateParamWhereNeeded<InputType, no_template_argument>
 {
     typedef InputType type;
 };
 
 template<>
-struct UseTemplateParamWhereNeeded<ArrayNoArg, no_template_argument> : ArrayNoArg {};
+struct TYPE_HIDDEN_VISIBILITY UseTemplateParamWhereNeeded<ArrayNoArg, no_template_argument> : ArrayNoArg {};
 
 template<>
-struct UseTemplateParamWhereNeeded<ArrayNoArg, ArrayNoArg> : ArrayNoArg {};
+struct TYPE_HIDDEN_VISIBILITY UseTemplateParamWhereNeeded<ArrayNoArg, ArrayNoArg> : ArrayNoArg {};
 
 template<typename T, typename CodomainMFC, typename ParamArray, typename Arity>
-struct ApplyCodomainDeduction
+struct TYPE_HIDDEN_VISIBILITY ApplyCodomainDeduction
 {
     typedef typename ArrayZip<typename GetInputTypeArray<T>::type, ParamArray, UseTemplateParamWhereNeeded<placeholders::_0, placeholders::_1> >::type TypesToApply;
     // Must use RationaliseApplyArray to convert the ArrayNoArg into apply_ignore within the first 5 elements of the array.
@@ -223,16 +227,16 @@ struct ApplyCodomainDeduction
 };
 
 template<typename T, typename CodomainType, typename ParamArray>
-struct GetCodomainType_Impl : identity_type<CodomainType> {};
+struct TYPE_HIDDEN_VISIBILITY GetCodomainType_Impl : identity_type<CodomainType> {};
 
 template<typename T, typename U, typename ParamArray>
-struct GetCodomainType_Impl<T, CodomainDeduction<U>, ParamArray> : ApplyCodomainDeduction<T, U, ParamArray, typename GetFunctionArity<T>::type>
+struct TYPE_HIDDEN_VISIBILITY GetCodomainType_Impl<T, CodomainDeduction<U>, ParamArray> : ApplyCodomainDeduction<T, U, ParamArray, typename GetFunctionArity<T>::type>
 {};
 
 } // namespace impl
 
 template<typename T, typename I0=no_template_argument, typename I1=no_template_argument, typename I2=no_template_argument, typename I3=no_template_argument, typename I4=no_template_argument>
-struct DeduceCodomainType : impl::GetCodomainType_Impl<typename ResolveFunctionSignatureType<T>::type,
+struct TYPE_HIDDEN_VISIBILITY DeduceCodomainType : impl::GetCodomainType_Impl<typename ResolveFunctionSignatureType<T>::type,
   typename GetCodomainType<typename ResolveFunctionSignatureType<T>::type>::type, Array<I0, I1, I2, I3, I4> > {};
 
 
@@ -241,116 +245,116 @@ struct DeduceCodomainType : impl::GetCodomainType_Impl<typename ResolveFunctionS
 namespace impl {
 
 template<typename CodomainType, typename InputTypes>
-struct function_pointer_signature;
+struct TYPE_HIDDEN_VISIBILITY function_pointer_signature;
 
 template<typename CodomainType>
-struct function_pointer_signature<CodomainType, Array<ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY function_pointer_signature<CodomainType, Array<ArrayNoArg> >
 {
     typedef CodomainType(*type)();
 };
 
 template<typename CodomainType, typename A>
-struct function_pointer_signature<CodomainType, Array<A, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY function_pointer_signature<CodomainType, Array<A, ArrayNoArg> >
 {
     typedef CodomainType(*type)(A);
 };
 
 template<typename CodomainType, typename A, typename B>
-struct function_pointer_signature<CodomainType, Array<A, B, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY function_pointer_signature<CodomainType, Array<A, B, ArrayNoArg> >
 {
     typedef CodomainType(*type)(A, B);
 };
 
 template<typename CodomainType, typename A, typename B, typename C>
-struct function_pointer_signature<CodomainType, Array<A, B, C, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY function_pointer_signature<CodomainType, Array<A, B, C, ArrayNoArg> >
 {
     typedef CodomainType(*type)(A, B, C);
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D>
-struct function_pointer_signature<CodomainType, Array<A, B, C, D, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY function_pointer_signature<CodomainType, Array<A, B, C, D, ArrayNoArg> >
 {
     typedef CodomainType(*type)(A, B, C, D);
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
-struct function_pointer_signature<CodomainType, Array<A, B, C, D, E, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY function_pointer_signature<CodomainType, Array<A, B, C, D, E, ArrayNoArg> >
 {
     typedef CodomainType(*type)(A, B, C, D, E);
 };
 
 
 template<typename CodomainType, typename InputTypes>
-struct member_function_pointer_signature;
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature;
 
 template<typename CodomainType, typename A>
-struct member_function_pointer_signature<CodomainType, Array<A const&, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const&, ArrayNoArg> >
 {
     typedef CodomainType(A::*type)() const;
 };
 
 template<typename CodomainType, typename A>
-struct member_function_pointer_signature<CodomainType, Array<A&, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A&, ArrayNoArg> >
 {
     typedef CodomainType(A::*type)();
 };
 
 template<typename CodomainType, typename A, typename B>
-struct member_function_pointer_signature<CodomainType, Array<A const&, B, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const&, B, ArrayNoArg> >
 {
     typedef CodomainType(A::*type)(B) const;
 };
 
 template<typename CodomainType, typename A, typename B>
-struct member_function_pointer_signature<CodomainType, Array<A&, B, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A&, B, ArrayNoArg> >
 {
     typedef CodomainType(A::*type)(B);
 };
 
 template<typename CodomainType, typename A, typename B, typename C>
-struct member_function_pointer_signature<CodomainType, Array<A const&, B, C, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const&, B, C, ArrayNoArg> >
 {
     typedef CodomainType(A::*type)(B, C) const;
 };
 
 template<typename CodomainType, typename A, typename B, typename C>
-struct member_function_pointer_signature<CodomainType, Array<A&, B, C, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A&, B, C, ArrayNoArg> >
 {
     typedef CodomainType(A::*type)(B, C);
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D>
-struct member_function_pointer_signature<CodomainType, Array<A const&, B, C, D, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const&, B, C, D, ArrayNoArg> >
 {
     typedef CodomainType(A::*type)(B, C, D) const;
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D>
-struct member_function_pointer_signature<CodomainType, Array<A&, B, C, D, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A&, B, C, D, ArrayNoArg> >
 {
     typedef CodomainType(A::*type)(B, C, D);
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
-struct member_function_pointer_signature<CodomainType, Array<A const&, B, C, D, E, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const&, B, C, D, E, ArrayNoArg> >
 {
     typedef CodomainType(A::*type)(B, C, D, E) const;
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
-struct member_function_pointer_signature<CodomainType, Array<A&, B, C, D, E, ArrayNoArg> >
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A&, B, C, D, E, ArrayNoArg> >
 {
     typedef CodomainType(A::*type)(B, C, D, E);
 };
 
 
 template<typename CodomainType, typename InputTypes, typename MemberFunction>
-struct function_wrapper;
+struct TYPE_HIDDEN_VISIBILITY function_wrapper;
 
 // Note ArrayNoArg explicitly mentioned in the specialisations
 // to remove ambiguity between partial specialsations
 template<typename CodomainType>
-struct function_wrapper<CodomainType, Array<ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<CodomainType, Array<ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -358,7 +362,7 @@ struct function_wrapper<CodomainType, Array<ArrayNoArg>, false_type>
     typedef Array<> input_types;
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func) const
     {
         return (*func)();
@@ -367,7 +371,7 @@ struct function_wrapper<CodomainType, Array<ArrayNoArg>, false_type>
 };
 
 template<>
-struct function_wrapper<void, Array<ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -376,7 +380,7 @@ struct function_wrapper<void, Array<ArrayNoArg>, false_type>
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func) const
     {
         (*func)();
@@ -386,7 +390,7 @@ struct function_wrapper<void, Array<ArrayNoArg>, false_type>
 
 
 template<typename CodomainType, typename A>
-struct function_wrapper<CodomainType, Array<A, ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<CodomainType, Array<A, ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -395,7 +399,7 @@ struct function_wrapper<CodomainType, Array<A, ArrayNoArg>, false_type>
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, A a) const
     {
         return (*func)(a);
@@ -404,7 +408,7 @@ struct function_wrapper<CodomainType, Array<A, ArrayNoArg>, false_type>
 };
 
 template<typename A>
-struct function_wrapper<void, Array<A, ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<A, ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -413,7 +417,7 @@ struct function_wrapper<void, Array<A, ArrayNoArg>, false_type>
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, A a) const
     {
         (*func)(a);
@@ -422,7 +426,7 @@ struct function_wrapper<void, Array<A, ArrayNoArg>, false_type>
 };
 
 template<typename CodomainType, typename A, typename B>
-struct function_wrapper<CodomainType, Array<A, B, ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<CodomainType, Array<A, B, ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -431,7 +435,7 @@ struct function_wrapper<CodomainType, Array<A, B, ArrayNoArg>, false_type>
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, A a, B b) const
     {
         return (*func)(a, b);
@@ -440,7 +444,7 @@ struct function_wrapper<CodomainType, Array<A, B, ArrayNoArg>, false_type>
 };
 
 template<typename A, typename B>
-struct function_wrapper<void, Array<A, B, ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<A, B, ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -449,7 +453,7 @@ struct function_wrapper<void, Array<A, B, ArrayNoArg>, false_type>
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, A a, B b) const
     {
         (*func)(a, b);
@@ -458,7 +462,7 @@ struct function_wrapper<void, Array<A, B, ArrayNoArg>, false_type>
 };
 
 template<typename CodomainType, typename A, typename B, typename C>
-struct function_wrapper<CodomainType, Array<A, B, C, ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<CodomainType, Array<A, B, C, ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -467,7 +471,7 @@ struct function_wrapper<CodomainType, Array<A, B, C, ArrayNoArg>, false_type>
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, A a, B b, C c) const
     {
         return (*func)(a, b, c);
@@ -476,7 +480,7 @@ struct function_wrapper<CodomainType, Array<A, B, C, ArrayNoArg>, false_type>
 };
 
 template<typename A, typename B, typename C>
-struct function_wrapper<void, Array<A, B, C, ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<A, B, C, ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -485,7 +489,7 @@ struct function_wrapper<void, Array<A, B, C, ArrayNoArg>, false_type>
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, A a, B b, C c) const
     {
         (*func)(a, b, c);
@@ -494,7 +498,7 @@ struct function_wrapper<void, Array<A, B, C, ArrayNoArg>, false_type>
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D>
-struct function_wrapper<CodomainType, Array<A, B, C, D, ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<CodomainType, Array<A, B, C, D, ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -503,7 +507,7 @@ struct function_wrapper<CodomainType, Array<A, B, C, D, ArrayNoArg>, false_type>
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, A a, B b, C c, D d) const
     {
         return (*func)(a, b, c, d);
@@ -512,7 +516,7 @@ struct function_wrapper<CodomainType, Array<A, B, C, D, ArrayNoArg>, false_type>
 };
 
 template<typename A, typename B, typename C, typename D>
-struct function_wrapper<void, Array<A, B, C, D, ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<A, B, C, D, ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -521,7 +525,7 @@ struct function_wrapper<void, Array<A, B, C, D, ArrayNoArg>, false_type>
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, A a, B b, C c, D d) const
     {
         (*func)(a, b, c, d);
@@ -530,7 +534,7 @@ struct function_wrapper<void, Array<A, B, C, D, ArrayNoArg>, false_type>
 };
 
 template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
-struct function_wrapper<CodomainType, Array<A, B, C, D, E, ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<CodomainType, Array<A, B, C, D, E, ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -539,7 +543,7 @@ struct function_wrapper<CodomainType, Array<A, B, C, D, E, ArrayNoArg>, false_ty
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, A a, B b, C c, D d, E e) const
     {
       return (*func)(a, b, c, d, e);
@@ -548,7 +552,7 @@ struct function_wrapper<CodomainType, Array<A, B, C, D, E, ArrayNoArg>, false_ty
 };
 
 template<typename A, typename B, typename C, typename D, typename E>
-struct function_wrapper<void, Array<A, B, C, D, E, ArrayNoArg>, false_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<A, B, C, D, E, ArrayNoArg>, false_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -557,7 +561,7 @@ struct function_wrapper<void, Array<A, B, C, D, E, ArrayNoArg>, false_type>
     typedef typename function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, A a, B b, C c, D d, E e) const
     {
         (*func)(a, b, c, d, e);
@@ -566,7 +570,7 @@ struct function_wrapper<void, Array<A, B, C, D, E, ArrayNoArg>, false_type>
 };
 
 template<typename R, typename C>
-struct function_wrapper<R, Array<C, ArrayNoArg>, true_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<R, Array<C, ArrayNoArg>, true_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -575,7 +579,7 @@ struct function_wrapper<R, Array<C, ArrayNoArg>, true_type>
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, C c) const
     {
         return (c.*func)();
@@ -584,7 +588,7 @@ struct function_wrapper<R, Array<C, ArrayNoArg>, true_type>
 };
 
 template<typename C>
-struct function_wrapper<void, Array<C, ArrayNoArg>, true_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<C, ArrayNoArg>, true_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -593,7 +597,7 @@ struct function_wrapper<void, Array<C, ArrayNoArg>, true_type>
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, C c) const
     {
         (c.*func)();
@@ -603,7 +607,7 @@ struct function_wrapper<void, Array<C, ArrayNoArg>, true_type>
 
 
 template<typename R, typename C, typename U>
-struct function_wrapper<R, Array<C, U, ArrayNoArg>, true_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<R, Array<C, U, ArrayNoArg>, true_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -612,7 +616,7 @@ struct function_wrapper<R, Array<C, U, ArrayNoArg>, true_type>
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, C c, U u) const
     {
         return (c.*func)(u);
@@ -621,7 +625,7 @@ struct function_wrapper<R, Array<C, U, ArrayNoArg>, true_type>
 };
 
 template<typename C, typename U>
-struct function_wrapper<void, Array<C, U, ArrayNoArg>, true_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<C, U, ArrayNoArg>, true_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -630,7 +634,7 @@ struct function_wrapper<void, Array<C, U, ArrayNoArg>, true_type>
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, C c, U u) const
     {
         (c.*func)(u);
@@ -640,7 +644,7 @@ struct function_wrapper<void, Array<C, U, ArrayNoArg>, true_type>
 
 
 template<typename R, typename C, typename U, typename V>
-struct function_wrapper<R, Array<C, U, V, ArrayNoArg>, true_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<R, Array<C, U, V, ArrayNoArg>, true_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -649,7 +653,7 @@ struct function_wrapper<R, Array<C, U, V, ArrayNoArg>, true_type>
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, C c, U u, V v) const
     {
         return (c.*func)(u, v);
@@ -658,7 +662,7 @@ struct function_wrapper<R, Array<C, U, V, ArrayNoArg>, true_type>
 };
 
 template<typename C, typename U, typename V>
-struct function_wrapper<void, Array<C, U, V, ArrayNoArg>, true_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<C, U, V, ArrayNoArg>, true_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -667,7 +671,7 @@ struct function_wrapper<void, Array<C, U, V, ArrayNoArg>, true_type>
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, C c, U u, V v) const
     {
         (c.*func)(u, v);
@@ -677,7 +681,7 @@ struct function_wrapper<void, Array<C, U, V, ArrayNoArg>, true_type>
 
 
 template<typename R, typename C, typename U, typename V, typename W>
-struct function_wrapper<R, Array<C, U, V, W, ArrayNoArg>, true_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<R, Array<C, U, V, W, ArrayNoArg>, true_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -686,7 +690,7 @@ struct function_wrapper<R, Array<C, U, V, W, ArrayNoArg>, true_type>
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, C c, U u, V v, W w) const
     {
         return (c.*func)(u, v, w);
@@ -695,7 +699,7 @@ struct function_wrapper<R, Array<C, U, V, W, ArrayNoArg>, true_type>
 };
 
 template<typename C, typename U, typename V, typename W>
-struct function_wrapper<void, Array<C, U, V, W, ArrayNoArg>, true_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<C, U, V, W, ArrayNoArg>, true_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -704,7 +708,7 @@ struct function_wrapper<void, Array<C, U, V, W, ArrayNoArg>, true_type>
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, C c, U u, V v, W w) const
     {
         (c.*func)(u, v, w);
@@ -714,7 +718,7 @@ struct function_wrapper<void, Array<C, U, V, W, ArrayNoArg>, true_type>
 
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
-struct function_wrapper<R, Array<C, U, V, W, X, ArrayNoArg>, true_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<R, Array<C, U, V, W, X, ArrayNoArg>, true_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -723,7 +727,7 @@ struct function_wrapper<R, Array<C, U, V, W, X, ArrayNoArg>, true_type>
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, C c, U u, V v, W w, X x) const
     {
         return (c.*func)(u, v, w, x);
@@ -732,7 +736,7 @@ struct function_wrapper<R, Array<C, U, V, W, X, ArrayNoArg>, true_type>
 };
 
 template<typename C, typename U, typename V, typename W, typename X>
-struct function_wrapper<void, Array<C, U, V, W, X, ArrayNoArg>, true_type>
+struct TYPE_HIDDEN_VISIBILITY function_wrapper<void, Array<C, U, V, W, X, ArrayNoArg>, true_type>
 {
     typedef function_wrapper type;
     typedef true_type introspection_enabled;
@@ -741,7 +745,7 @@ struct function_wrapper<void, Array<C, U, V, W, X, ArrayNoArg>, true_type>
     typedef typename member_function_pointer_signature<codomain_type, input_types>::type Func;
 
     /*
-    inline codomain_type
+    ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func, C c, U u, V v, W w, X x) const
     {
         (c.*func)(u, v, w, x);
@@ -752,87 +756,87 @@ struct function_wrapper<void, Array<C, U, V, W, X, ArrayNoArg>, true_type>
 } // namespace impl
  
 template<typename R>
-struct ResolveFunctionSignatureType<R(*)()> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)()> :
     impl::function_wrapper<R, Array<>, false_type>
 {};
 
 template<typename R, typename U>
-struct ResolveFunctionSignatureType<R(*)(U)> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(U)> :
     impl::function_wrapper<R, Array<U>, false_type>
 {};
 
 template<typename R, typename U, typename V>
-struct ResolveFunctionSignatureType<R(*)(U, V)> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(U, V)> :
     impl::function_wrapper<R, Array<U, V>, false_type>
 {};
 
 template<typename R, typename U, typename V, typename W>
-struct ResolveFunctionSignatureType<R(*)(U, V, W)> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(U, V, W)> :
     impl::function_wrapper<R, Array<U, V, W>, false_type>
 {};
 
 template<typename R, typename U, typename V, typename W, typename X>
-struct ResolveFunctionSignatureType<R(*)(U, V, W, X)> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(U, V, W, X)> :
     impl::function_wrapper<R, Array<U, V, W, X>, false_type>
 {};
 
 template<typename R, typename U, typename V, typename W, typename X, typename Y>
-struct ResolveFunctionSignatureType<R(*)(U, V, W, X, Y)> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(U, V, W, X, Y)> :
     impl::function_wrapper<R, Array<U, V, W, X, Y>, false_type>
 {};
 
 
 template<typename R, typename C>
-struct ResolveFunctionSignatureType<R(C::*)()> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(C::*)()> :
     impl::function_wrapper<R, Array<C&>, true_type>
 {};
 
 template<typename R, typename C>
-struct ResolveFunctionSignatureType<R(C::*)() const> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(C::*)() const> :
     impl::function_wrapper<R, Array<C const&>, true_type>
 {};
 
 
 template<typename R, typename C, typename U>
-struct ResolveFunctionSignatureType<R(C::*)(U)> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(C::*)(U)> :
     impl::function_wrapper<R, Array<C&, U>, true_type>
 {};
 
 template<typename R, typename C, typename U>
-struct ResolveFunctionSignatureType<R(C::*)(U) const> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(C::*)(U) const> :
     impl::function_wrapper<R, Array<C const&, U>, true_type>
 {};
 
 
 template<typename R, typename C, typename U, typename V>
-struct ResolveFunctionSignatureType<R(C::*)(U, V)> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(C::*)(U, V)> :
     impl::function_wrapper<R, Array<C&, U, V>, true_type>
 {};
 
 template<typename R, typename C, typename U, typename V>
-struct ResolveFunctionSignatureType<R(C::*)(U, V) const> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(C::*)(U, V) const> :
     impl::function_wrapper<R, Array<C const&, U, V>, true_type>
 {};
 
 
 template<typename R, typename C, typename U, typename V, typename W>
-struct ResolveFunctionSignatureType<R(C::*)(U, V, W)> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(C::*)(U, V, W)> :
     impl::function_wrapper<R, Array<C&, U, V, W>, true_type>
 {};
 
 template<typename R, typename C, typename U, typename V, typename W>
-struct ResolveFunctionSignatureType<R(C::*)(U, V, W) const> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(C::*)(U, V, W) const> :
     impl::function_wrapper<R, Array<C const&, U, V, W>, true_type>
 {};
 
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
-struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X)> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(C::*)(U, V, W, X)> :
     impl::function_wrapper<R, Array<C&, U, V, W, X>, true_type>
 {};
 
 template<typename R, typename C, typename U, typename V, typename W, typename X>
-struct ResolveFunctionSignatureType<R(C::*)(U, V, W, X) const> :
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(C::*)(U, V, W, X) const> :
     impl::function_wrapper<R, Array<C const&, U, V, W, X>, true_type>
 {};
 

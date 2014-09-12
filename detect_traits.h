@@ -7,11 +7,11 @@
 
 namespace intro {
 
-#define GENERATE_GET_MEMBER_TYPE(Type) \
-template<typename T>                   \
-struct GetMemberType_##Type            \
-{                                      \
-    typedef typename T::Type type;     \
+#define GENERATE_GET_MEMBER_TYPE(Type)             \
+template<typename T>                               \
+struct TYPE_HIDDEN_VISIBILITY GetMemberType_##Type \
+{                                                  \
+    typedef typename T::Type type;                 \
 };
 
 // See http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Member_Detector
@@ -22,27 +22,27 @@ struct GetMemberType_##Type            \
 #define GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                                  \
 namespace detect_traits_impl {                                                   \
 template<typename T>                                                             \
-struct HasMemberType_Impl##Type 	                                         \
+struct TYPE_HIDDEN_VISIBILITY HasMemberType_Impl##Type 	                         \
 {                                                                                \
 private:                                                                         \
     typedef char Yes;				   	                         \
-    struct No { char x[2]; };						         \
-    struct Fallback { struct Type {}; };                                         \
+    struct TYPE_HIDDEN_VISIBILITY No { char x[2]; };				 \
+    struct TYPE_HIDDEN_VISIBILITY Fallback { struct Type {}; };                  \
     template<typename U>                                                         \
-    static No test(typename U::Type*);                                           \
+    static HIDDEN No test(typename U::Type*);                                    \
     template<typename U>                                                         \
-    static Yes test(U*);                                                         \
-    struct Derived : T, Fallback {};					         \
+    static HIDDEN Yes test(U*);                                                  \
+    struct TYPE_HIDDEN_VISIBILITY Derived : T, Fallback {};			 \
 public:					                                         \
     typedef typename ValueToTrueFalse<sizeof(test<Derived>(0)) == 1>::type type; \
 };                                                                               \
 } // namespace detect_traits_impl
 
-#define GENERATE_HAS_MEMBER_TYPE(Type)                                     \
-GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                                    \
-template<typename T>                                                       \
-struct HasMemberType_##Type : and_<IsStructClassOrUnion<T>,                \
-    detect_traits_impl::HasMemberType_Impl##Type<T> >			   \
+#define GENERATE_HAS_MEMBER_TYPE(Type)                                             \
+GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                                            \
+template<typename T>                                                               \
+struct TYPE_HIDDEN_VISIBILITY HasMemberType_##Type : and_<IsStructClassOrUnion<T>, \
+    detect_traits_impl::HasMemberType_Impl##Type<T> >			           \
 {};
 
 #define GENERATE_HAS_AND_GET_MEMBER_TYPE(Type) \
