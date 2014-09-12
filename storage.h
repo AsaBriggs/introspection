@@ -922,7 +922,7 @@ struct TYPE_HIDDEN_VISIBILITY deduce_type
 // The make_storage functions deduce a storage type based on the parameters passed in,
 // taking into account "decaying" Ref objects.
 template<typename Tag>
-INLINE typename deduce_type<Array<>, Tag>::type make_storage()
+ALWAYS_INLINE_HIDDEN typename deduce_type<Array<>, Tag>::type make_storage()
 {
     typedef typename deduce_type<Array<>, Tag>::type T;
     return T::make();

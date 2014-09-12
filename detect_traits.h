@@ -43,7 +43,7 @@ public:					                                         \
 #define GENERATE_HAS_MEMBER_TYPE(Type)                 \
 GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                \
 template<typename T>                                   \
-  struct TYPE_HIDDEN_VISIBILITY HasMemberType_##Type : \
+struct TYPE_HIDDEN_VISIBILITY HasMemberType_##Type :   \
     ::intro::and_< ::intro::IsStructClassOrUnion<T>,   \
     detect_traits_impl::HasMemberType_Impl##Type<T> >  \
 {                                                      \

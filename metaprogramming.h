@@ -54,7 +54,7 @@ struct TYPE_DEFAULT_VISIBILITY Ref
     ALWAYS_INLINE_HIDDEN operator T&() const { return *m0; }
 
     template<typename P0>
-    static INLINE_HIDDEN type make(P0& p0)
+    static ALWAYS_INLINE_HIDDEN type make(P0& p0)
     {
         T& x = p0;
         type tmp = {&x};
