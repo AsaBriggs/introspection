@@ -12,6 +12,7 @@ template<typename T>                               \
 struct TYPE_HIDDEN_VISIBILITY GetMemberType_##Type \
 {                                                  \
     typedef typename T::Type type;                 \
+    METAPROGRAMMING_ONLY(GetMemberType_##Type)     \
 };
 
 // See http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Member_Detector
@@ -34,16 +35,20 @@ private:                                                                        
     static HIDDEN Yes test(U*);                                                  \
     struct TYPE_HIDDEN_VISIBILITY Derived : T, Fallback {};			 \
 public:					                                         \
-    typedef typename ValueToTrueFalse<sizeof(test<Derived>(0)) == 1>::type type; \
+    typedef typename ::intro::ValueToTrueFalse<sizeof(test<Derived>(0)) == 1>::type type; \
+    METAPROGRAMMING_ONLY(HasMemberType_Impl##Type)                               \
 };                                                                               \
 } // namespace detect_traits_impl
 
-#define GENERATE_HAS_MEMBER_TYPE(Type)                                             \
-GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                                            \
-template<typename T>                                                               \
-struct TYPE_HIDDEN_VISIBILITY HasMemberType_##Type : and_<IsStructClassOrUnion<T>, \
-    detect_traits_impl::HasMemberType_Impl##Type<T> >			           \
-{};
+#define GENERATE_HAS_MEMBER_TYPE(Type)                 \
+GENERATE_HAS_MEMBER_TYPE_OF_CLASS(Type)                \
+template<typename T>                                   \
+  struct TYPE_HIDDEN_VISIBILITY HasMemberType_##Type : \
+    ::intro::and_< ::intro::IsStructClassOrUnion<T>,   \
+    detect_traits_impl::HasMemberType_Impl##Type<T> >  \
+{                                                      \
+    METAPROGRAMMING_ONLY(HasMemberType_##Type)         \
+};
 
 #define GENERATE_HAS_AND_GET_MEMBER_TYPE(Type) \
 GENERATE_HAS_MEMBER_TYPE(Type)		       \
