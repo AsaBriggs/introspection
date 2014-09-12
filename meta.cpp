@@ -69,6 +69,13 @@ STATIC_ASSERT2((true_type));
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
 STATIC_ASSERT2((false_type));
 STATIC_ASSERT_NOT2((true_type));
+
+struct Test_METAPROGRAMMING_ONLY
+{
+  METAPROGRAMMING_ONLY(Test_METAPROGRAMMING_ONLY)
+};
+
+Test_METAPROGRAMMING_ONLY no_viable_constructor_destructor;
 #endif
 
 #define TEST(x) assert((x))
