@@ -20,11 +20,11 @@ namespace intro {
 // but nesting typedefs is impossible in pointers.
 // It is assumed that all types using within namespace impl have been passed through this metafunction first
 // to get the appropriate information.
-template<typename T>
+template<typename T, typename Enable=void>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType
 {
     typedef T type;
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
+    INTROSPECTION_STATIC_ASSERT(( is_struct_class_or_union<T> )); // Assert here = function arity too high
 };
 
 struct TYPE_HIDDEN_VISIBILITY no_template_argument { typedef no_template_argument type; METAPROGRAMMING_ONLY(no_template_argument) };

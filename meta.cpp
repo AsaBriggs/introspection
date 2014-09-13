@@ -2027,6 +2027,11 @@ void test_function_signatures()
   testMemberFun9<int, MemberFunctionTest&>(&MemberFunctionTest::intFun9);
 }
 
+#ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
+INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(*)(int, int, int, int, int, int, int, int, int, int, int)> ));
+INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(MemberFunctionTest::*)(int, int, int, int, int, int, int, int, int, int)> ));
+#endif
+
 } // unnamed namespace
 } // namespace intro
 
