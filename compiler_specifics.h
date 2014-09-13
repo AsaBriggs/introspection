@@ -1,20 +1,40 @@
 #ifndef INCLUDED_COMPILER_SPECIFICS
 #define INCLUDED_COMPILER_SPECIFICS
 
+#ifndef INLINE
 #define INLINE inline
-#define HIDDEN __attribute__((__visibility__("hidden")))
+#endif
 
-#define INLINE_HIDDEN INLINE HIDDEN
+#ifndef ALWAYS_INLINE
 #define ALWAYS_INLINE INLINE __attribute__((always_inline))
-#define ALWAYS_INLINE_HIDDEN ALWAYS_INLINE HIDDEN
+#endif
 
+#ifndef HIDDEN
+#define HIDDEN __attribute__((__visibility__("hidden")))
+#endif
+
+#ifndef INLINE_HIDDEN
+#define INLINE_HIDDEN INLINE HIDDEN
+#endif
+
+#ifndef ALWAYS_INLINE_HIDDEN
+#define ALWAYS_INLINE_HIDDEN ALWAYS_INLINE HIDDEN
+#endif
+
+#ifndef TYPE_DEFAULT_VISIBILITY
 #define TYPE_DEFAULT_VISIBILITY __attribute__((__visibility__("default")))
+#endif
+
+#ifndef TYPE_HIDDEN_VISIBILITY
 #define TYPE_HIDDEN_VISIBILITY __attribute__((__visibility__("hidden")))
+#endif
 
 // Place this just before the closing brace of the metaprogramming class
 // passing in the class name as the parameter. This prevents accidental
 // construction of a metaprogramming only class.
 // Should be used for all TYPE_HIDDEN_VISIBILITY classes
-#define METAPROGRAMMING_ONLY(x) private: x(); ~x();
+#ifndef METAPROGRAMMING_ONLY
+#define METAPROGRAMMING_ONLY(x) private: x(); ~x(); public:
+#endif
 
 #endif
