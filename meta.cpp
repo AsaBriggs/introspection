@@ -442,10 +442,20 @@ void test_is_same()
   INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int const&>::type, int const&> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int &>::type, int const&> ));
 
-  INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int volatile >::type, int volatile const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int volatile>::type, int volatile const&> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int volatile const>::type, int volatile const&> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int volatile const&>::type, int volatile const&> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<make_const_ref<int volatile &>::type, int volatile const&> ));
+
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_ref_type<int>::type, int&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_ref_type<int const>::type, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_ref_type<int const&>::type, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_ref_type<int &>::type, int&> ));
+
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_ref_type<int volatile>::type, int volatile&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_ref_type<int volatile const>::type, int volatile const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_ref_type<int volatile const&>::type, int volatile const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<make_ref_type<int volatile &>::type, int volatile&> ));
 }
 
 void test_deduce_input_type()
