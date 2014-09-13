@@ -605,17 +605,31 @@ struct TYPE_DEFAULT_VISIBILITY DefaultGet;
 
 #define MAKE_DEFAULT_GET_N(Idx)\
 template<typename T>\
+struct TYPE_DEFAULT_VISIBILITY DefaultGet<T const, Integer< Idx > >\
+{\
+    typedef DefaultGet type;\
+    typedef Integer< Idx > Index;\
+    typedef true_type IntrospectionEnabled;\
+    typedef T const& input_type_0;\
+    typedef typename make_const_ref<typename GetIntrospectionItem<T, Index>::type>::type codomain_type; \
+\
+    ALWAYS_INLINE_HIDDEN codomain_type\
+    operator()(input_type_0 x) const\
+    {\
+        return x.m##Idx;\
+    }\
+};\
+template<typename T>\
 struct TYPE_DEFAULT_VISIBILITY DefaultGet<T, Integer< Idx > >\
 {\
     typedef DefaultGet type;\
     typedef Integer< Idx > Index;\
     typedef true_type IntrospectionEnabled;\
-    typedef T input_type_0;\
-    typedef typename GetIntrospectionItem<T, Index>::type codomain_type;\
+    typedef T& input_type_0;\
+    typedef typename make_ref_type<typename GetIntrospectionItem<T, Index>::type>::type codomain_type; \
 \
-    ALWAYS_INLINE_HIDDEN\
-    typename make_const_ref<codomain_type>::type \
-    operator()(typename parameter_type<T>::type x) const\
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(input_type_0 x) const\
     {\
         return x.m##Idx;\
     }\
@@ -650,6 +664,20 @@ typename enable_if<IntrospectionIndirectStorage<T>, typename GenerateStorage<T>:
 
 template<typename T>
 ALWAYS_INLINE_HIDDEN
+typename enable_if<IntrospectionIndirectStorage<T>, typename GenerateStorage<T>::type>::type& get_storage(T& x)
+{
+    return x.m0;
+}
+
+template<typename T>
+ALWAYS_INLINE_HIDDEN
+typename disable_if<IntrospectionIndirectStorage<T>, T>::type& get_storage(T& x)
+{
+    return x;
+}
+
+template<typename T>
+ALWAYS_INLINE_HIDDEN
 typename disable_if<IntrospectionIndirectStorage<T>, T>::type const& get_storage(T const& x)
 {
     return x;
@@ -668,8 +696,8 @@ struct TYPE_DEFAULT_VISIBILITY Visit1<T, Proc, Arity, Arity>
     typedef Proc input_type_1;
     typedef Proc codomain_type;
 
-    ALWAYS_INLINE_HIDDEN Proc
-    operator()(input_type_0 x, Proc p)
+    ALWAYS_INLINE_HIDDEN codomain_type
+    operator()(input_type_0 x, input_type_1 p)
     {
         return p;
     }
@@ -684,8 +712,8 @@ struct TYPE_DEFAULT_VISIBILITY Visit1
     typedef Proc input_type_1;
     typedef Proc codomain_type;
 
-    ALWAYS_INLINE_HIDDEN Proc
-    operator()(input_type_0 x, Proc p)
+    ALWAYS_INLINE_HIDDEN codomain_type
+    operator()(input_type_0 x, input_type_1 p)
     {
         typedef typename Get<T, Index>::type Getter;
         p(Getter()(x), Index());
@@ -707,8 +735,8 @@ struct TYPE_DEFAULT_VISIBILITY Visit2<T, Proc, Arity, Arity>
     typedef Proc input_type_2;
     typedef Proc codomain_type;
 
-    ALWAYS_INLINE_HIDDEN Proc
-    operator()(input_type_0 x, input_type_1 y, Proc p)
+    ALWAYS_INLINE_HIDDEN codomain_type
+    operator()(input_type_0 x, input_type_1 y, input_type_2 p)
     {
         return p;
     }
@@ -724,8 +752,8 @@ struct TYPE_DEFAULT_VISIBILITY Visit2
     typedef Proc input_type_2;
     typedef Proc codomain_type;
 
-    ALWAYS_INLINE_HIDDEN Proc
-    operator()(input_type_0 x, input_type_1 y, Proc p)
+    ALWAYS_INLINE_HIDDEN codomain_type
+    operator()(input_type_0 x, input_type_1 y, input_type_2 p)
     {
         typedef typename Get<T, Index>::type Getter;
         p(Getter()(x), Getter()(y), Index());
@@ -740,9 +768,21 @@ ALWAYS_INLINE_HIDDEN Proc visit_impl(T& x, Proc p)
 }
 
 template<typename T, typename Proc>
+ALWAYS_INLINE_HIDDEN Proc visit_impl(T const& x, Proc p)
+{
+    return Visit1<T const, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, p);
+}
+
+template<typename T, typename Proc>
 ALWAYS_INLINE_HIDDEN Proc visit_impl(T& x, T& y, Proc p)
 {
     return Visit2<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, y, p);
+}
+
+template<typename T, typename Proc>
+ALWAYS_INLINE_HIDDEN Proc visit_impl(T const& x, T const& y, Proc p)
+{
+    return Visit2<T const, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, y, p);
 }
 
 template<typename GetComparator>
@@ -803,14 +843,14 @@ struct TYPE_DEFAULT_VISIBILITY less<T, typename enable_if<generate_introspected_
 {
     typedef less type;
     typedef true_type IntrospectionEnabled;
-    typedef T input_type_0;
-    typedef T input_type_1;
+    typedef typename parameter_type<T>::type input_type_0;
+    typedef typename parameter_type<T>::type input_type_1;
     typedef bool codomain_type;
 
     // Note function not forced to be always inline; wrapper operators are simple functions but
     // this may not be.
     INLINE codomain_type
-    operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
+    operator()(input_type_0 x, input_type_1 y) const
     {
         return impl::less_impl<less<placeholders::_0> >(impl::get_storage(x), impl::get_storage(y));
     }
@@ -821,14 +861,14 @@ struct TYPE_DEFAULT_VISIBILITY equal<T, typename enable_if<generate_introspected
 {
     typedef equal type;
     typedef true_type IntrospectionEnabled;
-    typedef T input_type_0;
-    typedef T input_type_1;
+    typedef typename parameter_type<T>::type input_type_0;
+    typedef typename parameter_type<T>::type input_type_1;
     typedef bool codomain_type;
 
     // Note function not forced to be always inline; wrapper operators are simple functions but
     // this may not be.
     INLINE codomain_type
-    operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
+    operator()(input_type_0 x, input_type_1 y) const
     {
         return impl::equal_impl<equal<placeholders::_0> >(impl::get_storage(x), impl::get_storage(y));
     }

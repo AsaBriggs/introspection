@@ -27,7 +27,11 @@ struct StreamIn_Visitor
     template<typename T, int Index>
     void operator()(T& x, Integer<Index>)
     {
-        *is >> x;
+        typename std::basic_istream<charT, traits>::sentry guard(*is);
+        if (guard) {
+            // Requires is is not 0
+            *is >> x;
+	}
     }
 };
 
@@ -41,12 +45,13 @@ struct StreamOut_Visitor
     template<typename T, int Index>
     void operator()(T const& x, Integer<Index>)
     {
+        // Requires os is not 0
         *os << x << ' ' ;
     }
 };
 
 template<typename T, typename charT, typename traits>
-std::basic_istream<charT, traits> stream_in_impl(std::basic_istream<charT, traits>& is, T& x)
+std::basic_istream<charT, traits>& stream_in_impl(std::basic_istream<charT, traits>& is, T& x)
 {
     StreamIn_Visitor<charT, traits> visitor = {&is};
     visit(x, visitor);

@@ -252,6 +252,20 @@ struct TYPE_HIDDEN_VISIBILITY make_const_ref_impl<T&>
 };
 
 template<typename T>
+struct TYPE_HIDDEN_VISIBILITY make_ref_type_impl
+{
+    typedef T& type;
+    METAPROGRAMMING_ONLY(make_ref_type_impl)
+};
+
+template<typename T>
+struct TYPE_HIDDEN_VISIBILITY make_ref_type_impl<T&>
+{
+    typedef T& type;
+    METAPROGRAMMING_ONLY(make_ref_type_impl)
+};
+
+template<typename T>
 struct TYPE_HIDDEN_VISIBILITY parameter_type_impl
 {
     typedef T const& type;
@@ -393,6 +407,9 @@ template<typename T>
 struct TYPE_HIDDEN_VISIBILITY make_const_ref : impl::make_const_ref_impl<T> {METAPROGRAMMING_ONLY(make_const_ref)};
 
 template<typename T>
+struct TYPE_HIDDEN_VISIBILITY make_ref_type : impl::make_ref_type_impl<T> {METAPROGRAMMING_ONLY(make_ref_type)};
+
+template<typename T>
 struct TYPE_HIDDEN_VISIBILITY deduce_input_type : impl::deduce_input_type_impl<T> {METAPROGRAMMING_ONLY(deduce_input_type)};
 
 template<typename T>
@@ -439,11 +456,12 @@ struct TYPE_DEFAULT_VISIBILITY OperatorEquals
 {
     typedef OperatorEquals type;
     typedef true_type IntrospectionEnabled;
-    typedef T input_type_0;
-    typedef T input_type_1;
+    typedef typename parameter_type<T>::type input_type_0;
+    typedef typename parameter_type<T>::type input_type_1;
     typedef bool codomain_type;
 
-    INLINE codomain_type operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
+    INLINE codomain_type
+    operator()(input_type_0 x, input_type_1 y) const
     {
         return x == y;
     }
@@ -456,11 +474,12 @@ struct TYPE_DEFAULT_VISIBILITY OperatorLessThan
 {
     typedef OperatorLessThan type;
     typedef true_type IntrospectionEnabled;
-    typedef T input_type_0;
-    typedef T input_type_1;
+    typedef typename parameter_type<T>::type input_type_0;
+    typedef typename parameter_type<T>::type input_type_1;
     typedef bool codomain_type;
 
-    INLINE codomain_type operator()(typename parameter_type<T>::type x, typename parameter_type<T>::type y) const
+    INLINE codomain_type
+    operator()(input_type_0 x, input_type_1 y) const
     {
         return x < y;
     }

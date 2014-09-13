@@ -5,6 +5,7 @@
 #include "introspection_assert.h"
 
 #include <iostream>
+#include <sstream>
 
 namespace intro {
 namespace {
@@ -684,6 +685,16 @@ void test_generated_operations(T const& x, T const& y)
   test_swap(x, y);
 }
 
+std::ostream& getOutput()
+{
+#ifdef PRINT_TEST_OUPTUT_TO_COUT
+    return std::cout;
+#else
+    static std::ostringstream os;
+    return os;
+#endif
+}
+
 void test_singleton()
 {
     typedef singleton<int, DefaultTag> type;
@@ -697,6 +708,14 @@ void test_singleton()
     INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<1> > ));
 
     INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
+
+    getOutput() << x << '\n';
+    getOutput() << y << '\n';
+
+    std::istringstream stream("22");
+    type k;
+    stream >> k;
+    TEST(22 == k.m0);
 }
 
 void test_pair()
@@ -720,9 +739,15 @@ void test_pair()
     INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
 
-    std::cout << x << '\n';
-    std::cout << y << '\n';
-    std::cout << z << '\n';
+    getOutput() << x << '\n';
+    getOutput() << y << '\n';
+    getOutput() << z << '\n';
+
+    std::istringstream stream("22 3.0");
+    type k;
+    stream >> k;
+    TEST(22 == k.m0);
+    TEST(3.0f == k.m1);
 }
 
 void test_triple()
@@ -753,10 +778,17 @@ void test_triple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
 
-    std::cout << x << '\n';
-    std::cout << y << '\n';
-    std::cout << z << '\n';
-    std::cout << a << '\n';
+    getOutput() << x << '\n';
+    getOutput() << y << '\n';
+    getOutput() << z << '\n';
+    getOutput() << a << '\n';
+
+    std::istringstream stream("22 3.0 3");
+    type k;
+    stream >> k;
+    TEST(22 == k.m0);
+    TEST(3.0f == k.m1);
+    TEST('3' == k.m2);
 }
 
 void test_quadruple()
@@ -794,11 +826,19 @@ void test_quadruple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
 
-    std::cout << x << '\n';
-    std::cout << y << '\n';
-    std::cout << z << '\n';
-    std::cout << a << '\n';
-    std::cout << b << '\n';
+    getOutput() << x << '\n';
+    getOutput() << y << '\n';
+    getOutput() << z << '\n';
+    getOutput() << a << '\n';
+    getOutput() << b << '\n';
+
+    std::istringstream stream("22 3.0 3 1");
+    type k;
+    stream >> k;
+    TEST(22 == k.m0);
+    TEST(3.0f == k.m1);
+    TEST('3' == k.m2);
+    TEST(true == k.m3);
 }
 
 void test_quintuple()
@@ -843,12 +883,21 @@ void test_quintuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
 
-    std::cout << x << '\n';
-    std::cout << y << '\n';
-    std::cout << z << '\n';
-    std::cout << a << '\n';
-    std::cout << b << '\n';
-    std::cout << c << '\n';
+    getOutput() << x << '\n';
+    getOutput() << y << '\n';
+    getOutput() << z << '\n';
+    getOutput() << a << '\n';
+    getOutput() << b << '\n';
+    getOutput() << c << '\n';
+
+    std::istringstream stream("22 3.0 3 1 12345");
+    type k;
+    stream >> k;
+    TEST(22 == k.m0);
+    TEST(3.0f == k.m1);
+    TEST('3' == k.m2);
+    TEST(true == k.m3);
+    TEST(12345U == k.m4);
 }
 
 void test_sextuple()
@@ -900,13 +949,23 @@ void test_sextuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
 
-    std::cout << x << '\n';
-    std::cout << y << '\n';
-    std::cout << z << '\n';
-    std::cout << a << '\n';
-    std::cout << b << '\n';
-    std::cout << c << '\n';
-    std::cout << d << '\n';
+    getOutput() << x << '\n';
+    getOutput() << y << '\n';
+    getOutput() << z << '\n';
+    getOutput() << a << '\n';
+    getOutput() << b << '\n';
+    getOutput() << c << '\n';
+    getOutput() << d << '\n';
+
+    std::istringstream stream("22 3.0 3 1 12345 112132");
+    type k;
+    stream >> k;
+    TEST(22 == k.m0);
+    TEST(3.0f == k.m1);
+    TEST('3' == k.m2);
+    TEST(true == k.m3);
+    TEST(12345U == k.m4);
+    TEST(112132L == k.m5);
 }
 
 void test_septuple()
@@ -965,14 +1024,25 @@ void test_septuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
 
-    std::cout << x << '\n';
-    std::cout << y << '\n';
-    std::cout << z << '\n';
-    std::cout << a << '\n';
-    std::cout << b << '\n';
-    std::cout << c << '\n';
-    std::cout << d << '\n';
-    std::cout << e << '\n';
+    getOutput() << x << '\n';
+    getOutput() << y << '\n';
+    getOutput() << z << '\n';
+    getOutput() << a << '\n';
+    getOutput() << b << '\n';
+    getOutput() << c << '\n';
+    getOutput() << d << '\n';
+    getOutput() << e << '\n';
+
+    std::istringstream stream("22 3.0 3 1 12345 112132 3.3e7");
+    type k;
+    stream >> k;
+    TEST(22 == k.m0);
+    TEST(3.0f == k.m1);
+    TEST('3' == k.m2);
+    TEST(true == k.m3);
+    TEST(12345U == k.m4);
+    TEST(112132L == k.m5);
+    TEST(3.3e7 == k.m6);
 }
 
 void test_octuple()
@@ -1038,15 +1108,27 @@ void test_octuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
 
-    std::cout << x << '\n';
-    std::cout << y << '\n';
-    std::cout << z << '\n';
-    std::cout << a << '\n';
-    std::cout << b << '\n';
-    std::cout << c << '\n';
-    std::cout << d << '\n';
-    std::cout << e << '\n';
-    std::cout << f << '\n';
+    getOutput() << x << '\n';
+    getOutput() << y << '\n';
+    getOutput() << z << '\n';
+    getOutput() << a << '\n';
+    getOutput() << b << '\n';
+    getOutput() << c << '\n';
+    getOutput() << d << '\n';
+    getOutput() << e << '\n';
+    getOutput() << f << '\n';
+
+    std::istringstream stream("22 3.0 3 1 12345 112132 3.3e7 22");
+    type k;
+    stream >> k;
+    TEST(22 == k.m0);
+    TEST(3.0f == k.m1);
+    TEST('3' == k.m2);
+    TEST(true == k.m3);
+    TEST(12345U == k.m4);
+    TEST(112132L == k.m5);
+    TEST(3.3e7 == k.m6);
+    TEST(22UL == k.m7);
 }
 
 void test_nonuple()
@@ -1119,16 +1201,29 @@ void test_nonuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<8> >::type> ));
 
-    std::cout << x << '\n';
-    std::cout << y << '\n';
-    std::cout << z << '\n';
-    std::cout << a << '\n';
-    std::cout << b << '\n';
-    std::cout << c << '\n';
-    std::cout << d << '\n';
-    std::cout << e << '\n';
-    std::cout << f << '\n';
-    std::cout << g << '\n';
+    getOutput() << x << '\n';
+    getOutput() << y << '\n';
+    getOutput() << z << '\n';
+    getOutput() << a << '\n';
+    getOutput() << b << '\n';
+    getOutput() << c << '\n';
+    getOutput() << d << '\n';
+    getOutput() << e << '\n';
+    getOutput() << f << '\n';
+    getOutput() << g << '\n';
+
+    std::istringstream stream("22 3.0 3 1 12345 112132 3.3e7 22 0");
+    type k;
+    stream >> k;
+    TEST(22 == k.m0);
+    TEST(3.0f == k.m1);
+    TEST('3' == k.m2);
+    TEST(true == k.m3);
+    TEST(12345U == k.m4);
+    TEST(112132L == k.m5);
+    TEST(3.3e7 == k.m6);
+    TEST(22UL == k.m7);
+    TEST(false == k.m8);
 }
 
 void test_decuple()
@@ -1208,17 +1303,31 @@ void test_decuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<8> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<9> >::type> ));
 
-    std::cout << x << '\n';
-    std::cout << y << '\n';
-    std::cout << z << '\n';
-    std::cout << a << '\n';
-    std::cout << b << '\n';
-    std::cout << c << '\n';
-    std::cout << d << '\n';
-    std::cout << e << '\n';
-    std::cout << f << '\n';
-    std::cout << g << '\n';
-    std::cout << h << '\n';
+    getOutput() << x << '\n';
+    getOutput() << y << '\n';
+    getOutput() << z << '\n';
+    getOutput() << a << '\n';
+    getOutput() << b << '\n';
+    getOutput() << c << '\n';
+    getOutput() << d << '\n';
+    getOutput() << e << '\n';
+    getOutput() << f << '\n';
+    getOutput() << g << '\n';
+    getOutput() << h << '\n';
+
+    std::istringstream stream("22 3.0 3 1 12345 112132 3.3e7 22 0 -1234");
+    type k;
+    stream >> k;
+    TEST(22 == k.m0);
+    TEST(3.0f == k.m1);
+    TEST('3' == k.m2);
+    TEST(true == k.m3);
+    TEST(12345U == k.m4);
+    TEST(112132L == k.m5);
+    TEST(3.3e7 == k.m6);
+    TEST(22UL == k.m7);
+    TEST(false == k.m8);
+    TEST(-1234 == k.m9);
 }
 
 void test_storage_reference_types()
