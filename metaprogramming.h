@@ -1,6 +1,11 @@
 #ifndef INCLUDED_METAPROGRAMMING
 #define INCLUDED_METAPROGRAMMING
 
+#ifndef INCLUDED_CSTRING
+#include <cstring>
+#define INCLUDED_CSTRING
+#endif
+
 #ifndef INCLUDED_COMPILER_SPECIFICS
 #include "compiler_specifics.h"
 #endif
