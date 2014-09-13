@@ -1236,110 +1236,6 @@ void test_nonuple()
     TEST(false == k.m8);
 }
 
-void test_decuple()
-{
-    typedef decuple<int, float, char, bool, unsigned, long long, double, unsigned long, bool, int, DefaultTag> type;
-    // Differed in the m0 value
-    type x = {1, 3.5f, 'a', false, 3U, 99LL, 1.0, 3UL, false, 88};
-    type y = {2, 3.5f, 'a', false, 3U, 99LL, 1.0, 3UL, false, 88};
-    TEST(1 == x.m0);
-    TEST(3.5f == x.m1);
-    TEST('a' == x.m2);
-    TEST(false == x.m3);
-    TEST(3U == x.m4);
-    TEST(99LL == x.m5);
-    TEST(1.0 == x.m6);
-    TEST(3UL == x.m7);
-    TEST(false == x.m8);
-    TEST(88 == x.m9);
-    test_generated_operations(x, y);
-
-    // Differ in the m1 value
-    type z = {1, 4.0f, 'a', false, 3U, 99LL, 1.0, 3UL, false, 88};
-    test_generated_operations(x, z);
-
-    // Differ in the m2 value
-    type a = {1, 3.5f, 'b', false, 3U, 99LL, 1.0, 3UL, false, 88};
-    test_generated_operations(x, a);
-
-    // Differ in the m3 value
-    type b = {1, 3.5f, 'a', true, 3U, 99LL, 1.0, 3UL, false, 88};
-    test_generated_operations(x, b);
-
-    // Differ in the m4 value
-    type c = {1, 3.5f, 'a', true, 4U, 99LL, 1.0, 3UL, false, 88};
-    test_generated_operations(x, c);
-
-    // Differ in the m5 value
-    type d = {1, 3.5f, 'a', true, 4U, 100LL, 1.0, 3UL, false, 88};
-    test_generated_operations(x, d);
-
-    // Differ in the m6 value
-    type e = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 3UL, false, 88};
-    test_generated_operations(x, e);
-
-    // Differ in the m7 value
-    type f = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, false, 88};
-    test_generated_operations(x, f);
-
-    // Differ in the m8 value
-    type g = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, true, 88};
-    test_generated_operations(x, g);
-
-    // Differ in the m9 value
-    type h = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, true, 89};
-    test_generated_operations(x, h);
-
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<3> > ));
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<4> > ));
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<5> > ));
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<7> > ));
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<8> > ));
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<9> > ));
-    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<10> > ));
-
-    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<0> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<float, GetIntrospectionItem<type, Integer<1> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<8> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<int, GetIntrospectionItem<type, Integer<9> >::type> ));
-
-    getOutput() << x << '\n';
-    getOutput() << y << '\n';
-    getOutput() << z << '\n';
-    getOutput() << a << '\n';
-    getOutput() << b << '\n';
-    getOutput() << c << '\n';
-    getOutput() << d << '\n';
-    getOutput() << e << '\n';
-    getOutput() << f << '\n';
-    getOutput() << g << '\n';
-    getOutput() << h << '\n';
-
-    std::istringstream stream("22 3.0 3 1 12345 112132 3.3e7 22 0 -1234");
-    type k;
-    stream >> k;
-    TEST(22 == k.m0);
-    TEST(3.0f == k.m1);
-    TEST('3' == k.m2);
-    TEST(true == k.m3);
-    TEST(12345U == k.m4);
-    TEST(112132L == k.m5);
-    TEST(3.3e7 == k.m6);
-    TEST(22UL == k.m7);
-    TEST(false == k.m8);
-    TEST(-1234 == k.m9);
-}
-
 void test_storage_reference_types()
 {
     typedef singleton<int&, DefaultTag> type;
@@ -1368,14 +1264,13 @@ struct NumberedStorageType
     typedef Integer<6> IntrospectionItem6;
     typedef Integer<7> IntrospectionItem7;
     typedef Integer<8> IntrospectionItem8;
-    typedef Integer<9> IntrospectionItem9;
 };
 
 void test_numbered_introspection()
 {
     typedef NumberedStorageType type;
-    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<10>, IntrospectionArity<type>::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Integer<0>, Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8>, Integer<9> >, GenerateIntrospectionItems<type>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<9>, IntrospectionArity<type>::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<Array<Integer<0>, Integer<1>, Integer<2>, Integer<3>, Integer<4>, Integer<5>, Integer<6>, Integer<7>, Integer<8> >, GenerateIntrospectionItems<type>::type> ));
     INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
     INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<1> > ));
     INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<2> > ));
@@ -1385,8 +1280,7 @@ void test_numbered_introspection()
     INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<6> > ));
     INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<7> > ));
     INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<8> > ));
-    INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<9> > ));
-    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<10> > ));
+    INTROSPECTION_STATIC_ASSERT_NOT2(( HasIntrospectionItem<type, Integer<9> > ));
 
     INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, GetIntrospectionItem<type, Integer<0> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<1>, GetIntrospectionItem<type, Integer<1> >::type> ));
@@ -1397,8 +1291,6 @@ void test_numbered_introspection()
     INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<6>, GetIntrospectionItem<type, Integer<6> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<7>, GetIntrospectionItem<type, Integer<7> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<8>, GetIntrospectionItem<type, Integer<8> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<9>, GetIntrospectionItem<type, Integer<9> >::type> ));
-
 }
 
 typedef triple<int, long, char> VisitorTestType;
@@ -2154,7 +2046,6 @@ int main()
     test_septuple();
     test_octuple();
     test_nonuple();
-    test_decuple();
     test_storage_reference_types();
     test_numbered_introspection();
     test_visit();

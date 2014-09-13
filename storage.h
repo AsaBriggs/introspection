@@ -224,31 +224,10 @@ struct TYPE_DEFAULT_VISIBILITY nonuple
     }
 };
 
-template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9, typename Tag=DefaultTag>
-struct TYPE_DEFAULT_VISIBILITY decuple
-{
-    typedef decuple type;
-    typedef true_type IntrospectionEnabled;
-    typedef Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> IntrospectionItems;
-
-    T0 m0;
-    T1 m1;
-    T2 m2;
-    T3 m3;
-    T4 m4;
-    T5 m5;
-    T6 m6;
-    T7 m7;
-    T8 m8;
-    T9 m9;
-
-    template<typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9>
-    static INLINE type make(P0 const& p0, P1 const& p1, P2 const& p2, P3 const& p3, P4 const& p4, P5 const& p5, P6 const& p6, P7 const& p7, P8 const& p8, P9 const& p9)
-    {
-        type tmp = {p0, p1, p2, p3, p4, p5, p6, p7, p8, p9};
-        return tmp;
-    }
-};
+// Note that to keep the requirements of storage within the Arity limits of Apply (N=10)
+// It was decided that implementing storage containing N types would be troublesome and so was abandoned.
+// If it is deemed necessary then the limits of Apply, Array and the number of placeholders should be
+// increased.
 
 GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionEnabled)
 
@@ -297,7 +276,6 @@ GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem5)
 GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem6)
 GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem7)
 GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem8)
-GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem9)
 
 
 namespace impl {
@@ -334,12 +312,9 @@ struct TYPE_HIDDEN_VISIBILITY HasNumberedIntrospectionItem<T, Integer<7> > : Has
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY HasNumberedIntrospectionItem<T, Integer<8> > : HasMemberType_IntrospectionItem8<T> {METAPROGRAMMING_ONLY(HasNumberedIntrospectionItem)};
 
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY HasNumberedIntrospectionItem<T, Integer<9> > : HasMemberType_IntrospectionItem9<T> {METAPROGRAMMING_ONLY(HasNumberedIntrospectionItem)};
-
 // Alllows IntrospectionArityLoop to terminate
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY HasNumberedIntrospectionItem<T, Integer<10> > : false_type {METAPROGRAMMING_ONLY(HasNumberedIntrospectionItem)};
+struct TYPE_HIDDEN_VISIBILITY HasNumberedIntrospectionItem<T, Integer<9> > : false_type {METAPROGRAMMING_ONLY(HasNumberedIntrospectionItem)};
 
 template<typename T, typename Index>
 struct TYPE_HIDDEN_VISIBILITY HasArrayIntrospectionItem :
@@ -347,9 +322,6 @@ struct TYPE_HIDDEN_VISIBILITY HasArrayIntrospectionItem :
 {
     METAPROGRAMMING_ONLY(HasArrayIntrospectionItem)
 };
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY HasArrayIntrospectionItem<T, Integer<10> > : false_type {METAPROGRAMMING_ONLY(HasArrayIntrospectionItem)};
 
 } // namespace HasItem
 
@@ -393,9 +365,6 @@ struct TYPE_HIDDEN_VISIBILITY GetNumberedIntrospectionItem<T, Integer<7> > : Get
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY GetNumberedIntrospectionItem<T, Integer<8> > : GetMemberType_IntrospectionItem8<T> {METAPROGRAMMING_ONLY(GetNumberedIntrospectionItem)};
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GetNumberedIntrospectionItem<T, Integer<9> > : GetMemberType_IntrospectionItem9<T> {METAPROGRAMMING_ONLY(GetNumberedIntrospectionItem)};
 
 template<typename T, typename Index>
 struct TYPE_HIDDEN_VISIBILITY GetArrayIntrospectionItem :
@@ -568,13 +537,6 @@ struct TYPE_HIDDEN_VISIBILITY GenerateStorageFromArray<Array<T0, T1, T2, T3, T4,
     METAPROGRAMMING_ONLY(GenerateStorageFromArray)
 };
 
-template<typename Tag, typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
-struct TYPE_HIDDEN_VISIBILITY GenerateStorageFromArray<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Tag>
-{
-    typedef decuple<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, Tag> type;
-    METAPROGRAMMING_ONLY(GenerateStorageFromArray)
-};
-
 } // namespace GenerateStorageNS
 
 template<typename T, typename Enabled>
@@ -644,7 +606,6 @@ MAKE_DEFAULT_GET_N(5)
 MAKE_DEFAULT_GET_N(6)
 MAKE_DEFAULT_GET_N(7)
 MAKE_DEFAULT_GET_N(8)
-MAKE_DEFAULT_GET_N(9)
 
 #undef MAKE_DEFAULT_GET_N
 
@@ -1040,13 +1001,6 @@ ALWAYS_INLINE_HIDDEN typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, 
 {
     typedef typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8>, Tag>::type T;
     return T::make(m0, m1, m2, m3, m4, m5, m6, m7, m8);
-}
-
-template<typename Tag, typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
-ALWAYS_INLINE_HIDDEN typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Tag>::type make_storage(T0 const& m0, T1 const& m1, T2 const& m2, T3 const& m3, T4 const& m4, T5 const& m5, T6 const& m6, T7 const& m7, T8 const& m8, T9 const& m9)
-{
-    typedef typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Tag>::type T;
-    return T::make(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9);
 }
 
 template<typename T, typename Proc>
