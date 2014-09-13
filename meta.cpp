@@ -1398,10 +1398,27 @@ struct TestVisitor
   bool visit0;
   bool visit1;
   bool visit2;
+  bool visitStart;
+  bool visitEnd;
   void operator()(int const&, Integer<0>) { visit0 = true; }
   void operator()(long const&, Integer<1>) { visit1 = true; }
   void operator()(char const&, Integer<2>) { visit2 = true; }
+  void operator()(VisitStart) { visitStart = true; }
+  void operator()(VisitEnd) { visitEnd = true; }
+};
 
+struct TestVisitor2
+{
+  bool visit0;
+  bool visit1;
+  bool visit2;
+  bool visitStart;
+  bool visitEnd;
+  void operator()(int const&, int const&, Integer<0>) { visit0 = true; }
+  void operator()(long const&, long const&, Integer<1>) { visit1 = true; }
+  void operator()(char const&, char const&, Integer<2>) { visit2 = true; }
+  void operator()(VisitStart) { visitStart = true; }
+  void operator()(VisitEnd) { visitEnd = true; }
 };
 
 void test_visit()
@@ -1409,12 +1426,49 @@ void test_visit()
   // Visitor mechanism uses looping so testing a short
   // container exercises no different (meta)code to a
   // longer container.
-  TestVisitor v = {false, false, false};
-  VisitorTestType t = {3, 9L, 'a'};
-  v = visit(t, v);
-  TEST(v.visit0);
-  TEST(v.visit1);
-  TEST(v.visit2);
+  {
+    TestVisitor v = {false, false, false, false, false};
+    VisitorTestType t = {3, 9L, 'a'};
+    v = visit(t, v);
+    TEST(v.visit0);
+    TEST(v.visit1);
+    TEST(v.visit2);
+    TEST(!v.visitStart);
+    TEST(!v.visitEnd);
+  }
+
+  {
+    TestVisitor v = {false, false, false, false, false};
+    VisitorTestType t = {3, 9L, 'a'};
+    v = visit_with_start_end(t, v);
+    TEST(v.visit0);
+    TEST(v.visit1);
+    TEST(v.visit2);
+    TEST(v.visitStart);
+    TEST(v.visitEnd);
+  }
+
+  {
+    TestVisitor2 v = {false, false, false, false, false};
+    VisitorTestType t = {3, 9L, 'a'};
+    v = visit(t, t, v);
+    TEST(v.visit0);
+    TEST(v.visit1);
+    TEST(v.visit2);
+    TEST(!v.visitStart);
+    TEST(!v.visitEnd);
+  }
+
+  {
+    TestVisitor2 v = {false, false, false, false, false};
+    VisitorTestType t = {3, 9L, 'a'};
+    v = visit_with_start_end(t, t, v);
+    TEST(v.visit0);
+    TEST(v.visit1);
+    TEST(v.visit2);
+    TEST(v.visitStart);
+    TEST(v.visitEnd);
+  }
 }
 
 void testfun0()

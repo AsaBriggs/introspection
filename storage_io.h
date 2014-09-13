@@ -23,11 +23,12 @@ struct StreamIn_Visitor
     typedef true_type IntrospectionEnabled;
     typedef std::basic_istream<charT, traits>* IntrospectionItem0;
     IntrospectionItem0 is;
+    typedef typename std::basic_istream<charT, traits>::sentry Guard;
 
     template<typename T, int Index>
     void operator()(T& x, Integer<Index>)
     {
-        typename std::basic_istream<charT, traits>::sentry guard(*is);
+        Guard guard(*is);
         if (guard) {
             // Requires is is not 0
             *is >> x;

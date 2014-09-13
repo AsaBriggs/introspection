@@ -653,6 +653,9 @@ MAKE_DEFAULT_GET_N(9)
 template<typename T, typename Index>
 struct TYPE_DEFAULT_VISIBILITY Get : impl::DefaultGet<T, Index> {};
 
+struct TYPE_DEFAULT_VISIBILITY VisitStart { typedef VisitStart type; };
+struct TYPE_DEFAULT_VISIBILITY VisitEnd { typedef VisitEnd type; };
+
 namespace impl {
 
 template<typename T>
@@ -768,21 +771,28 @@ ALWAYS_INLINE_HIDDEN Proc visit_impl(T& x, Proc p)
 }
 
 template<typename T, typename Proc>
-ALWAYS_INLINE_HIDDEN Proc visit_impl(T const& x, Proc p)
-{
-    return Visit1<T const, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, p);
-}
-
-template<typename T, typename Proc>
 ALWAYS_INLINE_HIDDEN Proc visit_impl(T& x, T& y, Proc p)
 {
     return Visit2<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, y, p);
 }
 
+
 template<typename T, typename Proc>
-ALWAYS_INLINE_HIDDEN Proc visit_impl(T const& x, T const& y, Proc p)
+ALWAYS_INLINE_HIDDEN Proc visit_impl2(T& x, Proc p)
 {
-    return Visit2<T const, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, y, p);
+    p(VisitStart());
+    p =  Visit1<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, p);
+    p(VisitEnd());
+    return p;
+}
+
+template<typename T, typename Proc>
+ALWAYS_INLINE_HIDDEN Proc visit_impl2(T& x, T& y, Proc p)
+{
+    p(VisitStart());
+    p = Visit2<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, y, p);
+    p(VisitEnd());
+    return p;
 }
 
 template<typename GetComparator>
@@ -1049,6 +1059,18 @@ template<typename T, typename U, typename Proc>
 ALWAYS_INLINE_HIDDEN Proc visit(T& x, U& y, Proc p)
 {
     return impl::visit_impl(impl::get_storage(x), impl::get_storage(y), p);
+}
+
+template<typename T, typename Proc>
+ALWAYS_INLINE_HIDDEN Proc visit_with_start_end(T& x, Proc p)
+{
+    return impl::visit_impl2(impl::get_storage(x), p);
+}
+
+template<typename T, typename U, typename Proc>
+ALWAYS_INLINE_HIDDEN Proc visit_with_start_end(T& x, U& y, Proc p)
+{
+    return impl::visit_impl2(impl::get_storage(x), impl::get_storage(y), p);
 }
 
 } // namespace intro
