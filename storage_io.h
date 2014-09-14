@@ -76,14 +76,14 @@ template<typename T, typename charT, typename traits>
 typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_istream<charT, traits>& >::type
 operator>>(std::basic_istream<charT, traits>& is, T& x)
 {
-    return impl::stream_in_impl(is, impl::get_storage(x));
+    return impl::stream_in_impl(is, get_storage(x));
 }
 
 template<typename T, typename charT, typename traits>
 typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_ostream<charT, traits>& >::type
 operator<<(std::basic_ostream<charT, traits>& os, T const& x)
 {
-    return impl::stream_out_impl(os, impl::get_storage(x));
+    return impl::stream_out_impl(os, get_storage(x));
 }
 
 } // namespace intro

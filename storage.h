@@ -278,9 +278,7 @@ GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem7)
 GENERATE_HAS_AND_GET_MEMBER_TYPE(IntrospectionItem8)
 
 
-namespace impl {
-
-namespace HasItem {
+namespace HasIntrospectionItem_impl {
 
 template<typename T, typename Index>
 struct TYPE_HIDDEN_VISIBILITY HasNumberedIntrospectionItem;
@@ -323,18 +321,22 @@ struct TYPE_HIDDEN_VISIBILITY HasArrayIntrospectionItem :
     METAPROGRAMMING_ONLY(HasArrayIntrospectionItem)
 };
 
-} // namespace HasItem
-
 template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY HasIntrospectionItem_impl :
+struct TYPE_HIDDEN_VISIBILITY HasIntrospectionItem :
      eval_if<HasMemberType_IntrospectionItems<T>,
-             HasItem::HasArrayIntrospectionItem<T, Index>,
-             HasItem::HasNumberedIntrospectionItem<T, Index> >
+             HasArrayIntrospectionItem<T, Index>,
+             HasNumberedIntrospectionItem<T, Index> >
 {
-    METAPROGRAMMING_ONLY(HasIntrospectionItem_impl)
+    METAPROGRAMMING_ONLY(HasIntrospectionItem)
 };
 
-namespace GetItem {
+} // namespace HasIntrospectionItem_impl
+
+template<typename T, typename Index>
+struct TYPE_HIDDEN_VISIBILITY HasIntrospectionItem :  HasIntrospectionItem_impl::HasIntrospectionItem<T, Index> {METAPROGRAMMING_ONLY(HasIntrospectionItem)};
+
+
+namespace GetIntrospectionItem_impl {
 
 template<typename T, typename Index>
 struct TYPE_HIDDEN_VISIBILITY GetNumberedIntrospectionItem;
@@ -373,17 +375,21 @@ struct TYPE_HIDDEN_VISIBILITY GetArrayIntrospectionItem :
     METAPROGRAMMING_ONLY(GetArrayIntrospectionItem)
 };
 
-} // namespace GetItem
-
 template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY GetIntrospectionItem_impl : eval_if<HasMemberType_IntrospectionItems<T>,
-                                           GetItem::GetArrayIntrospectionItem<T, Index>,
-                                           GetItem::GetNumberedIntrospectionItem<T, Index> >
+struct TYPE_HIDDEN_VISIBILITY GetIntrospectionItem : eval_if<HasMemberType_IntrospectionItems<T>,
+                                           GetArrayIntrospectionItem<T, Index>,
+                                           GetNumberedIntrospectionItem<T, Index> >
 {
-    METAPROGRAMMING_ONLY(GetIntrospectionItem_impl)
+    METAPROGRAMMING_ONLY(GetIntrospectionItem)
 };
 
-namespace Arity {
+} // namespace GetIntrospectionItem_impl
+
+template<typename T, typename Index>
+struct TYPE_HIDDEN_VISIBILITY GetIntrospectionItem : GetIntrospectionItem_impl::GetIntrospectionItem<T, Index> {METAPROGRAMMING_ONLY(GetIntrospectionItem)};
+
+
+namespace IntrospectionArity_impl {
 
 template<typename T, typename CurrentArity>
 struct TYPE_HIDDEN_VISIBILITY IntrospectionArityLoop;
@@ -391,7 +397,7 @@ struct TYPE_HIDDEN_VISIBILITY IntrospectionArityLoop;
 // Count upwards; higher Arity is less likely.
 // Note that Indexing is zero based, and that CurrentArity suggests 0..CurrentArity-1 (inclusive) are available
 template<typename T, typename CurrentArity>
-struct TYPE_HIDDEN_VISIBILITY IntrospectionArityLoop : eval_if<HasIntrospectionItem_impl<T, CurrentArity>,
+struct TYPE_HIDDEN_VISIBILITY IntrospectionArityLoop : eval_if<HasIntrospectionItem<T, CurrentArity>,
                                         IntrospectionArityLoop<T, typename Successor<CurrentArity>::type>,
                                         CurrentArity>
 {
@@ -404,19 +410,23 @@ struct TYPE_HIDDEN_VISIBILITY IntrospectionArityArray : ArraySize<typename GetMe
     METAPROGRAMMING_ONLY(IntrospectionArityArray)
 };
 
-} // namespace Arity
-
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY IntrospectionArity_impl : eval_if<IntrospectionEnabled<T>,
+struct TYPE_HIDDEN_VISIBILITY IntrospectionArity : eval_if<IntrospectionEnabled<T>,
                                          eval_if<HasMemberType_IntrospectionItems<T>,
-                                                 Arity::IntrospectionArityArray<T>,
-                                                 Arity::IntrospectionArityLoop<T, Integer<0> > >,
+                                                 IntrospectionArityArray<T>,
+                                                 IntrospectionArityLoop<T, Integer<0> > >,
                                          Integer<0> >
 {
-    METAPROGRAMMING_ONLY(IntrospectionArity_impl)
+    METAPROGRAMMING_ONLY(IntrospectionArity)
 };
 
-namespace GetItems {
+} // namespace IntrospectionArity_impl
+
+template<typename T>
+struct TYPE_HIDDEN_VISIBILITY IntrospectionArity : IntrospectionArity_impl::IntrospectionArity<T> {METAPROGRAMMING_ONLY(IntrospectionArity)};
+
+
+namespace GenerateIntrospectionItems_impl {
 
 template<typename T, typename Arity, typename Index, typename CurrentArray>
 struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems_Loop;
@@ -427,42 +437,30 @@ struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems_Loop<T, Arity, Arity, C
 template<typename T, typename ArityMinusOne, typename Index, typename CurrentArray>
 struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems_Loop : 
     GenerateIntrospectionItems_Loop<T, ArityMinusOne, typename Successor<Index>::type,
-        typename ArrayConcat<CurrentArray, Array< typename GetItem::GetNumberedIntrospectionItem<T, Index>::type> >::type>
+        typename ArrayConcat<CurrentArray, Array< typename GetIntrospectionItem_impl::GetNumberedIntrospectionItem<T, Index>::type> >::type>
 {
     METAPROGRAMMING_ONLY(GenerateIntrospectionItems_Loop)
 };
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems_DeduceArity :
-    GenerateIntrospectionItems_Loop<T, typename IntrospectionArity_impl<T>::type, Integer<0>, Array<> > {METAPROGRAMMING_ONLY(GenerateIntrospectionItems_DeduceArity)};
-
-} // namespace GetItems
+    GenerateIntrospectionItems_Loop<T, typename IntrospectionArity<T>::type, Integer<0>, Array<> > {METAPROGRAMMING_ONLY(GenerateIntrospectionItems_DeduceArity)};
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems_impl : eval_if<HasMemberType_IntrospectionItems<T>,
+struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems : eval_if<HasMemberType_IntrospectionItems<T>,
                                                  GetMemberType_IntrospectionItems<T>,
-                                                 GetItems::GenerateIntrospectionItems_DeduceArity<T> >
+                                                 GenerateIntrospectionItems_DeduceArity<T> >
 {
-  METAPROGRAMMING_ONLY(GenerateIntrospectionItems_impl)
+    METAPROGRAMMING_ONLY(GenerateIntrospectionItems)
 };
 
-} // namespace impl
-
-template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY HasIntrospectionItem : impl::HasIntrospectionItem_impl<T, Index> {METAPROGRAMMING_ONLY(HasIntrospectionItem)};
-
-template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY GetIntrospectionItem : impl::GetIntrospectionItem_impl<T, Index> {METAPROGRAMMING_ONLY(GetIntrospectionItem)};
+} // namespace GenerateIntrospectionItems_impl
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY IntrospectionArity : impl::IntrospectionArity_impl<T> {METAPROGRAMMING_ONLY(IntrospectionArity)};
+struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems : GenerateIntrospectionItems_impl::GenerateIntrospectionItems<T> {METAPROGRAMMING_ONLY(GenerateIntrospectionItems)};
 
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems : impl::GenerateIntrospectionItems_impl<T> {METAPROGRAMMING_ONLY(GenerateIntrospectionItems)};
 
-namespace impl {
-
-namespace GenerateStorageNS {
+namespace GenerateStorage_impl {
 
 template<typename Array, typename Tag>
 struct TYPE_HIDDEN_VISIBILITY GenerateStorageFromArray;
@@ -537,30 +535,30 @@ struct TYPE_HIDDEN_VISIBILITY GenerateStorageFromArray<Array<T0, T1, T2, T3, T4,
     METAPROGRAMMING_ONLY(GenerateStorageFromArray)
 };
 
-} // namespace GenerateStorageNS
-
 template<typename T, typename Enabled>
-struct TYPE_HIDDEN_VISIBILITY GenerateStorage_impl;
+struct TYPE_HIDDEN_VISIBILITY GenerateStorage;
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GenerateStorage_impl<T, false_type> {METAPROGRAMMING_ONLY(GenerateStorage_impl)};
+struct TYPE_HIDDEN_VISIBILITY GenerateStorage<T, false_type> {METAPROGRAMMING_ONLY(GenerateStorage)};
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GenerateStorage_impl<T, true_type> :
-    GenerateStorageNS::GenerateStorageFromArray<typename GenerateIntrospectionItems_impl<T>::type,
+struct TYPE_HIDDEN_VISIBILITY GenerateStorage<T, true_type> :
+    GenerateStorageFromArray<typename GenerateIntrospectionItems<T>::type,
                                               typename IntrospectionStorageTag<T>::type>
 {
-    METAPROGRAMMING_ONLY(GenerateStorage_impl)
+    METAPROGRAMMING_ONLY(GenerateStorage)
 };
 
-} // namespace impl
+} // namespace GenerateStorage_impl
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GenerateStorage : impl::GenerateStorage_impl<T, typename IntrospectionEnabled<T>::type > {METAPROGRAMMING_ONLY(GenerateStorage)};
+struct TYPE_HIDDEN_VISIBILITY GenerateStorage : GenerateStorage_impl::GenerateStorage<T, typename IntrospectionEnabled<T>::type > {METAPROGRAMMING_ONLY(GenerateStorage)};
 
-// OK, how to generate a function to call the appropriate make_storage?
+template<typename Array, typename Tag>
+struct TYPE_HIDDEN_VISIBILITY GenerateStorageFromArray : GenerateStorage_impl::GenerateStorageFromArray<Array, Tag>{METAPROGRAMMING_ONLY(GenerateStorageFromArray)};
 
-namespace impl {
+
+namespace DefaultGet_impl {
 
 template<typename T, typename Index>
 struct TYPE_DEFAULT_VISIBILITY DefaultGet;
@@ -609,15 +607,10 @@ MAKE_DEFAULT_GET_N(8)
 
 #undef MAKE_DEFAULT_GET_N
 
-} // namespace impl
+} // namespace DefaultGet_impl
 
 template<typename T, typename Index>
-struct TYPE_DEFAULT_VISIBILITY Get : impl::DefaultGet<T, Index> {};
-
-struct TYPE_DEFAULT_VISIBILITY VisitStart { typedef VisitStart type; };
-struct TYPE_DEFAULT_VISIBILITY VisitEnd { typedef VisitEnd type; };
-
-namespace impl {
+struct TYPE_DEFAULT_VISIBILITY Get : DefaultGet_impl::DefaultGet<T, Index> {};
 
 template<typename T>
 ALWAYS_INLINE_HIDDEN
@@ -646,6 +639,11 @@ typename disable_if<IntrospectionIndirectStorage<T>, T>::type const& get_storage
 {
     return x;
 }
+
+struct TYPE_DEFAULT_VISIBILITY VisitStart { typedef VisitStart type; };
+struct TYPE_DEFAULT_VISIBILITY VisitEnd { typedef VisitEnd type; };
+
+namespace Visit_impl {
 
 // Note that T may be const-qualified
 template<typename T, typename Proc, typename Index, typename Arity>
@@ -726,20 +724,20 @@ struct TYPE_DEFAULT_VISIBILITY Visit2
 };
 
 template<typename T, typename Proc>
-ALWAYS_INLINE_HIDDEN Proc visit_impl(T& x, Proc p)
+ALWAYS_INLINE_HIDDEN Proc visit(T& x, Proc p)
 {
     return Visit1<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, p);
 }
 
 template<typename T, typename Proc>
-ALWAYS_INLINE_HIDDEN Proc visit_impl(T& x, T& y, Proc p)
+ALWAYS_INLINE_HIDDEN Proc visit(T& x, T& y, Proc p)
 {
     return Visit2<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, y, p);
 }
 
 
 template<typename T, typename Proc>
-ALWAYS_INLINE_HIDDEN Proc visit_impl2(T& x, Proc p)
+ALWAYS_INLINE_HIDDEN Proc visit2(T& x, Proc p)
 {
     p(VisitStart());
     p =  Visit1<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, p);
@@ -748,13 +746,41 @@ ALWAYS_INLINE_HIDDEN Proc visit_impl2(T& x, Proc p)
 }
 
 template<typename T, typename Proc>
-ALWAYS_INLINE_HIDDEN Proc visit_impl2(T& x, T& y, Proc p)
+ALWAYS_INLINE_HIDDEN Proc visit2(T& x, T& y, Proc p)
 {
     p(VisitStart());
     p = Visit2<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, y, p);
     p(VisitEnd());
     return p;
 }
+
+} // namespace Visit_impl
+
+template<typename T, typename Proc>
+ALWAYS_INLINE_HIDDEN Proc visit(T& x, Proc p)
+{
+    return Visit_impl::visit(get_storage(x), p);
+}
+
+template<typename T, typename U, typename Proc>
+ALWAYS_INLINE_HIDDEN Proc visit(T& x, U& y, Proc p)
+{
+    return Visit_impl::visit(get_storage(x), get_storage(y), p);
+}
+
+template<typename T, typename Proc>
+ALWAYS_INLINE_HIDDEN Proc visit_with_start_end(T& x, Proc p)
+{
+    return Visit_impl::visit2(get_storage(x), p);
+}
+
+template<typename T, typename U, typename Proc>
+ALWAYS_INLINE_HIDDEN Proc visit_with_start_end(T& x, U& y, Proc p)
+{
+    return Visit_impl::visit2(get_storage(x), get_storage(y), p);
+}
+
+namespace introspected_comparisons_impl {
 
 template<typename GetComparator>
 struct TYPE_DEFAULT_VISIBILITY Equal_Visitor
@@ -794,17 +820,17 @@ template<typename GetComparator, typename T>
 ALWAYS_INLINE_HIDDEN bool equal_impl(T const& x, T const& y)
 {
     Equal_Visitor<GetComparator> tmp = {true};
-    return visit_impl(x, y, tmp).value;
+    return visit(x, y, tmp).value;
 }
 
 template<typename GetComparator, typename T>
 ALWAYS_INLINE_HIDDEN bool less_impl(T const& x, T const& y)
 {
     Less_Visitor<GetComparator> tmp = {false};
-    return visit_impl(x, y, tmp).value;
+    return visit(x, y, tmp).value;
 }
 
-} // namespace impl
+} // namespace introspected_comparisons_impl
 
 template<typename T, typename enable=void>
 struct TYPE_HIDDEN_VISIBILITY generate_introspected_comparisons : IntrospectionEnabled<T> {METAPROGRAMMING_ONLY(generate_introspected_comparisons)};
@@ -823,7 +849,7 @@ struct TYPE_DEFAULT_VISIBILITY less<T, typename enable_if<generate_introspected_
     INLINE codomain_type
     operator()(input_type_0 x, input_type_1 y) const
     {
-        return impl::less_impl<less<placeholders::_0> >(impl::get_storage(x), impl::get_storage(y));
+        return introspected_comparisons_impl::less_impl<less<placeholders::_0> >(get_storage(x), get_storage(y));
     }
 };
 
@@ -841,7 +867,7 @@ struct TYPE_DEFAULT_VISIBILITY equal<T, typename enable_if<generate_introspected
     INLINE codomain_type
     operator()(input_type_0 x, input_type_1 y) const
     {
-        return impl::equal_impl<equal<placeholders::_0> >(impl::get_storage(x), impl::get_storage(y));
+        return introspected_comparisons_impl::equal_impl<equal<placeholders::_0> >(get_storage(x), get_storage(y));
     }
 };
 
@@ -851,7 +877,7 @@ template<typename T>
 INLINE typename enable_if<generate_introspected_comparisons<T>, bool>::type
 operator==(T const& x, T const& y)
 {
-    return impl::equal_impl<OperatorEquals<placeholders::_0> >(impl::get_storage(x), impl::get_storage(y));
+    return introspected_comparisons_impl::equal_impl<OperatorEquals<placeholders::_0> >(get_storage(x), get_storage(y));
 }
 
 template<typename T>
@@ -867,7 +893,7 @@ template<typename T>
 INLINE typename enable_if<generate_introspected_comparisons<T>, bool>::type
 operator<(T const& x, T const& y)
 {
-    return impl::less_impl<OperatorLessThan<placeholders::_0> >(impl::get_storage(x), impl::get_storage(y));
+    return introspected_comparisons_impl::less_impl<OperatorLessThan<placeholders::_0> >(get_storage(x), get_storage(y));
 }
 
 template<typename T>
@@ -908,17 +934,17 @@ struct TYPE_HIDDEN_VISIBILITY underlying_type<T,
 {
     typedef typename ArrayTransform<typename GenerateIntrospectionItems<T>::type, get_underlying_type<placeholders::_0> >::type TransformedTypes;
 
-    typedef typename impl::GenerateStorageNS::GenerateStorageFromArray<TransformedTypes,
+    typedef typename GenerateStorageFromArray<TransformedTypes,
         typename IntrospectionStorageTag<T>::type>::type type;
     METAPROGRAMMING_ONLY(underlying_type)
 };
 
 // ArrayNoArg type and singleton can be reduced to simpler cases, unwrapping the struct in singelton's case
 template<typename Tag>
-struct TYPE_HIDDEN_VISIBILITY underlying_type<empty_type<Tag> > : ArrayNoArg {    METAPROGRAMMING_ONLY(underlying_type)};
+struct TYPE_HIDDEN_VISIBILITY underlying_type<empty_type<Tag> > : empty_type<Tag> {METAPROGRAMMING_ONLY(underlying_type)};
 
 template<typename T, typename Tag>
-struct TYPE_HIDDEN_VISIBILITY underlying_type<singleton<T, Tag> > : get_underlying_type<T> {    METAPROGRAMMING_ONLY(underlying_type)};
+struct TYPE_HIDDEN_VISIBILITY underlying_type<singleton<T, Tag> > : get_underlying_type<T> {METAPROGRAMMING_ONLY(underlying_type)};
 
 
 template<typename Arr, typename Tag>
@@ -926,7 +952,7 @@ struct TYPE_HIDDEN_VISIBILITY deduce_type
 {
     typedef typename ArrayTransform<Arr, decay_ref<placeholders::_0> >::type TransformedTypes;
 
-    typedef typename impl::GenerateStorageNS::GenerateStorageFromArray<TransformedTypes,
+    typedef typename GenerateStorageFromArray<TransformedTypes,
         Tag>::type type;
     METAPROGRAMMING_ONLY(deduce_type)
 };
@@ -1003,29 +1029,6 @@ ALWAYS_INLINE_HIDDEN typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, 
     return T::make(m0, m1, m2, m3, m4, m5, m6, m7, m8);
 }
 
-template<typename T, typename Proc>
-ALWAYS_INLINE_HIDDEN Proc visit(T& x, Proc p)
-{
-    return impl::visit_impl(impl::get_storage(x), p);
-}
-
-template<typename T, typename U, typename Proc>
-ALWAYS_INLINE_HIDDEN Proc visit(T& x, U& y, Proc p)
-{
-    return impl::visit_impl(impl::get_storage(x), impl::get_storage(y), p);
-}
-
-template<typename T, typename Proc>
-ALWAYS_INLINE_HIDDEN Proc visit_with_start_end(T& x, Proc p)
-{
-    return impl::visit_impl2(impl::get_storage(x), p);
-}
-
-template<typename T, typename U, typename Proc>
-ALWAYS_INLINE_HIDDEN Proc visit_with_start_end(T& x, U& y, Proc p)
-{
-    return impl::visit_impl2(impl::get_storage(x), impl::get_storage(y), p);
-}
 
 } // namespace intro
 

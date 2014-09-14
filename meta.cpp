@@ -625,18 +625,6 @@ void test_detect_traits()
   INTROSPECTION_STATIC_ASSERT2(( is_same<int volatile const&, GetMemberType_TestTypedef<TestTrue2>::type> ));
 }
 
-void test_empty()
-{
-  empty_type<DefaultTag> a;
-  empty_type<DefaultTag> b;
-  TEST(a == b);
-  TEST(!(a != b));
-  TEST(!(a < b ));
-  TEST(a <= b);
-  TEST(a >= b);
-  TEST(!(a > b));
-}
-
 template<typename T>
 void test_equality(T const& x, T const& y)
 {
@@ -712,6 +700,19 @@ std::ostream& getOutput()
     static std::ostringstream os;
     return os;
 #endif
+}
+
+void test_empty()
+{
+  empty_type<DefaultTag> a;
+  empty_type<DefaultTag> b;
+  TEST(a == b);
+  TEST(!(a != b));
+  TEST(!(a < b ));
+  TEST(a <= b);
+  TEST(a >= b);
+  TEST(!(a > b));
+  swap(a, b);
 }
 
 void test_singleton()
