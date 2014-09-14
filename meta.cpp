@@ -1822,8 +1822,6 @@ void testMemberFun2(T func)
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&>, typename GetInputTypeArray<T>::type> ));
 }
 
-extern double TEST_DOUBLE_ARRAY[];
-
 template<typename ReturnType, typename Input0, typename T>
 void testMemberFun3(T func)
 {
@@ -1998,8 +1996,6 @@ void testMemberFun9(T func)
   INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename GetFunctionArity<T>::type > ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool, int>, typename GetInputTypeArray<T>::type> ));
 }
-
-double TEST_DOUBLE_ARRAY[1] = {};
 
 void test_function_signatures()
 {
