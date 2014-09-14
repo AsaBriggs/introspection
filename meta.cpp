@@ -201,6 +201,8 @@ struct ArrayReverser
 
 void test_Apply()
 {
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int, Apply<placeholders::_0, int>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<float, Apply<placeholders::_2,int, bool, float>::type> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<int> >::type> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<int>, short, double, char, float, void >::type> ));
 

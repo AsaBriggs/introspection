@@ -910,6 +910,13 @@ struct TYPE_HIDDEN_VISIBILITY BindArguments
     METAPROGRAMMING_ONLY(BindArguments)
 };
 
+template<typename Index, typename Environment>
+struct TYPE_HIDDEN_VISIBILITY BindArguments<placeholders::Placeholder<Index>, Environment> :
+    LookupPlaceholder<placeholders::Placeholder<Index>, Environment>
+{
+    METAPROGRAMMING_ONLY(BindArguments)
+};
+
 template<template<typename> class T, typename P0, typename Environment>
 struct TYPE_HIDDEN_VISIBILITY BindArguments<T<P0>, Environment> :
     T<typename LookupPlaceholder<P0, Environment>::type>
@@ -1119,6 +1126,13 @@ struct TYPE_HIDDEN_VISIBILITY AddPlaceholders<T, Integer<10> >
 template<typename T, typename Environment>
 struct TYPE_HIDDEN_VISIBILITY Apply_impl :
     BindArguments<typename AddPlaceholders<T, typename EnvironmentArity<Environment>::type >::type, Environment>
+{
+    METAPROGRAMMING_ONLY(Apply_impl)
+};
+
+template<typename Index, typename Environment>
+struct TYPE_HIDDEN_VISIBILITY Apply_impl<placeholders::Placeholder<Index>, Environment> :
+    BindArguments<placeholders::Placeholder<Index>, Environment>
 {
     METAPROGRAMMING_ONLY(Apply_impl)
 };
