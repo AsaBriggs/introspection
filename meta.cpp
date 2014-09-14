@@ -936,36 +936,36 @@ void test_quintuple()
 
 void test_sextuple()
 {
-    typedef sextuple<int, float, char, bool, unsigned, long long, DefaultTag> type;
+    typedef sextuple<int, float, char, bool, unsigned, long, DefaultTag> type;
     // Differed in the m0 value
-    type x = {1, 3.5f, 'a', false, 3U, 99LL};
-    type y = {2, 3.5f, 'a', false, 3U, 99LL};
+    type x = {1, 3.5f, 'a', false, 3U, 99L};
+    type y = {2, 3.5f, 'a', false, 3U, 99L};
     TEST(1 == x.m0);
     TEST(3.5f == x.m1);
     TEST('a' == x.m2);
     TEST(false == x.m3);
     TEST(3U == x.m4);
-    TEST(99LL == x.m5);
+    TEST(99L == x.m5);
     test_generated_operations(x, y);
 
     // Differ in the m1 value
-    type z = {1, 4.0f, 'a', false, 3U, 99LL};
+    type z = {1, 4.0f, 'a', false, 3U, 99L};
     test_generated_operations(x, z);
 
     // Differ in the m2 value
-    type a = {1, 3.5f, 'b', false, 3U, 99LL};
+    type a = {1, 3.5f, 'b', false, 3U, 99L};
     test_generated_operations(x, a);
 
     // Differ in the m3 value
-    type b = {1, 3.5f, 'a', true, 3U, 99LL};
+    type b = {1, 3.5f, 'a', true, 3U, 99L};
     test_generated_operations(x, b);
 
     // Differ in the m4 value
-    type c = {1, 3.5f, 'a', true, 4U, 99LL};
+    type c = {1, 3.5f, 'a', true, 4U, 99L};
     test_generated_operations(x, c);
 
     // Differ in the m5 value
-    type d = {1, 3.5f, 'a', true, 4U, 100LL};
+    type d = {1, 3.5f, 'a', true, 4U, 100L};
     test_generated_operations(x, d);
 
     INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
@@ -981,7 +981,7 @@ void test_sextuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetIntrospectionItem<type, Integer<5> >::type> ));
 
     getOutput() << x << '\n';
     getOutput() << y << '\n';
@@ -1004,41 +1004,41 @@ void test_sextuple()
 
 void test_septuple()
 {
-    typedef septuple<int, float, char, bool, unsigned, long long, double, DefaultTag> type;
+    typedef septuple<int, float, char, bool, unsigned, long, double, DefaultTag> type;
     // Differed in the m0 value
-    type x = {1, 3.5f, 'a', false, 3U, 99LL, 1.0};
-    type y = {2, 3.5f, 'a', false, 3U, 99LL, 1.0};
+    type x = {1, 3.5f, 'a', false, 3U, 99L, 1.0};
+    type y = {2, 3.5f, 'a', false, 3U, 99L, 1.0};
     TEST(1 == x.m0);
     TEST(3.5f == x.m1);
     TEST('a' == x.m2);
     TEST(false == x.m3);
     TEST(3U == x.m4);
-    TEST(99LL == x.m5);
+    TEST(99L == x.m5);
     TEST(1.0 == x.m6);
     test_generated_operations(x, y);
 
     // Differ in the m1 value
-    type z = {1, 4.0f, 'a', false, 3U, 99LL, 1.0};
+    type z = {1, 4.0f, 'a', false, 3U, 99L, 1.0};
     test_generated_operations(x, z);
 
     // Differ in the m2 value
-    type a = {1, 3.5f, 'b', false, 3U, 99LL, 1.0};
+    type a = {1, 3.5f, 'b', false, 3U, 99L, 1.0};
     test_generated_operations(x, a);
 
     // Differ in the m3 value
-    type b = {1, 3.5f, 'a', true, 3U, 99LL, 1.0};
+    type b = {1, 3.5f, 'a', true, 3U, 99L, 1.0};
     test_generated_operations(x, b);
 
     // Differ in the m4 value
-    type c = {1, 3.5f, 'a', true, 4U, 99LL, 1.0};
+    type c = {1, 3.5f, 'a', true, 4U, 99L, 1.0};
     test_generated_operations(x, c);
 
     // Differ in the m5 value
-    type d = {1, 3.5f, 'a', true, 4U, 100LL, 1.0};
+    type d = {1, 3.5f, 'a', true, 4U, 100L, 1.0};
     test_generated_operations(x, d);
 
     // Differ in the m6 value
-    type e = {1, 3.5f, 'a', true, 4U, 100LL, 2.0};
+    type e = {1, 3.5f, 'a', true, 4U, 100L, 2.0};
     test_generated_operations(x, e);
 
     INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
@@ -1055,7 +1055,7 @@ void test_septuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetIntrospectionItem<type, Integer<5> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
 
     getOutput() << x << '\n';
@@ -1081,46 +1081,46 @@ void test_septuple()
 
 void test_octuple()
 {
-    typedef octuple<int, float, char, bool, unsigned, long long, double, unsigned long, DefaultTag> type;
+    typedef octuple<int, float, char, bool, unsigned, long, double, unsigned long, DefaultTag> type;
     // Differed in the m0 value
-    type x = {1, 3.5f, 'a', false, 3U, 99LL, 1.0, 3UL};
-    type y = {2, 3.5f, 'a', false, 3U, 99LL, 1.0, 3UL};
+    type x = {1, 3.5f, 'a', false, 3U, 99L, 1.0, 3UL};
+    type y = {2, 3.5f, 'a', false, 3U, 99L, 1.0, 3UL};
     TEST(1 == x.m0);
     TEST(3.5f == x.m1);
     TEST('a' == x.m2);
     TEST(false == x.m3);
     TEST(3U == x.m4);
-    TEST(99LL == x.m5);
+    TEST(99L == x.m5);
     TEST(1.0 == x.m6);
     TEST(3UL == x.m7);
     test_generated_operations(x, y);
 
     // Differ in the m1 value
-    type z = {1, 4.0f, 'a', false, 3U, 99LL, 1.0, 3UL};
+    type z = {1, 4.0f, 'a', false, 3U, 99L, 1.0, 3UL};
     test_generated_operations(x, z);
 
     // Differ in the m2 value
-    type a = {1, 3.5f, 'b', false, 3U, 99LL, 1.0, 3UL};
+    type a = {1, 3.5f, 'b', false, 3U, 99L, 1.0, 3UL};
     test_generated_operations(x, a);
 
     // Differ in the m3 value
-    type b = {1, 3.5f, 'a', true, 3U, 99LL, 1.0, 3UL};
+    type b = {1, 3.5f, 'a', true, 3U, 99L, 1.0, 3UL};
     test_generated_operations(x, b);
 
     // Differ in the m4 value
-    type c = {1, 3.5f, 'a', true, 4U, 99LL, 1.0, 3UL};
+    type c = {1, 3.5f, 'a', true, 4U, 99L, 1.0, 3UL};
     test_generated_operations(x, c);
 
     // Differ in the m5 value
-    type d = {1, 3.5f, 'a', true, 4U, 100LL, 1.0, 3UL};
+    type d = {1, 3.5f, 'a', true, 4U, 100L, 1.0, 3UL};
     test_generated_operations(x, d);
 
     // Differ in the m6 value
-    type e = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 3UL};
+    type e = {1, 3.5f, 'a', true, 4U, 100L, 2.0, 3UL};
     test_generated_operations(x, e);
 
     // Differ in the m7 value
-    type f = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL};
+    type f = {1, 3.5f, 'a', true, 4U, 100L, 2.0, 4UL};
     test_generated_operations(x, f);
 
     INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
@@ -1138,7 +1138,7 @@ void test_octuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetIntrospectionItem<type, Integer<5> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
 
@@ -1167,51 +1167,51 @@ void test_octuple()
 
 void test_nonuple()
 {
-    typedef nonuple<int, float, char, bool, unsigned, long long, double, unsigned long, bool, DefaultTag> type;
+    typedef nonuple<int, float, char, bool, unsigned, long, double, unsigned long, bool, DefaultTag> type;
     // Differed in the m0 value
-    type x = {1, 3.5f, 'a', false, 3U, 99LL, 1.0, 3UL, false};
-    type y = {2, 3.5f, 'a', false, 3U, 99LL, 1.0, 3UL, false};
+    type x = {1, 3.5f, 'a', false, 3U, 99L, 1.0, 3UL, false};
+    type y = {2, 3.5f, 'a', false, 3U, 99L, 1.0, 3UL, false};
     TEST(1 == x.m0);
     TEST(3.5f == x.m1);
     TEST('a' == x.m2);
     TEST(false == x.m3);
     TEST(3U == x.m4);
-    TEST(99LL == x.m5);
+    TEST(99L == x.m5);
     TEST(1.0 == x.m6);
     TEST(3UL == x.m7);
     TEST(false == x.m8);
     test_generated_operations(x, y);
 
     // Differ in the m1 value
-    type z = {1, 4.0f, 'a', false, 3U, 99LL, 1.0, 3UL, false};
+    type z = {1, 4.0f, 'a', false, 3U, 99L, 1.0, 3UL, false};
     test_generated_operations(x, z);
 
     // Differ in the m2 value
-    type a = {1, 3.5f, 'b', false, 3U, 99LL, 1.0, 3UL, false};
+    type a = {1, 3.5f, 'b', false, 3U, 99L, 1.0, 3UL, false};
     test_generated_operations(x, a);
 
     // Differ in the m3 value
-    type b = {1, 3.5f, 'a', true, 3U, 99LL, 1.0, 3UL, false};
+    type b = {1, 3.5f, 'a', true, 3U, 99L, 1.0, 3UL, false};
     test_generated_operations(x, b);
 
     // Differ in the m4 value
-    type c = {1, 3.5f, 'a', true, 4U, 99LL, 1.0, 3UL, false};
+    type c = {1, 3.5f, 'a', true, 4U, 99L, 1.0, 3UL, false};
     test_generated_operations(x, c);
 
     // Differ in the m5 value
-    type d = {1, 3.5f, 'a', true, 4U, 100LL, 1.0, 3UL, false};
+    type d = {1, 3.5f, 'a', true, 4U, 100L, 1.0, 3UL, false};
     test_generated_operations(x, d);
 
     // Differ in the m6 value
-    type e = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 3UL, false};
+    type e = {1, 3.5f, 'a', true, 4U, 100L, 2.0, 3UL, false};
     test_generated_operations(x, e);
 
     // Differ in the m7 value
-    type f = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, false};
+    type f = {1, 3.5f, 'a', true, 4U, 100L, 2.0, 4UL, false};
     test_generated_operations(x, f);
 
     // Differ in the m8 value
-    type g = {1, 3.5f, 'a', true, 4U, 100LL, 2.0, 4UL, true};
+    type g = {1, 3.5f, 'a', true, 4U, 100L, 2.0, 4UL, true};
     test_generated_operations(x, g);
 
     INTROSPECTION_STATIC_ASSERT2(( HasIntrospectionItem<type, Integer<0> > ));
@@ -1230,7 +1230,7 @@ void test_nonuple()
     INTROSPECTION_STATIC_ASSERT2(( is_same<char, GetIntrospectionItem<type, Integer<2> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<3> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned, GetIntrospectionItem<type, Integer<4> >::type> ));
-    INTROSPECTION_STATIC_ASSERT2(( is_same<long long, GetIntrospectionItem<type, Integer<5> >::type> ));
+    INTROSPECTION_STATIC_ASSERT2(( is_same<long, GetIntrospectionItem<type, Integer<5> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<double, GetIntrospectionItem<type, Integer<6> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<unsigned long, GetIntrospectionItem<type, Integer<7> >::type> ));
     INTROSPECTION_STATIC_ASSERT2(( is_same<bool, GetIntrospectionItem<type, Integer<8> >::type> ));
