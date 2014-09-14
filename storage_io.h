@@ -15,10 +15,10 @@
 #endif
 
 namespace intro {
-namespace impl {
+namespace StreamIn_impl {
 
 template<typename charT, typename traits>
-struct StreamIn_Visitor
+struct TYPE_HIDDEN_VISIBILITY StreamIn_Visitor
 {
     typedef true_type IntrospectionEnabled;
     typedef std::basic_istream<charT, traits>* IntrospectionItem0;
@@ -26,7 +26,7 @@ struct StreamIn_Visitor
     typedef typename std::basic_istream<charT, traits>::sentry Guard;
 
     template<typename T, int Index>
-    void operator()(T& x, Integer<Index>)
+    ALWAYS_INLINE_HIDDEN void operator()(T& x, Integer<Index>)
     {
         Guard guard(*is);
         if (guard) {
@@ -36,15 +36,27 @@ struct StreamIn_Visitor
     }
 };
 
+template<typename T, typename charT, typename traits>
+std::basic_istream<charT, traits>& stream_in(std::basic_istream<charT, traits>& is, T& x)
+{
+    StreamIn_Visitor<charT, traits> visitor = {&is};
+    visit(x, visitor);
+    return is;
+}
+
+} // namespace StreamIn_impl
+
+ namespace StreamOut_impl {
+
 template<typename charT, typename traits>
-struct StreamOut_Visitor
+struct TYPE_HIDDEN_VISIBILITY StreamOut_Visitor
 {
     typedef true_type IntrospectionEnabled;
     typedef std::basic_ostream<charT, traits>* IntrospectionItem0;
     IntrospectionItem0 os;
 
     template<typename T, int Index>
-    void operator()(T const& x, Integer<Index>)
+    ALWAYS_INLINE_HIDDEN void operator()(T const& x, Integer<Index>)
     {
         // Requires os is not 0
         *os << x << ' ' ;
@@ -52,38 +64,30 @@ struct StreamOut_Visitor
 };
 
 template<typename T, typename charT, typename traits>
-std::basic_istream<charT, traits>& stream_in_impl(std::basic_istream<charT, traits>& is, T& x)
-{
-    StreamIn_Visitor<charT, traits> visitor = {&is};
-    visit(x, visitor);
-    return is;
-}
-
-template<typename T, typename charT, typename traits>
-std::basic_ostream<charT, traits>& stream_out_impl(std::basic_ostream<charT, traits>& os, T const& x)
+std::basic_ostream<charT, traits>& stream_out(std::basic_ostream<charT, traits>& os, T const& x)
 {
     StreamOut_Visitor<charT, traits> visitor = {&os};
     visit(x, visitor);
     return os;
 }
 
-} // namespace impl
+} // namespace StreamOut_impl
 
 template<typename T, typename enable=void>
 struct TYPE_HIDDEN_VISIBILITY generate_introspected_streaming : IntrospectionEnabled<T> {METAPROGRAMMING_ONLY(generate_introspected_streaming)};
 
 template<typename T, typename charT, typename traits>
-typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_istream<charT, traits>& >::type
+INLINE typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_istream<charT, traits>& >::type
 operator>>(std::basic_istream<charT, traits>& is, T& x)
 {
-    return impl::stream_in_impl(is, get_storage(x));
+    return StreamIn_impl::stream_in(is, get_storage(x));
 }
 
 template<typename T, typename charT, typename traits>
-typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_ostream<charT, traits>& >::type
+INLINE typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_ostream<charT, traits>& >::type
 operator<<(std::basic_ostream<charT, traits>& os, T const& x)
 {
-    return impl::stream_out_impl(os, get_storage(x));
+    return StreamOut_impl::stream_out(os, get_storage(x));
 }
 
 } // namespace intro
