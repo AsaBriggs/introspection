@@ -27,19 +27,16 @@ struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType
     INTROSPECTION_STATIC_ASSERT(( is_struct_class_or_union<T> )); // Assert here = function arity too high
 };
 
-struct TYPE_HIDDEN_VISIBILITY no_template_argument { typedef no_template_argument type; METAPROGRAMMING_ONLY(no_template_argument) };
-struct TYPE_HIDDEN_VISIBILITY template_param { typedef template_param type; METAPROGRAMMING_ONLY(template_param)};
-
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY CodomainDeduction { typedef CodomainDeduction type; METAPROGRAMMING_ONLY(CodomainDeduction)};
 
 // Generates the non-impl functions to forward onto the impl, via the ResolveFunctionSignatureType metafunction.
 #define GENERATE_FUNCTION_SIGNATURE_GETTERS(x)\
-namespace impl{\
+namespace function_signature_getters {\
 GENERATE_HAS_AND_GET_MEMBER_TYPE(x)\
 }\
-template<typename T> struct TYPE_HIDDEN_VISIBILITY Has_##x : impl::HasMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {METAPROGRAMMING_ONLY(Has_##x)};\
-template<typename T> struct TYPE_HIDDEN_VISIBILITY Get_##x : impl::GetMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {METAPROGRAMMING_ONLY(Get_##x)};
+template<typename T> struct TYPE_HIDDEN_VISIBILITY Has_##x : function_signature_getters::HasMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {METAPROGRAMMING_ONLY(Has_##x)};\
+template<typename T> struct TYPE_HIDDEN_VISIBILITY Get_##x : function_signature_getters::GetMemberType_##x<typename ResolveFunctionSignatureType<T>::type> {METAPROGRAMMING_ONLY(Get_##x)};
 
 GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_0)
 GENERATE_FUNCTION_SIGNATURE_GETTERS(input_type_1)
@@ -65,7 +62,7 @@ struct TYPE_HIDDEN_VISIBILITY GetCodomainType : Get_codomain_type<T> {METAPROGRA
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY FunctionSignatureEnabled : Has_codomain_type<T> {METAPROGRAMMING_ONLY(FunctionSignatureEnabled)};
 
-namespace impl {
+namespace HasInputType_impl {
 
 template<typename T, typename Index>
 struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType;
@@ -103,10 +100,9 @@ struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType<T, Integer<9> > : Has_input_t
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType<T, Integer<10> > : false_type {METAPROGRAMMING_ONLY(HasNumberedInputType)};
 
-
 template<typename T, typename Index>
 struct TYPE_HIDDEN_VISIBILITY HasArrayInputItem :
-    not_<is_same<ArrayNoArg, typename ArrayIndex<typename GetMemberType_input_types<T>::type, Index>::type > >
+    not_<is_same<ArrayNoArg, typename ArrayIndex<typename Get_input_types<T>::type, Index>::type > >
 {
     METAPROGRAMMING_ONLY(HasArrayInputItem)
 };
@@ -115,24 +111,24 @@ template<typename T>
 struct TYPE_HIDDEN_VISIBILITY HasArrayInputItem<T, Integer<10> > : false_type {METAPROGRAMMING_ONLY(HasArrayInputItem)};
 
 template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY HasInputType_impl :
-     eval_if<HasMemberType_input_types<T>,
+struct TYPE_HIDDEN_VISIBILITY HasInputType :
+    eval_if<Has_input_types<T>,
              HasArrayInputItem<T, Index>,
              HasNumberedInputType<T, Index> >
 {
-    METAPROGRAMMING_ONLY(HasInputType_impl)
+    METAPROGRAMMING_ONLY(HasInputType)
 };
 
-} // namespace impl
+} // namespace HasInputType_impl
 
 template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY HasInputType : impl::HasInputType_impl<typename ResolveFunctionSignatureType<T>::type, Index>
+struct TYPE_HIDDEN_VISIBILITY HasInputType : HasInputType_impl::HasInputType<typename ResolveFunctionSignatureType<T>::type, Index>
 {
     METAPROGRAMMING_ONLY(HasInputType)
 };
 
 
-namespace impl {
+namespace GetInputType_impl {
 
 template<typename T, typename Index>
 struct TYPE_HIDDEN_VISIBILITY GetNumberedInputType_impl;
@@ -168,33 +164,34 @@ template<typename T>
 struct TYPE_HIDDEN_VISIBILITY GetNumberedInputType_impl<T, Integer<9> > : Get_input_type_9<T> {METAPROGRAMMING_ONLY(GetNumberedInputType_impl)};
 
 template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY GetArrayInputType_impl : ArrayIndex<typename GetMemberType_input_types<T>::type, Index>
+struct TYPE_HIDDEN_VISIBILITY GetArrayInputType_impl : ArrayIndex<typename Get_input_types<T>::type, Index>
 {
     METAPROGRAMMING_ONLY(GetArrayInputType_impl)
 };
 
 template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY GetInputType_impl : eval_if<HasMemberType_input_types<T>,
+struct TYPE_HIDDEN_VISIBILITY GetInputType : eval_if<Has_input_types<T>,
     GetArrayInputType_impl<T, Index>,
     GetNumberedInputType_impl<T, Index> >
-{
-    METAPROGRAMMING_ONLY(GetInputType_impl)
-};
-
-} // namespace impl
-
-template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY GetInputType : impl::GetInputType_impl<typename ResolveFunctionSignatureType<T>::type, Index>
 {
     METAPROGRAMMING_ONLY(GetInputType)
 };
 
-namespace impl {
+} // namespace GetInputType_impl
+
+template<typename T, typename Index>
+struct TYPE_HIDDEN_VISIBILITY GetInputType : GetInputType_impl::GetInputType<typename ResolveFunctionSignatureType<T>::type, Index>
+{
+    METAPROGRAMMING_ONLY(GetInputType)
+};
+
+
+namespace GetFunctionArity_impl {
 
 // Count upwards; higher Arity is less likely.
 // Note that Indexing is zero based, and that CurrentArity suggests 0..CurrentArity-1(inclusive) are available
 template<typename T, typename CurrentArity>
-struct TYPE_HIDDEN_VISIBILITY GetFunctionArityLoop : eval_if<HasNumberedInputType<T, CurrentArity>,
+struct TYPE_HIDDEN_VISIBILITY GetFunctionArityLoop : eval_if<HasInputType_impl::HasNumberedInputType<T, CurrentArity>,
                                       GetFunctionArityLoop<T, typename Successor<CurrentArity>::type>,
                                       CurrentArity>
 {
@@ -202,28 +199,29 @@ struct TYPE_HIDDEN_VISIBILITY GetFunctionArityLoop : eval_if<HasNumberedInputTyp
 };
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GetFunctionArityArray : ArraySize<typename GetMemberType_input_types<T>::type>
+struct TYPE_HIDDEN_VISIBILITY GetFunctionArityArray : ArraySize<typename Get_input_types<T>::type>
 {
     METAPROGRAMMING_ONLY(GetFunctionArityArray)
 };
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GetFunctionArity_impl : eval_if<HasMemberType_input_types<T>,
+struct TYPE_HIDDEN_VISIBILITY GetFunctionArity : eval_if<Has_input_types<T>,
   GetFunctionArityArray<T>,
   GetFunctionArityLoop<T, Integer<0> > >
-{
-    METAPROGRAMMING_ONLY(GetFunctionArity_impl)
-};
-
-} // namespace impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GetFunctionArity : impl::GetFunctionArity_impl<typename ResolveFunctionSignatureType<T>::type>
 {
     METAPROGRAMMING_ONLY(GetFunctionArity)
 };
 
-namespace impl {
+} // namespace GetFunctionArity_impl
+
+template<typename T>
+struct TYPE_HIDDEN_VISIBILITY GetFunctionArity : GetFunctionArity_impl::GetFunctionArity<typename ResolveFunctionSignatureType<T>::type>
+{
+    METAPROGRAMMING_ONLY(GetFunctionArity)
+};
+
+
+namespace GetInputTypeArray_impl {
 
 template<typename T, typename AccumulatedArray, typename CurrentIndex, typename Arity>
 struct TYPE_HIDDEN_VISIBILITY GetInputTypeArrayNumbered;
@@ -241,21 +239,24 @@ struct TYPE_HIDDEN_VISIBILITY GetInputTypeArrayNumbered :
     METAPROGRAMMING_ONLY(GetInputTypeArrayNumbered)
 };
 
-
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GetInputTypeArray_impl : eval_if<HasMemberType_input_types<T>,
-    GetMemberType_input_types<T>,
+struct TYPE_HIDDEN_VISIBILITY GetInputTypeArray : eval_if<Has_input_types<T>,
+    Get_input_types<T>,
     GetInputTypeArrayNumbered<T, Array<>, Integer<0>, typename GetFunctionArity<T>::type> >
 {
-    METAPROGRAMMING_ONLY(GetInputTypeArray_impl)
+    METAPROGRAMMING_ONLY(GetInputTypeArray)
 };
 
 }
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GetInputTypeArray : impl::GetInputTypeArray_impl<typename ResolveFunctionSignatureType<T>::type> {METAPROGRAMMING_ONLY(GetInputTypeArray)};
+struct TYPE_HIDDEN_VISIBILITY GetInputTypeArray : GetInputTypeArray_impl::GetInputTypeArray<typename ResolveFunctionSignatureType<T>::type> {METAPROGRAMMING_ONLY(GetInputTypeArray)};
 
-namespace impl {
+
+struct TYPE_HIDDEN_VISIBILITY no_template_argument { typedef no_template_argument type; METAPROGRAMMING_ONLY(no_template_argument) };
+struct TYPE_HIDDEN_VISIBILITY template_param { typedef template_param type; METAPROGRAMMING_ONLY(template_param) };
+
+namespace GetCodomainType_impl {
 
 template<typename InputType, typename ParamArrayItem>
 struct TYPE_HIDDEN_VISIBILITY UseTemplateParamWhereNeeded;
@@ -297,27 +298,25 @@ struct TYPE_HIDDEN_VISIBILITY ApplyCodomainDeduction
 };
 
 template<typename T, typename CodomainType, typename ParamArray>
-struct TYPE_HIDDEN_VISIBILITY GetCodomainType_impl : identity_type<CodomainType> {METAPROGRAMMING_ONLY(GetCodomainType_impl)};
+struct TYPE_HIDDEN_VISIBILITY GetCodomainType : identity_type<CodomainType> {METAPROGRAMMING_ONLY(GetCodomainType)};
 
 template<typename T, typename U, typename ParamArray>
-struct TYPE_HIDDEN_VISIBILITY GetCodomainType_impl<T, CodomainDeduction<U>, ParamArray> : ApplyCodomainDeduction<T, U, ParamArray, typename GetFunctionArity<T>::type>
+struct TYPE_HIDDEN_VISIBILITY GetCodomainType<T, CodomainDeduction<U>, ParamArray> : ApplyCodomainDeduction<T, U, ParamArray, typename GetFunctionArity<T>::type>
 {
-    METAPROGRAMMING_ONLY(GetCodomainType_impl)
+    METAPROGRAMMING_ONLY(GetCodomainType)
 };
 
-} // namespace impl
+} // namespace GetCodomainType_impl
 
 template<typename T, typename I0=no_template_argument, typename I1=no_template_argument, typename I2=no_template_argument, typename I3=no_template_argument, typename I4=no_template_argument, typename I5=no_template_argument, typename I6=no_template_argument, typename I7=no_template_argument, typename I8=no_template_argument, typename I9=no_template_argument>
-struct TYPE_HIDDEN_VISIBILITY DeduceCodomainType : impl::GetCodomainType_impl<typename ResolveFunctionSignatureType<T>::type,
+struct TYPE_HIDDEN_VISIBILITY DeduceCodomainType : GetCodomainType_impl::GetCodomainType<typename ResolveFunctionSignatureType<T>::type,
 typename GetCodomainType<typename ResolveFunctionSignatureType<T>::type>::type, Array<I0, I1, I2, I3, I4, I5, I6, I7, I8, I9> >
 {
     METAPROGRAMMING_ONLY(DeduceCodomainType)
 };
 
 
-//Specialisations for function pointers
-
-namespace impl {
+namespace function_pointer_specialisations {
 
 template<typename CodomainType, typename InputTypes>
 struct TYPE_HIDDEN_VISIBILITY function_pointer_signature;
@@ -678,81 +677,81 @@ struct TYPE_HIDDEN_VISIBILITY function_wrapper<CodomainType, Array<A, B, C, D, E
     METAPROGRAMMING_ONLY(function_wrapper)
 };
 
-} // namespace impl
+} // namespace function_pointer_specialisations
  
 template<typename R>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)()> :
-    impl::function_wrapper<R, Array<>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A)> :
-    impl::function_wrapper<R, Array<A>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B)> :
-    impl::function_wrapper<R, Array<A, B>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A, B>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B, C)> :
-    impl::function_wrapper<R, Array<A, B, C>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A, B, C>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B, C, D)> :
-    impl::function_wrapper<R, Array<A, B, C, D>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A, B, C, D>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B, C, D, E)> :
-    impl::function_wrapper<R, Array<A, B, C, D, E>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A, B, C, D, E>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B, C, D, E, F)> :
-    impl::function_wrapper<R, Array<A, B, C, D, E, F>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A, B, C, D, E, F>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B, C, D, E, F, G)> :
-    impl::function_wrapper<R, Array<A, B, C, D, E, F, G>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A, B, C, D, E, F, G>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B, C, D, E, F, G, H)> :
-    impl::function_wrapper<R, Array<A, B, C, D, E, F, G, H>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A, B, C, D, E, F, G, H>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B, C, D, E, F, G, H, I)> :
-    impl::function_wrapper<R, Array<A, B, C, D, E, F, G, H, I>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A, B, C, D, E, F, G, H, I>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I, typename J>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B, C, D, E, F, G, H, I, J)> :
-    impl::function_wrapper<R, Array<A, B, C, D, E, F, G, H, I, J>, false_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A, B, C, D, E, F, G, H, I, J>, false_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
@@ -761,14 +760,14 @@ struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B, C, D, E, F
 
 template<typename R, typename A>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)()> :
-    impl::function_wrapper<R, Array<A&>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A&>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)() const> :
-    impl::function_wrapper<R, Array<A const&>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A const&>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
@@ -776,14 +775,14 @@ struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)() const> :
 
 template<typename R, typename A, typename B>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B)> :
-    impl::function_wrapper<R, Array<A&, B>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A&, B>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B) const> :
-    impl::function_wrapper<R, Array<A const&, B>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A const&, B>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
@@ -791,14 +790,14 @@ struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B) const> :
 
 template<typename R, typename A, typename B, typename C>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C)> :
-    impl::function_wrapper<R, Array<A&, B, C>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A&, B, C>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C) const> :
-    impl::function_wrapper<R, Array<A const&, B, C>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A const&, B, C>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
@@ -806,14 +805,14 @@ struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C) const> 
 
 template<typename R, typename A, typename B, typename C, typename D>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D)> :
-    impl::function_wrapper<R, Array<A&, B, C, D>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A&, B, C, D>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D) const> :
-    impl::function_wrapper<R, Array<A const&, B, C, D>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A const&, B, C, D>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
@@ -821,70 +820,70 @@ struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D) cons
 
 template<typename R, typename A, typename B, typename C, typename D, typename E>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E)> :
-    impl::function_wrapper<R, Array<A&, B, C, D, E>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A&, B, C, D, E>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E) const> :
-    impl::function_wrapper<R, Array<A const&, B, C, D, E>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A const&, B, C, D, E>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F)> :
-    impl::function_wrapper<R, Array<A&, B, C, D, E, F>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A&, B, C, D, E, F>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F) const> :
-    impl::function_wrapper<R, Array<A const&, B, C, D, E, F>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A const&, B, C, D, E, F>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G)> :
-    impl::function_wrapper<R, Array<A&, B, C, D, E, F, G>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A&, B, C, D, E, F, G>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G) const> :
-    impl::function_wrapper<R, Array<A const&, B, C, D, E, F, G>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A const&, B, C, D, E, F, G>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H)> :
-    impl::function_wrapper<R, Array<A&, B, C, D, E, F, G, H>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A&, B, C, D, E, F, G, H>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H) const> :
-    impl::function_wrapper<R, Array<A const&, B, C, D, E, F, G, H>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A const&, B, C, D, E, F, G, H>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H, I)> :
-    impl::function_wrapper<R, Array<A&, B, C, D, E, F, G, H, I>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A&, B, C, D, E, F, G, H, I>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H, I) const> :
-    impl::function_wrapper<R, Array<A const&, B, C, D, E, F, G, H, I>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A const&, B, C, D, E, F, G, H, I>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
@@ -892,14 +891,14 @@ struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I, typename J>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H, I, J)> :
-    impl::function_wrapper<R, Array<A&, B, C, D, E, F, G, H, I, J>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A&, B, C, D, E, F, G, H, I, J>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
 
 template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I, typename J>
 struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H, I, J) const> :
-    impl::function_wrapper<R, Array<A const&, B, C, D, E, F, G, H, I, J>, true_type>
+    function_pointer_specialisations::function_wrapper<R, Array<A const&, B, C, D, E, F, G, H, I, J>, true_type>
 {
     METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
 };
