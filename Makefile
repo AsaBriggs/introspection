@@ -1,40 +1,18 @@
-CC       = g++
-DEBUG    = -O0 -g
-CFLAGS   = -Wall 
-CXXFLAGS = $(CFLAGS)
-LDFLAGS	 = -g
-
-TARGETS=meta
+CC=g++
+CFLAGS=-c -Wall
+LDFLAGS=
 INCLUDES=compiler_specifics.h introspection_assert.h metaprogramming.h detect_traits.h storage.h function_signatures.h storage_io.h
+SOURCES=meta.cpp compiler_specifics.cpp introspection_assert.cpp metaprogramming.cpp detect_traits.cpp storage.cpp function_signatures.cpp storage_io.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=meta
 
-all:$(TARGETS)
+all: $(SOURCES) $(EXECUTABLE)
 
-meta: meta.o compiler_specifics.o introspection_assert.o metaprogramming.o detect_traits.o storage.o function_signatures.o storage_io.o
-	$(CC) $(LDFLAGS) $^ -o $@ 
+$(EXECUTABLE): $(OBJECTS) 
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
-meta.o: meta.cpp $(INCLUDES)
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-compiler_specifics.o: compiler_specifics.cpp $(INCLUDES)
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-introspection_assert.o: introspection_assert.cpp $(INCLUDES)
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-metaprogramming.o: metaprogramming.cpp $(INCLUDES)
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-detect_traits.o: detect_traits.cpp $(INCLUDES)
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-storage.o: storage.cpp $(INCLUDES)
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-function_signatures.o: function_signatures.cpp $(INCLUDES)
-	$(CC) $(CXXFLAGS) -c $< -o $@
-
-storage_io.o: storage_io.cpp $(INCLUDES)
-	$(CC) $(CXXFLAGS) -c $< -o $@
+%.o: %.cpp $(INCLUDES)
+	$(CC) $(CFLAGS) $< -o $@
 
 .PHONY: clean 
 
