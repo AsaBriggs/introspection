@@ -938,6 +938,10 @@ struct TYPE_HIDDEN_VISIBILITY underlying_type<T,
 };
 
 
+template<typename Tag>
+ALWAYS_INLINE_HIDDEN void swap(empty_type<Tag>&, empty_type<Tag>&)
+{}
+
 namespace deduce_type_impl {
 
 template<typename Arr, typename Tag>
