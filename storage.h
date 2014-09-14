@@ -832,8 +832,11 @@ ALWAYS_INLINE_HIDDEN bool less_impl(T const& x, T const& y)
 
 } // namespace introspected_comparisons_impl
 
+
+// Metafunction to control generation of comparison operations for storage
 template<typename T, typename enable=void>
 struct TYPE_HIDDEN_VISIBILITY generate_introspected_comparisons : IntrospectionEnabled<T> {METAPROGRAMMING_ONLY(generate_introspected_comparisons)};
+
 
 template<typename T>
 struct TYPE_DEFAULT_VISIBILITY less<T, typename enable_if<generate_introspected_comparisons<T>, void>::type>
@@ -918,15 +921,10 @@ operator>=(T const& x, T const& y)
     return !(x < y);
 }
 
-
+// Metafunction to control generation of underlying_type metafunction specialsations
 template<typename T, typename enable=void>
 struct TYPE_HIDDEN_VISIBILITY generate_introspected_underlying_type : IntrospectionEnabled<T> {METAPROGRAMMING_ONLY(generate_introspected_underlying_type)};
 
-template<typename Tag>
-struct TYPE_HIDDEN_VISIBILITY generate_introspected_underlying_type<empty_type<Tag> > : false_type {METAPROGRAMMING_ONLY(generate_introspected_underlying_type)};
-
-template<typename T, typename Tag>
-struct TYPE_HIDDEN_VISIBILITY generate_introspected_underlying_type<singleton<T, Tag> > : false_type {METAPROGRAMMING_ONLY(generate_introspected_underlying_type)};
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY underlying_type<T,
@@ -939,13 +937,8 @@ struct TYPE_HIDDEN_VISIBILITY underlying_type<T,
     METAPROGRAMMING_ONLY(underlying_type)
 };
 
-// ArrayNoArg type and singleton can be reduced to simpler cases, unwrapping the struct in singelton's case
-template<typename Tag>
-struct TYPE_HIDDEN_VISIBILITY underlying_type<empty_type<Tag> > : empty_type<Tag> {METAPROGRAMMING_ONLY(underlying_type)};
 
-template<typename T, typename Tag>
-struct TYPE_HIDDEN_VISIBILITY underlying_type<singleton<T, Tag> > : get_underlying_type<T> {METAPROGRAMMING_ONLY(underlying_type)};
-
+namespace deduce_type_impl {
 
 template<typename Arr, typename Tag>
 struct TYPE_HIDDEN_VISIBILITY deduce_type
@@ -956,6 +949,12 @@ struct TYPE_HIDDEN_VISIBILITY deduce_type
         Tag>::type type;
     METAPROGRAMMING_ONLY(deduce_type)
 };
+
+} // namespace deduce_type_impl
+
+template<typename Arr, typename Tag>
+struct TYPE_HIDDEN_VISIBILITY deduce_type : deduce_type_impl::deduce_type<Arr, Tag> {METAPROGRAMMING_ONLY(deduce_type)};
+
 
 // The make_storage functions deduce a storage type based on the parameters passed in,
 // taking into account "decaying" Ref objects.
