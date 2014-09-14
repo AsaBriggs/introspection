@@ -1,6 +1,10 @@
 #ifndef INCLUDED_STORAGE
 #define INCLUDED_STORAGE
 
+#ifndef INCLUDED_INTROSPECTION_ASSERT
+#include "introspection_assert.h"
+#endif
+
 #ifndef INCLUDED_METAPROGRAMMING
 #include "metaprogramming.h"
 #endif
@@ -247,6 +251,7 @@ struct TYPE_HIDDEN_VISIBILITY IntrospectionStorageTag :
             GetMemberType_IntrospectionStorageTag<T>,
             DefaultTag>
 {
+    INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
     METAPROGRAMMING_ONLY(IntrospectionStorageTag)
 };
 
@@ -260,6 +265,7 @@ struct TYPE_HIDDEN_VISIBILITY IntrospectionIndirectStorage :
             GetMemberType_IntrospectionIndirectStorage<T>,
             false_type>
 {
+    INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
     METAPROGRAMMING_ONLY(IntrospectionIndirectStorage)
 };
 
@@ -321,19 +327,17 @@ struct TYPE_HIDDEN_VISIBILITY HasArrayIntrospectionItem :
     METAPROGRAMMING_ONLY(HasArrayIntrospectionItem)
 };
 
-template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY HasIntrospectionItem :
-     eval_if<HasMemberType_IntrospectionItems<T>,
-             HasArrayIntrospectionItem<T, Index>,
-             HasNumberedIntrospectionItem<T, Index> >
-{
-    METAPROGRAMMING_ONLY(HasIntrospectionItem)
-};
-
 } // namespace HasIntrospectionItem_impl
 
 template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY HasIntrospectionItem :  HasIntrospectionItem_impl::HasIntrospectionItem<T, Index> {METAPROGRAMMING_ONLY(HasIntrospectionItem)};
+struct TYPE_HIDDEN_VISIBILITY HasIntrospectionItem : 
+     eval_if<HasMemberType_IntrospectionItems<T>,
+             HasIntrospectionItem_impl::HasArrayIntrospectionItem<T, Index>,
+             HasIntrospectionItem_impl::HasNumberedIntrospectionItem<T, Index> >
+{
+    INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
+    METAPROGRAMMING_ONLY(HasIntrospectionItem)
+};
 
 
 namespace GetIntrospectionItem_impl {
@@ -374,19 +378,18 @@ struct TYPE_HIDDEN_VISIBILITY GetArrayIntrospectionItem :
 {
     METAPROGRAMMING_ONLY(GetArrayIntrospectionItem)
 };
-
-template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY GetIntrospectionItem : eval_if<HasMemberType_IntrospectionItems<T>,
-                                           GetArrayIntrospectionItem<T, Index>,
-                                           GetNumberedIntrospectionItem<T, Index> >
-{
-    METAPROGRAMMING_ONLY(GetIntrospectionItem)
-};
-
+ 
 } // namespace GetIntrospectionItem_impl
 
 template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY GetIntrospectionItem : GetIntrospectionItem_impl::GetIntrospectionItem<T, Index> {METAPROGRAMMING_ONLY(GetIntrospectionItem)};
+struct TYPE_HIDDEN_VISIBILITY GetIntrospectionItem :
+    eval_if<HasMemberType_IntrospectionItems<T>,
+            GetIntrospectionItem_impl::GetArrayIntrospectionItem<T, Index>,
+            GetIntrospectionItem_impl::GetNumberedIntrospectionItem<T, Index> >
+{
+    INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
+    METAPROGRAMMING_ONLY(GetIntrospectionItem)
+};
 
 
 namespace IntrospectionArity_impl {
@@ -410,20 +413,18 @@ struct TYPE_HIDDEN_VISIBILITY IntrospectionArityArray : ArraySize<typename GetMe
     METAPROGRAMMING_ONLY(IntrospectionArityArray)
 };
 
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY IntrospectionArity : eval_if<IntrospectionEnabled<T>,
-                                         eval_if<HasMemberType_IntrospectionItems<T>,
-                                                 IntrospectionArityArray<T>,
-                                                 IntrospectionArityLoop<T, Integer<0> > >,
-                                         Integer<0> >
-{
-    METAPROGRAMMING_ONLY(IntrospectionArity)
-};
-
 } // namespace IntrospectionArity_impl
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY IntrospectionArity : IntrospectionArity_impl::IntrospectionArity<T> {METAPROGRAMMING_ONLY(IntrospectionArity)};
+struct TYPE_HIDDEN_VISIBILITY IntrospectionArity : eval_if<IntrospectionEnabled<T>,
+                                                           eval_if<HasMemberType_IntrospectionItems<T>,
+                                                                   IntrospectionArity_impl::IntrospectionArityArray<T>,
+                                                                   IntrospectionArity_impl::IntrospectionArityLoop<T, Integer<0> > >,
+                                                                   Integer<0> >
+{
+    INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
+    METAPROGRAMMING_ONLY(IntrospectionArity)
+};
 
 
 namespace GenerateIntrospectionItems_impl {
@@ -446,18 +447,16 @@ template<typename T>
 struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems_DeduceArity :
     GenerateIntrospectionItems_Loop<T, typename IntrospectionArity<T>::type, Integer<0>, Array<> > {METAPROGRAMMING_ONLY(GenerateIntrospectionItems_DeduceArity)};
 
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems : eval_if<HasMemberType_IntrospectionItems<T>,
-                                                 GetMemberType_IntrospectionItems<T>,
-                                                 GenerateIntrospectionItems_DeduceArity<T> >
-{
-    METAPROGRAMMING_ONLY(GenerateIntrospectionItems)
-};
-
 } // namespace GenerateIntrospectionItems_impl
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems : GenerateIntrospectionItems_impl::GenerateIntrospectionItems<T> {METAPROGRAMMING_ONLY(GenerateIntrospectionItems)};
+struct TYPE_HIDDEN_VISIBILITY GenerateIntrospectionItems : eval_if<HasMemberType_IntrospectionItems<T>,
+                                                                   GetMemberType_IntrospectionItems<T>,
+                                                                   GenerateIntrospectionItems_impl::GenerateIntrospectionItems_DeduceArity<T> >
+{
+    INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
+    METAPROGRAMMING_ONLY(GenerateIntrospectionItems)
+};
 
 
 namespace GenerateStorage_impl {
@@ -535,27 +534,20 @@ struct TYPE_HIDDEN_VISIBILITY GenerateStorageFromArray<Array<T0, T1, T2, T3, T4,
     METAPROGRAMMING_ONLY(GenerateStorageFromArray)
 };
 
-template<typename T, typename Enabled>
-struct TYPE_HIDDEN_VISIBILITY GenerateStorage;
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GenerateStorage<T, false_type> {METAPROGRAMMING_ONLY(GenerateStorage)};
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GenerateStorage<T, true_type> :
-    GenerateStorageFromArray<typename GenerateIntrospectionItems<T>::type,
-                                              typename IntrospectionStorageTag<T>::type>
-{
-    METAPROGRAMMING_ONLY(GenerateStorage)
-};
-
 } // namespace GenerateStorage_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GenerateStorage : GenerateStorage_impl::GenerateStorage<T, typename IntrospectionEnabled<T>::type > {METAPROGRAMMING_ONLY(GenerateStorage)};
 
 template<typename Array, typename Tag>
 struct TYPE_HIDDEN_VISIBILITY GenerateStorageFromArray : GenerateStorage_impl::GenerateStorageFromArray<Array, Tag>{METAPROGRAMMING_ONLY(GenerateStorageFromArray)};
+
+template<typename T>
+struct TYPE_HIDDEN_VISIBILITY GenerateStorage :
+    GenerateStorageFromArray<typename GenerateIntrospectionItems<T>::type,
+                             typename IntrospectionStorageTag<T>::type>
+{
+    INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
+    METAPROGRAMMING_ONLY(GenerateStorage)
+};
+
 
 
 namespace DefaultGet_impl {
@@ -610,7 +602,10 @@ MAKE_DEFAULT_GET_N(8)
 } // namespace DefaultGet_impl
 
 template<typename T, typename Index>
-struct TYPE_DEFAULT_VISIBILITY Get : DefaultGet_impl::DefaultGet<T, Index> {};
+struct TYPE_DEFAULT_VISIBILITY Get : DefaultGet_impl::DefaultGet<T, Index> 
+{
+    INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
+};
 
 template<typename T>
 ALWAYS_INLINE_HIDDEN
@@ -726,12 +721,14 @@ struct TYPE_DEFAULT_VISIBILITY Visit2
 template<typename T, typename Proc>
 ALWAYS_INLINE_HIDDEN Proc visit(T& x, Proc p)
 {
+    INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
     return Visit1<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, p);
 }
 
 template<typename T, typename Proc>
 ALWAYS_INLINE_HIDDEN Proc visit(T& x, T& y, Proc p)
 {
+    INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
     return Visit2<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, y, p);
 }
 

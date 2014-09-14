@@ -74,7 +74,6 @@ ALWAYS_INLINE_HIDDEN Ref<T> make_ref(T& x)
     return Ref<T>::make(x);
 }
 
-namespace ValueToTrueFalse_impl {
 
 template<bool value>
 struct TYPE_HIDDEN_VISIBILITY ValueToTrueFalse;
@@ -85,13 +84,6 @@ struct TYPE_HIDDEN_VISIBILITY ValueToTrueFalse<false> : false_type {METAPROGRAMM
 template<>
 struct TYPE_HIDDEN_VISIBILITY ValueToTrueFalse<true> : true_type {METAPROGRAMMING_ONLY(ValueToTrueFalse)};
 
-} // namespace ValueToTrueFalse_impl
-
-template<bool value>
-struct TYPE_HIDDEN_VISIBILITY ValueToTrueFalse : ValueToTrueFalse_impl::ValueToTrueFalse<value> {METAPROGRAMMING_ONLY(ValueToTrueFalse)};
-
-
-namespace Successor_impl {
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY Successor;
@@ -99,13 +91,6 @@ struct TYPE_HIDDEN_VISIBILITY Successor;
 template<int num>
 struct TYPE_HIDDEN_VISIBILITY Successor<Integer<num> > : Integer<num+1> {METAPROGRAMMING_ONLY(Successor)};
 
-} // namespace Successor_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY Successor : Successor_impl::Successor<T> {METAPROGRAMMING_ONLY(Successor)};
-
-
-namespace Predecessor_impl {
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY Predecessor;
@@ -113,52 +98,40 @@ struct TYPE_HIDDEN_VISIBILITY Predecessor;
 template<int num>
 struct TYPE_HIDDEN_VISIBILITY Predecessor<Integer<num> > : Integer<num-1> {METAPROGRAMMING_ONLY(Predecessor)};
 
-} // namespace Predecessor_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY Predecessor : Predecessor_impl::Predecessor<T> {METAPROGRAMMING_ONLY(Predecessor)};
-
 
 namespace Min_impl {
 
 template<typename T, typename U, bool ULessThanT>
-struct TYPE_HIDDEN_VISIBILITY Min2;
+struct TYPE_HIDDEN_VISIBILITY Min;
 
 template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY Min2<T, U, false> : T {METAPROGRAMMING_ONLY(Min2)};
+struct TYPE_HIDDEN_VISIBILITY Min<T, U, false> : T {METAPROGRAMMING_ONLY(Min)};
 
 template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY Min2<T, U, true> : U {METAPROGRAMMING_ONLY(Min2)};
-
-template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY Min : Min2<T, U, U::type::value < T::type::value> {METAPROGRAMMING_ONLY(Min)};
+struct TYPE_HIDDEN_VISIBILITY Min<T, U, true> : U {METAPROGRAMMING_ONLY(Min)};
 
 } // namespace Min_impl
 
 template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY Min : Min_impl::Min<T, U> {METAPROGRAMMING_ONLY(Min)};
+struct TYPE_HIDDEN_VISIBILITY Min : Min_impl::Min<T, U, U::type::value < T::type::value> {METAPROGRAMMING_ONLY(Min)};
+
 
 namespace Max_impl {
 
 template<typename T, typename U, bool ULessThanT>
-struct TYPE_HIDDEN_VISIBILITY Max2;
+struct TYPE_HIDDEN_VISIBILITY Max;
 
 template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY Max2<T, U, false> : U {METAPROGRAMMING_ONLY(Max2)};
+struct TYPE_HIDDEN_VISIBILITY Max<T, U, false> : U {METAPROGRAMMING_ONLY(Max)};
 
 template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY Max2<T, U, true> : T {METAPROGRAMMING_ONLY(Max2)};
-
-template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY Max : Max2<T, U, U::type::value < T::type::value> {METAPROGRAMMING_ONLY(Max)};
+struct TYPE_HIDDEN_VISIBILITY Max<T, U, true> : T {METAPROGRAMMING_ONLY(Max)};
 
 } // namespace Max_impl
 
 template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY Max : Max_impl::Max<T, U> {METAPROGRAMMING_ONLY(Max)};
+struct TYPE_HIDDEN_VISIBILITY Max : Max_impl::Max<T, U, U::type::value < T::type::value> {METAPROGRAMMING_ONLY(Max)};
 
-
-namespace Subtract_impl {
 
 template<typename T0, typename T1>
 struct TYPE_HIDDEN_VISIBILITY Subtract;
@@ -166,13 +139,6 @@ struct TYPE_HIDDEN_VISIBILITY Subtract;
 template<int num0, int num1>
 struct TYPE_HIDDEN_VISIBILITY Subtract<Integer<num0>, Integer<num1> > : Integer<num0 - num1> {METAPROGRAMMING_ONLY(Subtract)};
 
-} // namespace Subtract_impl
-
-template<typename T0, typename T1>
-struct TYPE_HIDDEN_VISIBILITY Subtract : Subtract_impl::Subtract<T0, T1> {METAPROGRAMMING_ONLY(Subtract)};
-
-
-namespace Add_impl {
 
 template<typename T0, typename T1>
 struct TYPE_HIDDEN_VISIBILITY Add;
@@ -180,13 +146,6 @@ struct TYPE_HIDDEN_VISIBILITY Add;
 template<int num0, int num1>
 struct TYPE_HIDDEN_VISIBILITY Add<Integer<num0>, Integer<num1> > : Integer<num0 + num1> {METAPROGRAMMING_ONLY(Add)};
 
-} // namespace Add_impl
-
-template<typename T0, typename T1>
-struct TYPE_HIDDEN_VISIBILITY Add : Add_impl::Add<T0, T1> {METAPROGRAMMING_ONLY(Add)};
-
-
-namespace Multiply_impl {
 
 template<typename T0, typename T1>
 struct TYPE_HIDDEN_VISIBILITY Multiply;
@@ -194,13 +153,6 @@ struct TYPE_HIDDEN_VISIBILITY Multiply;
 template<int num0, int num1>
 struct TYPE_HIDDEN_VISIBILITY Multiply<Integer<num0>, Integer<num1> > : Integer<num0 * num1> {METAPROGRAMMING_ONLY(Multiply)};
 
-} // namespace Multiply_impl
-
-template<typename T0, typename T1>
-struct TYPE_HIDDEN_VISIBILITY Multiply : Multiply_impl::Multiply<T0, T1> {METAPROGRAMMING_ONLY(Multiply)};
-
-
-namespace Divide_impl {
 
 template<typename T0, typename T1>
 struct TYPE_HIDDEN_VISIBILITY Divide;
@@ -208,24 +160,12 @@ struct TYPE_HIDDEN_VISIBILITY Divide;
 template<int num0, int num1>
 struct TYPE_HIDDEN_VISIBILITY Divide<Integer<num0>, Integer<num1> > : Integer<num0 / num1> {METAPROGRAMMING_ONLY(Divide)};
 
-} // namespace Divide_impl
-
-template<typename T0, typename T1>
-struct TYPE_HIDDEN_VISIBILITY Divide : Divide_impl::Divide<T0, T1> {METAPROGRAMMING_ONLY(Divide)};
-
-
-namespace Negate_impl {
 
 template<typename T0>
 struct TYPE_HIDDEN_VISIBILITY Negate;
 
 template<int num>
 struct TYPE_HIDDEN_VISIBILITY Negate<Integer<num> > : Integer<-num> {METAPROGRAMMING_ONLY(Negate)};
-
-} // namespace Negate_impl
-
-template<typename T0>
-struct TYPE_HIDDEN_VISIBILITY Negate : Negate_impl::Negate<T0> {METAPROGRAMMING_ONLY(Negate)};
 
 
 namespace not_impl {
@@ -284,6 +224,7 @@ struct TYPE_HIDDEN_VISIBILITY and_<true_type, V1, V2> : and_<typename V1::type, 
 template<typename V0, typename V1, typename V2=true_type>
 struct TYPE_HIDDEN_VISIBILITY and_ : and_impl::and_<typename V0::type, V1, V2> {METAPROGRAMMING_ONLY(and_)};
 
+
 namespace enable_if_impl {
 
 template<typename enable, typename T>
@@ -303,6 +244,7 @@ struct TYPE_HIDDEN_VISIBILITY enable_if<false_type, T> {METAPROGRAMMING_ONLY(ena
 
 template<typename enable, typename T>
 struct TYPE_HIDDEN_VISIBILITY enable_if : enable_if_impl::enable_if<typename enable::type, T> {METAPROGRAMMING_ONLY(enable_if)};
+
 
 namespace disable_if_impl {
 
@@ -387,21 +329,12 @@ template<typename Test, typename T, typename F>
 struct TYPE_HIDDEN_VISIBILITY eval_if : eval_if_impl::eval_if<typename Test::type, T, F> {METAPROGRAMMING_ONLY(eval_if)};
 
 
-namespace is_same_impl {
-
 template<typename T, typename U>
 struct TYPE_HIDDEN_VISIBILITY is_same : false_type {METAPROGRAMMING_ONLY(is_same)};
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY is_same<T, T> : true_type {METAPROGRAMMING_ONLY(is_same)};
 
-} // namespace is_same_impl
-
-template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY is_same : is_same_impl::is_same<T, U> {METAPROGRAMMING_ONLY(is_same)};
-
-
-namespace is_reference_impl {
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY is_reference : false_type {METAPROGRAMMING_ONLY(is_reference)};
@@ -409,12 +342,6 @@ struct TYPE_HIDDEN_VISIBILITY is_reference : false_type {METAPROGRAMMING_ONLY(is
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY is_reference<T&> : true_type {METAPROGRAMMING_ONLY(is_reference)};
 
-} // namespace is_reference_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY is_reference : is_reference_impl::is_reference<T> {METAPROGRAMMING_ONLY(is_reference)};
-
-namespace make_const_ref_impl {
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY make_const_ref
@@ -430,13 +357,6 @@ struct TYPE_HIDDEN_VISIBILITY make_const_ref<T&>
     METAPROGRAMMING_ONLY(make_const_ref)
 };
 
-} // namespace make_const_ref_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY make_const_ref : make_const_ref_impl::make_const_ref<T> {METAPROGRAMMING_ONLY(make_const_ref)};
-
-
-namespace make_ref_type_impl {
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY make_ref_type
@@ -452,12 +372,6 @@ struct TYPE_HIDDEN_VISIBILITY make_ref_type<T&>
     METAPROGRAMMING_ONLY(make_ref_type)
 };
 
-} // namespace make_ref_type_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY make_ref_type : make_ref_type_impl::make_ref_type<T> {METAPROGRAMMING_ONLY(make_ref_type)};
-
-namespace deduce_input_type_impl {
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY deduce_input_type
@@ -473,13 +387,6 @@ struct TYPE_HIDDEN_VISIBILITY deduce_input_type<T const&>
     METAPROGRAMMING_ONLY(deduce_input_type)
 };
 
-} // namespace deduce_input_type_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY deduce_input_type : deduce_input_type_impl::deduce_input_type<T> {METAPROGRAMMING_ONLY(deduce_input_type)};
-
-
-namespace parameter_type_impl {
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY parameter_type
@@ -494,11 +401,6 @@ struct TYPE_HIDDEN_VISIBILITY parameter_type<T&>
     typedef T& type;
     METAPROGRAMMING_ONLY(parameter_type)
 };
-
-} // namespace parameter_type_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY parameter_type : parameter_type_impl::parameter_type<T> {METAPROGRAMMING_ONLY(parameter_type)};
 
 
 template<typename T, typename enable=void>
@@ -536,7 +438,6 @@ ALWAYS_INLINE_HIDDEN void swap(T& x, T& y)
 }
 
 template<typename T, typename enable=void>
-//requires(Regular(T))
 struct TYPE_DEFAULT_VISIBILITY OperatorEquals
 {
     typedef OperatorEquals type;
@@ -554,7 +455,6 @@ struct TYPE_DEFAULT_VISIBILITY OperatorEquals
 
 
 template<typename T, typename enable=void>
-//requires(TotallyOrdered(T))
 struct TYPE_DEFAULT_VISIBILITY OperatorLessThan
 {
     typedef OperatorLessThan type;
@@ -614,8 +514,6 @@ template<typename T>
 struct TYPE_HIDDEN_VISIBILITY decay_ref : decay_ref_impl::decay_ref<T> {METAPROGRAMMING_ONLY(decay_ref)};
 
 
-namespace is_convertible_impl {
-
 template<typename From, typename To>
 struct TYPE_HIDDEN_VISIBILITY is_convertible
 {
@@ -630,13 +528,6 @@ public:
     METAPROGRAMMING_ONLY(is_convertible)
 };
 
-} // namespace is_convertible_impl
-
-template<typename From, typename To>
-struct TYPE_HIDDEN_VISIBILITY is_convertible : is_convertible_impl::is_convertible<From, To> {METAPROGRAMMING_ONLY(is_convertible)};
-
-
-namespace is_struct_class_or_union_impl {
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY is_struct_class_or_union
@@ -652,12 +543,6 @@ public:
     typedef typename ValueToTrueFalse<sizeof(test<T>(0)) == 1>::type type;
     METAPROGRAMMING_ONLY(is_struct_class_or_union)
 };
-
-
-} // namespace is_struct_class_or_union_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY is_struct_class_or_union : is_struct_class_or_union_impl::is_struct_class_or_union<T> {METAPROGRAMMING_ONLY(is_struct_class_or_union)};
 
 
 struct TYPE_HIDDEN_VISIBILITY ArrayNoArg
@@ -676,7 +561,6 @@ struct TYPE_HIDDEN_VISIBILITY Array
     METAPROGRAMMING_ONLY(Array)
 };
 
-namespace ArrayIndex_impl {
 
 template<typename T, typename Index>
 struct TYPE_HIDDEN_VISIBILITY ArrayIndex;
@@ -751,13 +635,6 @@ struct TYPE_HIDDEN_VISIBILITY ArrayIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T
     METAPROGRAMMING_ONLY(ArrayIndex)
 };
 
-} // namespace ArrayIndex_impl
-
-template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY ArrayIndex : ArrayIndex_impl::ArrayIndex<T, Index> {METAPROGRAMMING_ONLY(ArrayIndex)};
-
-
-namespace ArraySize_impl {
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY ArraySize;
@@ -795,13 +672,6 @@ struct TYPE_HIDDEN_VISIBILITY ArraySize<Array<T0> > : Integer<1> {METAPROGRAMMIN
 template<>
 struct TYPE_HIDDEN_VISIBILITY ArraySize<Array<> > : Integer<0> {METAPROGRAMMING_ONLY(ArraySize)};
 
-} // namespace ArraySize_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY ArraySize : ArraySize_impl::ArraySize<T> {METAPROGRAMMING_ONLY(ArraySize)};
-
-
-namespace ArrayConcat_impl {
 
 template<typename T, typename U>
 struct TYPE_HIDDEN_VISIBILITY ArrayConcat ;
@@ -839,13 +709,6 @@ struct TYPE_HIDDEN_VISIBILITY ArrayConcat<Array<T0>, Array<U0, U1, U2, U3, U4, U
 template<typename U0, typename U1, typename U2, typename U3, typename U4, typename U5, typename U6, typename U7, typename U8, typename U9>
 struct TYPE_HIDDEN_VISIBILITY ArrayConcat<Array<>, Array<U0, U1, U2, U3, U4, U5, U6, U7, U8, U9> > : Array<U0, U1, U2, U3, U4, U5, U6, U7, U8, U9> {METAPROGRAMMING_ONLY(ArrayConcat)};
 
-} // namespace ArrayConcat_impl
-
-template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY ArrayConcat : ArrayConcat_impl::ArrayConcat<T, U> {METAPROGRAMMING_ONLY(ArrayConcat)};
-
-
-namespace ArraySplit_impl {
 
 template<typename T, typename At>
 struct TYPE_HIDDEN_VISIBILITY ArraySplit;
@@ -883,13 +746,6 @@ struct TYPE_HIDDEN_VISIBILITY ArraySplit<Array<T0, T1, T2, T3, T4, T5, T6, T7, T
 template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
 struct TYPE_HIDDEN_VISIBILITY ArraySplit<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<10> > : Array<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Array<> > {METAPROGRAMMING_ONLY(ArraySplit)};
 
-} // namespace ArraySplit_impl
-
-template<typename T, typename At>
-struct TYPE_HIDDEN_VISIBILITY ArraySplit : ArraySplit_impl::ArraySplit<T, At> {METAPROGRAMMING_ONLY(ArraySplit)};
-
-
-namespace ArrayReverse_impl {
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY ArrayReverse;
@@ -927,13 +783,6 @@ struct TYPE_HIDDEN_VISIBILITY ArrayReverse<Array<T0> > : Array<T0> {METAPROGRAMM
 template<>
 struct TYPE_HIDDEN_VISIBILITY ArrayReverse<Array<> > : Array<> {METAPROGRAMMING_ONLY(ArrayReverse)};
 
-} // namespace ArrayReverse_impl
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY ArrayReverse : ArrayReverse_impl::ArrayReverse<T> {METAPROGRAMMING_ONLY(ArrayReverse)};
-
-
-namespace ArrayRotate_impl {
 
 template<typename T, typename F, typename M, typename L>
 struct TYPE_HIDDEN_VISIBILITY ArrayRotate;
@@ -966,11 +815,6 @@ struct TYPE_HIDDEN_VISIBILITY ArrayRotate
   typedef typename ArrayConcat<B, typename ArrayIndex<SplitAtL, Integer<1> >::type>::type type; // 0..F & M..L & F..M & L..End
 };
 
-} // namespace ArrayRotate_impl
-
-
-template<typename T, typename F, typename M, typename L>
-struct TYPE_HIDDEN_VISIBILITY ArrayRotate : ArrayRotate_impl::ArrayRotate<T, F, M, L> {METAPROGRAMMING_ONLY(ArrayRotate)};
 
 template<typename T, typename M>
 struct TYPE_HIDDEN_VISIBILITY ArrayRotateDefault : ArrayRotate<T, Integer<0>, M, typename ArraySize<T>::type > {METAPROGRAMMING_ONLY(ArrayRotateDefault)};
@@ -999,7 +843,8 @@ typedef Placeholder<Integer<9> > _9;
 // I don't consider it worthwhile; either we need to loop over the placeholder expression
 // replacing _ with numberered placeholders one-by-one or there has to be a big
 // "match all possible placeholder combinations" which would be hideous to write.
-}
+
+} // namespace placeholders
 
 namespace Apply_impl {
 
@@ -1393,26 +1238,23 @@ struct TYPE_HIDDEN_VISIBILITY ApplyIfNotArrayNoArg : Apply<Fun, T>
 template<typename Fun>
 struct TYPE_HIDDEN_VISIBILITY ApplyIfNotArrayNoArg<ArrayNoArg, Fun> : ArrayNoArg {METAPROGRAMMING_ONLY(ApplyIfNotArrayNoArg)};
 
-template<typename T, typename Fun>
-struct TYPE_HIDDEN_VISIBILITY ArrayTransform
-{
-    typedef Array<typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<0> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<1> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<2> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<3> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<4> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<5> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<6> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<7> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<8> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<9> >::type, Fun>::type> type;
-    METAPROGRAMMING_ONLY(ArrayTransform)
-};
-
 } // ArrayTransform_impl
 
 template<typename T, typename Fun>
-struct TYPE_HIDDEN_VISIBILITY ArrayTransform : ArrayTransform_impl::ArrayTransform<T, Fun> {METAPROGRAMMING_ONLY(ArrayTransform)};
+struct TYPE_HIDDEN_VISIBILITY ArrayTransform
+{
+    typedef Array<typename ArrayTransform_impl::ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<0> >::type, Fun>::type,
+                  typename ArrayTransform_impl::ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<1> >::type, Fun>::type,
+                  typename ArrayTransform_impl::ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<2> >::type, Fun>::type,
+                  typename ArrayTransform_impl::ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<3> >::type, Fun>::type,
+                  typename ArrayTransform_impl::ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<4> >::type, Fun>::type,
+                  typename ArrayTransform_impl::ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<5> >::type, Fun>::type,
+                  typename ArrayTransform_impl::ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<6> >::type, Fun>::type,
+                  typename ArrayTransform_impl::ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<7> >::type, Fun>::type,
+                  typename ArrayTransform_impl::ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<8> >::type, Fun>::type,
+                  typename ArrayTransform_impl::ApplyIfNotArrayNoArg<typename ArrayIndex<T, Integer<9> >::type, Fun>::type> type;
+    METAPROGRAMMING_ONLY(ArrayTransform)
+};
 
 
 namespace ArrayZip_impl {
@@ -1426,36 +1268,33 @@ struct TYPE_HIDDEN_VISIBILITY ApplyIfNotArrayNoArg2 : Apply<Fun, T0, T1>
 template<typename Fun>
 struct TYPE_HIDDEN_VISIBILITY ApplyIfNotArrayNoArg2<ArrayNoArg, ArrayNoArg, Fun> : ArrayNoArg {METAPROGRAMMING_ONLY(ApplyIfNotArrayNoArg2)};
 
-template<typename T, typename U, typename Fun>
-struct TYPE_HIDDEN_VISIBILITY ArrayZip
-{
-    typedef Array<typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<0> >::type,
-                                                 typename ArrayIndex<U, Integer<0> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<1> >::type,
-                                                 typename ArrayIndex<U, Integer<1> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<2> >::type,
-                                                 typename ArrayIndex<U, Integer<2> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<3> >::type,
-                                                 typename ArrayIndex<U, Integer<3> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<4> >::type,
-                                                 typename ArrayIndex<U, Integer<4> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<5> >::type,
-                                                 typename ArrayIndex<U, Integer<5> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<6> >::type,
-                                                 typename ArrayIndex<U, Integer<6> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<7> >::type,
-                                                 typename ArrayIndex<U, Integer<7> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<8> >::type,
-                                                 typename ArrayIndex<U, Integer<8> >::type, Fun>::type,
-                  typename ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<9> >::type,
-                                                 typename ArrayIndex<U, Integer<9> >::type, Fun>::type> type;
-    METAPROGRAMMING_ONLY(ArrayZip)
-};
-
 } // namespace ArrayZip_impl
 
 template<typename T, typename U, typename Fun>
-struct TYPE_HIDDEN_VISIBILITY ArrayZip : ArrayZip_impl::ArrayZip<T, U, Fun> {METAPROGRAMMING_ONLY(ArrayZip)};
+struct TYPE_HIDDEN_VISIBILITY ArrayZip
+{
+    typedef Array<typename ArrayZip_impl::ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<0> >::type,
+                                                                typename ArrayIndex<U, Integer<0> >::type, Fun>::type,
+                  typename ArrayZip_impl::ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<1> >::type,
+                                                                typename ArrayIndex<U, Integer<1> >::type, Fun>::type,
+                  typename ArrayZip_impl::ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<2> >::type,
+                                                                typename ArrayIndex<U, Integer<2> >::type, Fun>::type,
+                  typename ArrayZip_impl::ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<3> >::type,
+                                                                typename ArrayIndex<U, Integer<3> >::type, Fun>::type,
+                  typename ArrayZip_impl::ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<4> >::type,
+                                                                typename ArrayIndex<U, Integer<4> >::type, Fun>::type,
+                  typename ArrayZip_impl::ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<5> >::type,
+                                                                typename ArrayIndex<U, Integer<5> >::type, Fun>::type,
+                  typename ArrayZip_impl::ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<6> >::type,
+                                                                typename ArrayIndex<U, Integer<6> >::type, Fun>::type,
+                  typename ArrayZip_impl::ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<7> >::type,
+                                                                typename ArrayIndex<U, Integer<7> >::type, Fun>::type,
+                  typename ArrayZip_impl::ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<8> >::type,
+                                                                typename ArrayIndex<U, Integer<8> >::type, Fun>::type,
+                  typename ArrayZip_impl::ApplyIfNotArrayNoArg2<typename ArrayIndex<T, Integer<9> >::type,
+                                                                typename ArrayIndex<U, Integer<9> >::type, Fun>::type> type;
+    METAPROGRAMMING_ONLY(ArrayZip)
+};
 
 
 namespace RationaliseApplyArray_impl {
@@ -1474,28 +1313,22 @@ struct TYPE_HIDDEN_VISIBILITY RationaliseApplyArrayConvert<From, From, To>
     METAPROGRAMMING_ONLY(RationaliseApplyArrayConvert)
 };
 
+} // namespace RationaliseApplyArray_impl
+
 template<typename T, typename ToRemove>
 struct TYPE_HIDDEN_VISIBILITY RationaliseApplyArray
 {
     // Did not use ArrayTransform as this skips over ArrayNoArg elements, which is not what this metafunction should do.
-    typedef Array<typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<0> >::type, ToRemove, Apply_impl::ignore>::type,
-                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<1> >::type, ToRemove, Apply_impl::ignore>::type,
-                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<2> >::type, ToRemove, Apply_impl::ignore>::type,
-                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<3> >::type, ToRemove, Apply_impl::ignore>::type,
-                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<4> >::type, ToRemove, Apply_impl::ignore>::type,
-                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<5> >::type, ToRemove, Apply_impl::ignore>::type,
-                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<6> >::type, ToRemove, Apply_impl::ignore>::type,
-                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<7> >::type, ToRemove, Apply_impl::ignore>::type,
-                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<8> >::type, ToRemove, Apply_impl::ignore>::type,
-                  typename RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<9> >::type, ToRemove, Apply_impl::ignore>::type> type;
-    METAPROGRAMMING_ONLY(RationaliseApplyArray)
-};
-
-} // namespace RationaliseApplyArray_impl
-
-template<typename T, typename ToRemove>
-struct TYPE_HIDDEN_VISIBILITY RationaliseApplyArray : RationaliseApplyArray_impl::RationaliseApplyArray<T, ToRemove>
-{
+    typedef Array<typename RationaliseApplyArray_impl::RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<0> >::type, ToRemove, Apply_impl::ignore>::type,
+                  typename RationaliseApplyArray_impl::RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<1> >::type, ToRemove, Apply_impl::ignore>::type,
+                  typename RationaliseApplyArray_impl::RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<2> >::type, ToRemove, Apply_impl::ignore>::type,
+                  typename RationaliseApplyArray_impl::RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<3> >::type, ToRemove, Apply_impl::ignore>::type,
+                  typename RationaliseApplyArray_impl::RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<4> >::type, ToRemove, Apply_impl::ignore>::type,
+                  typename RationaliseApplyArray_impl::RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<5> >::type, ToRemove, Apply_impl::ignore>::type,
+                  typename RationaliseApplyArray_impl::RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<6> >::type, ToRemove, Apply_impl::ignore>::type,
+                  typename RationaliseApplyArray_impl::RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<7> >::type, ToRemove, Apply_impl::ignore>::type,
+                  typename RationaliseApplyArray_impl::RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<8> >::type, ToRemove, Apply_impl::ignore>::type,
+                  typename RationaliseApplyArray_impl::RationaliseApplyArrayConvert<typename ArrayIndex<T, Integer<9> >::type, ToRemove, Apply_impl::ignore>::type> type;
     METAPROGRAMMING_ONLY(RationaliseApplyArray)
 };
 
