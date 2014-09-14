@@ -15,6 +15,7 @@
 #endif
 
 namespace intro {
+
 namespace StreamIn_impl {
 
 template<typename charT, typename traits>
@@ -26,7 +27,7 @@ struct TYPE_HIDDEN_VISIBILITY StreamIn_Visitor
     typedef typename std::basic_istream<charT, traits>::sentry Guard;
 
     template<typename T, int Index>
-    ALWAYS_INLINE_HIDDEN void operator()(T& x, Integer<Index>)
+    INLINE void operator()(T& x, Integer<Index>)
     {
         Guard guard(*is);
         if (guard) {
@@ -37,7 +38,7 @@ struct TYPE_HIDDEN_VISIBILITY StreamIn_Visitor
 };
 
 template<typename T, typename charT, typename traits>
-std::basic_istream<charT, traits>& stream_in(std::basic_istream<charT, traits>& is, T& x)
+INLINE std::basic_istream<charT, traits>& stream_in(std::basic_istream<charT, traits>& is, T& x)
 {
     StreamIn_Visitor<charT, traits> visitor = {&is};
     visit(x, visitor);
@@ -46,7 +47,8 @@ std::basic_istream<charT, traits>& stream_in(std::basic_istream<charT, traits>& 
 
 } // namespace StreamIn_impl
 
- namespace StreamOut_impl {
+
+namespace StreamOut_impl {
 
 template<typename charT, typename traits>
 struct TYPE_HIDDEN_VISIBILITY StreamOut_Visitor
@@ -56,7 +58,7 @@ struct TYPE_HIDDEN_VISIBILITY StreamOut_Visitor
     IntrospectionItem0 os;
 
     template<typename T, int Index>
-    ALWAYS_INLINE_HIDDEN void operator()(T const& x, Integer<Index>)
+    INLINE void operator()(T const& x, Integer<Index>)
     {
         // Requires os is not 0
         *os << x << ' ' ;
@@ -64,7 +66,7 @@ struct TYPE_HIDDEN_VISIBILITY StreamOut_Visitor
 };
 
 template<typename T, typename charT, typename traits>
-std::basic_ostream<charT, traits>& stream_out(std::basic_ostream<charT, traits>& os, T const& x)
+INLINE std::basic_ostream<charT, traits>& stream_out(std::basic_ostream<charT, traits>& os, T const& x)
 {
     StreamOut_Visitor<charT, traits> visitor = {&os};
     visit(x, visitor);
@@ -73,8 +75,10 @@ std::basic_ostream<charT, traits>& stream_out(std::basic_ostream<charT, traits>&
 
 } // namespace StreamOut_impl
 
+
 template<typename T, typename enable=void>
 struct TYPE_HIDDEN_VISIBILITY generate_introspected_streaming : IntrospectionEnabled<T> {METAPROGRAMMING_ONLY(generate_introspected_streaming)};
+
 
 template<typename T, typename charT, typename traits>
 INLINE typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_istream<charT, traits>& >::type
