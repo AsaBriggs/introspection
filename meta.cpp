@@ -365,11 +365,25 @@ void test_integer_operations()
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<3>, Min<Integer<4>, Integer<3> >::type> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Min<Integer<-5>, Integer<-3> >::type> ));
 
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Max<Integer<0>, Integer<-1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<3>, Max<Integer<2>, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Max<Integer<-5>, Integer<-7> >::type> ));
+
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Subtract<Integer<0>, Integer<5> >::type > ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Subtract<Integer<47>, Integer<5> >::type > ));
 
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Add<Integer<0>, Integer<-5> >::type > ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Add<Integer<37>, Integer<5> >::type > ));
+
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<10>, Multiply<Integer<2>, Integer<5> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Multiply<Integer<37>, Integer<0> >::type > ));
+
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<7>, Divide<Integer<42>, Integer<6> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Divide<Integer<0>, Integer<1> >::type > ));
+
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-10>, Negate<Integer<10> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Negate<Integer<0> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Negate<Integer<-42> >::type > ));
 }
 
 void test_boolean_operations()

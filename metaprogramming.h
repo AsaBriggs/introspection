@@ -121,25 +121,41 @@ struct TYPE_HIDDEN_VISIBILITY Predecessor : Predecessor_impl::Predecessor<T> {ME
 
 namespace Min_impl {
 
-template<int num0, int num1, bool num0LessEq>
+template<typename T, typename U, bool ULessThanT>
 struct TYPE_HIDDEN_VISIBILITY Min2;
 
-template<int num0, int num1>
-struct TYPE_HIDDEN_VISIBILITY Min2<num0, num1, false> : Integer<num1> {METAPROGRAMMING_ONLY(Min2)};
-
-template<int num0, int num1>
-struct TYPE_HIDDEN_VISIBILITY Min2<num0, num1, true> : Integer<num0> {METAPROGRAMMING_ONLY(Min2)};
+template<typename T, typename U>
+struct TYPE_HIDDEN_VISIBILITY Min2<T, U, false> : T {METAPROGRAMMING_ONLY(Min2)};
 
 template<typename T, typename U>
-struct TYPE_HIDDEN_VISIBILITY Min;
+struct TYPE_HIDDEN_VISIBILITY Min2<T, U, true> : U {METAPROGRAMMING_ONLY(Min2)};
 
-template<int num0, int num1>
-struct TYPE_HIDDEN_VISIBILITY Min<Integer<num0>, Integer<num1> > : Min2<num0, num1, !(num1 < num0)> {METAPROGRAMMING_ONLY(Min)};
+template<typename T, typename U>
+struct TYPE_HIDDEN_VISIBILITY Min : Min2<T, U, U::type::value < T::type::value> {METAPROGRAMMING_ONLY(Min)};
 
 } // namespace Min_impl
 
 template<typename T, typename U>
 struct TYPE_HIDDEN_VISIBILITY Min : Min_impl::Min<T, U> {METAPROGRAMMING_ONLY(Min)};
+
+namespace Max_impl {
+
+template<typename T, typename U, bool ULessThanT>
+struct TYPE_HIDDEN_VISIBILITY Max2;
+
+template<typename T, typename U>
+struct TYPE_HIDDEN_VISIBILITY Max2<T, U, false> : U {METAPROGRAMMING_ONLY(Max2)};
+
+template<typename T, typename U>
+struct TYPE_HIDDEN_VISIBILITY Max2<T, U, true> : T {METAPROGRAMMING_ONLY(Max2)};
+
+template<typename T, typename U>
+struct TYPE_HIDDEN_VISIBILITY Max : Max2<T, U, U::type::value < T::type::value> {METAPROGRAMMING_ONLY(Max)};
+
+} // namespace Max_impl
+
+template<typename T, typename U>
+struct TYPE_HIDDEN_VISIBILITY Max : Max_impl::Max<T, U> {METAPROGRAMMING_ONLY(Max)};
 
 
 namespace Subtract_impl {
@@ -168,6 +184,49 @@ struct TYPE_HIDDEN_VISIBILITY Add<Integer<num0>, Integer<num1> > : Integer<num0 
 
 template<typename T0, typename T1>
 struct TYPE_HIDDEN_VISIBILITY Add : Add_impl::Add<T0, T1> {METAPROGRAMMING_ONLY(Add)};
+
+
+namespace Multiply_impl {
+
+template<typename T0, typename T1>
+struct TYPE_HIDDEN_VISIBILITY Multiply;
+
+template<int num0, int num1>
+struct TYPE_HIDDEN_VISIBILITY Multiply<Integer<num0>, Integer<num1> > : Integer<num0 * num1> {METAPROGRAMMING_ONLY(Multiply)};
+
+} // namespace Multiply_impl
+
+template<typename T0, typename T1>
+struct TYPE_HIDDEN_VISIBILITY Multiply : Multiply_impl::Multiply<T0, T1> {METAPROGRAMMING_ONLY(Multiply)};
+
+
+namespace Divide_impl {
+
+template<typename T0, typename T1>
+struct TYPE_HIDDEN_VISIBILITY Divide;
+
+template<int num0, int num1>
+struct TYPE_HIDDEN_VISIBILITY Divide<Integer<num0>, Integer<num1> > : Integer<num0 / num1> {METAPROGRAMMING_ONLY(Divide)};
+
+} // namespace Divide_impl
+
+template<typename T0, typename T1>
+struct TYPE_HIDDEN_VISIBILITY Divide : Divide_impl::Divide<T0, T1> {METAPROGRAMMING_ONLY(Divide)};
+
+
+namespace Negate_impl {
+
+template<typename T0>
+struct TYPE_HIDDEN_VISIBILITY Negate;
+
+template<int num>
+struct TYPE_HIDDEN_VISIBILITY Negate<Integer<num> > : Integer<-num> {METAPROGRAMMING_ONLY(Negate)};
+
+} // namespace Negate_impl
+
+template<typename T0>
+struct TYPE_HIDDEN_VISIBILITY Negate : Negate_impl::Negate<T0> {METAPROGRAMMING_ONLY(Negate)};
+
 
 namespace not_impl {
 
