@@ -1,9 +1,9 @@
 #ifndef INCLUDED_METAPROGRAMMING
 #define INCLUDED_METAPROGRAMMING
 
-#ifndef INCLUDED_CSTRING
-#include <cstring>
-#define INCLUDED_CSTRING
+#ifndef INCLUDED_CSTDDEF
+#include <cstddef>
+#define INCLUDED_CSTDDEF
 #endif
 
 #ifndef INCLUDED_COMPILER_SPECIFICS
@@ -307,7 +307,7 @@ struct TYPE_HIDDEN_VISIBILITY decay_ref_impl
     METAPROGRAMMING_ONLY(decay_ref_impl)
 };
 
-template<typename T, size_t N>
+template<typename T, ptrdiff_t N>
 struct TYPE_HIDDEN_VISIBILITY decay_ref_impl<T[N]>
 {
     typedef T const* type;
