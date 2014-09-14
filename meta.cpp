@@ -519,9 +519,16 @@ void test_decay_ref()
   INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<int>::type, int> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<int&>::type, int&> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<int const&>::type, int const&> ));
+
+  INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<int(&)[10] >::type, int*> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<int const(&)[10] >::type, int const*> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<int(&)[] >::type, int*> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<int const(&)[] >::type, int const*> ));
+
   INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<Ref<int> >::type, int&> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<decay_ref<Ref<int const> >::type, int const&> ));
 }
+
 void test_Array()
 {
   // Tests the array is self-evaluating

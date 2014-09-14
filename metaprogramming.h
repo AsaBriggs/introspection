@@ -308,9 +308,16 @@ struct TYPE_HIDDEN_VISIBILITY decay_ref_impl
 };
 
 template<typename T, ptrdiff_t N>
-struct TYPE_HIDDEN_VISIBILITY decay_ref_impl<T[N]>
+  struct TYPE_HIDDEN_VISIBILITY decay_ref_impl<T(&)[N]>
 {
-    typedef T const* type;
+    typedef T* type;
+    METAPROGRAMMING_ONLY(decay_ref_impl)
+};
+
+template<typename T>
+  struct TYPE_HIDDEN_VISIBILITY decay_ref_impl<T(&)[]>
+{
+    typedef T* type;
     METAPROGRAMMING_ONLY(decay_ref_impl)
 };
 
