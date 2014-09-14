@@ -110,19 +110,13 @@ struct TYPE_HIDDEN_VISIBILITY HasArrayInputItem :
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY HasArrayInputItem<T, Integer<10> > : false_type {METAPROGRAMMING_ONLY(HasArrayInputItem)};
 
-template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY HasInputType :
-    eval_if<Has_input_types<T>,
-             HasArrayInputItem<T, Index>,
-             HasNumberedInputType<T, Index> >
-{
-    METAPROGRAMMING_ONLY(HasInputType)
-};
-
 } // namespace HasInputType_impl
 
 template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY HasInputType : HasInputType_impl::HasInputType<typename ResolveFunctionSignatureType<T>::type, Index>
+struct TYPE_HIDDEN_VISIBILITY HasInputType :
+    eval_if<Has_input_types<T>,
+            HasInputType_impl::HasArrayInputItem<T, Index>,
+            HasInputType_impl::HasNumberedInputType<T, Index> >
 {
     METAPROGRAMMING_ONLY(HasInputType)
 };
@@ -169,18 +163,13 @@ struct TYPE_HIDDEN_VISIBILITY GetArrayInputType_impl : ArrayIndex<typename Get_i
     METAPROGRAMMING_ONLY(GetArrayInputType_impl)
 };
 
-template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY GetInputType : eval_if<Has_input_types<T>,
-    GetArrayInputType_impl<T, Index>,
-    GetNumberedInputType_impl<T, Index> >
-{
-    METAPROGRAMMING_ONLY(GetInputType)
-};
-
 } // namespace GetInputType_impl
 
 template<typename T, typename Index>
-struct TYPE_HIDDEN_VISIBILITY GetInputType : GetInputType_impl::GetInputType<typename ResolveFunctionSignatureType<T>::type, Index>
+struct TYPE_HIDDEN_VISIBILITY GetInputType :
+    eval_if<Has_input_types<T>,
+            GetInputType_impl::GetArrayInputType_impl<T, Index>,
+            GetInputType_impl::GetNumberedInputType_impl<T, Index> >
 {
     METAPROGRAMMING_ONLY(GetInputType)
 };
@@ -204,18 +193,13 @@ struct TYPE_HIDDEN_VISIBILITY GetFunctionArityArray : ArraySize<typename Get_inp
     METAPROGRAMMING_ONLY(GetFunctionArityArray)
 };
 
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GetFunctionArity : eval_if<Has_input_types<T>,
-  GetFunctionArityArray<T>,
-  GetFunctionArityLoop<T, Integer<0> > >
-{
-    METAPROGRAMMING_ONLY(GetFunctionArity)
-};
-
 } // namespace GetFunctionArity_impl
 
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GetFunctionArity : GetFunctionArity_impl::GetFunctionArity<typename ResolveFunctionSignatureType<T>::type>
+struct TYPE_HIDDEN_VISIBILITY GetFunctionArity :
+    eval_if<Has_input_types<T>,
+            GetFunctionArity_impl::GetFunctionArityArray<T>,
+            GetFunctionArity_impl::GetFunctionArityLoop<T, Integer<0> > >
 {
     METAPROGRAMMING_ONLY(GetFunctionArity)
 };
@@ -239,18 +223,16 @@ struct TYPE_HIDDEN_VISIBILITY GetInputTypeArrayNumbered :
     METAPROGRAMMING_ONLY(GetInputTypeArrayNumbered)
 };
 
+} // namespace GetInputTypeArray_impl
+
 template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GetInputTypeArray : eval_if<Has_input_types<T>,
-    Get_input_types<T>,
-    GetInputTypeArrayNumbered<T, Array<>, Integer<0>, typename GetFunctionArity<T>::type> >
+struct TYPE_HIDDEN_VISIBILITY GetInputTypeArray :
+    eval_if<Has_input_types<T>,
+            Get_input_types<T>,
+            GetInputTypeArray_impl::GetInputTypeArrayNumbered<T, Array<>, Integer<0>, typename GetFunctionArity<T>::type> >
 {
     METAPROGRAMMING_ONLY(GetInputTypeArray)
 };
-
-}
-
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY GetInputTypeArray : GetInputTypeArray_impl::GetInputTypeArray<typename ResolveFunctionSignatureType<T>::type> {METAPROGRAMMING_ONLY(GetInputTypeArray)};
 
 
 struct TYPE_HIDDEN_VISIBILITY no_template_argument { typedef no_template_argument type; METAPROGRAMMING_ONLY(no_template_argument) };
