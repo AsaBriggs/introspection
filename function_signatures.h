@@ -191,7 +191,7 @@ namespace GetFunctionArity_impl {
 // Count upwards; higher Arity is less likely.
 // Note that Indexing is zero based, and that CurrentArity suggests 0..CurrentArity-1(inclusive) are available
 template<typename T, typename CurrentArity>
-struct TYPE_HIDDEN_VISIBILITY GetFunctionArityLoop : eval_if<HasInputType_impl::HasNumberedInputType<T, CurrentArity>,
+struct TYPE_HIDDEN_VISIBILITY GetFunctionArityLoop : eval_if<HasInputType<T, CurrentArity>,
                                       GetFunctionArityLoop<T, typename Successor<CurrentArity>::type>,
                                       CurrentArity>
 {

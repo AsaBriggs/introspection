@@ -817,14 +817,14 @@ struct TYPE_DEFAULT_VISIBILITY Less_Visitor
 };
 
 template<typename GetComparator, typename T>
-ALWAYS_INLINE_HIDDEN bool equal_impl(T const& x, T const& y)
+ALWAYS_INLINE_HIDDEN bool equal(T const& x, T const& y)
 {
     Equal_Visitor<GetComparator> tmp = {true};
     return visit(x, y, tmp).value;
 }
 
 template<typename GetComparator, typename T>
-ALWAYS_INLINE_HIDDEN bool less_impl(T const& x, T const& y)
+ALWAYS_INLINE_HIDDEN bool less(T const& x, T const& y)
 {
     Less_Visitor<GetComparator> tmp = {false};
     return visit(x, y, tmp).value;
@@ -852,7 +852,7 @@ struct TYPE_DEFAULT_VISIBILITY less<T, typename enable_if<generate_introspected_
     INLINE codomain_type
     operator()(input_type_0 x, input_type_1 y) const
     {
-        return introspected_comparisons_impl::less_impl<less<placeholders::_0> >(get_storage(x), get_storage(y));
+        return introspected_comparisons_impl::less<less<placeholders::_0> >(get_storage(x), get_storage(y));
     }
 };
 
@@ -870,7 +870,7 @@ struct TYPE_DEFAULT_VISIBILITY equal<T, typename enable_if<generate_introspected
     INLINE codomain_type
     operator()(input_type_0 x, input_type_1 y) const
     {
-        return introspected_comparisons_impl::equal_impl<equal<placeholders::_0> >(get_storage(x), get_storage(y));
+        return introspected_comparisons_impl::equal<equal<placeholders::_0> >(get_storage(x), get_storage(y));
     }
 };
 
@@ -880,7 +880,7 @@ template<typename T>
 INLINE typename enable_if<generate_introspected_comparisons<T>, bool>::type
 operator==(T const& x, T const& y)
 {
-    return introspected_comparisons_impl::equal_impl<OperatorEquals<placeholders::_0> >(get_storage(x), get_storage(y));
+    return introspected_comparisons_impl::equal<OperatorEquals<placeholders::_0> >(get_storage(x), get_storage(y));
 }
 
 template<typename T>
@@ -896,7 +896,7 @@ template<typename T>
 INLINE typename enable_if<generate_introspected_comparisons<T>, bool>::type
 operator<(T const& x, T const& y)
 {
-    return introspected_comparisons_impl::less_impl<OperatorLessThan<placeholders::_0> >(get_storage(x), get_storage(y));
+    return introspected_comparisons_impl::less<OperatorLessThan<placeholders::_0> >(get_storage(x), get_storage(y));
 }
 
 template<typename T>
