@@ -10,6 +10,10 @@
 #include "compiler_specifics.h"
 #endif
 
+#ifndef INCLUDED_INTROSPECTION_NUMERICS
+#include "introspection_numerics.h"
+#endif
+
 #ifndef INCLUDED_INTROSPECTION_ASSERT
 #include "introspection_assert.h"
 #endif
@@ -396,12 +400,30 @@ struct TYPE_HIDDEN_VISIBILITY parameter_type
 };
 
 template<typename T>
+struct TYPE_HIDDEN_VISIBILITY parameter_type<T*>
+{
+    typedef T* type;
+    METAPROGRAMMING_ONLY(parameter_type)
+};
+
+template<typename T>
 struct TYPE_HIDDEN_VISIBILITY parameter_type<T&>
 {
     typedef T& type;
     METAPROGRAMMING_ONLY(parameter_type)
 };
 
+#define X(x)template<> \
+struct TYPE_HIDDEN_VISIBILITY parameter_type<x> \
+{ \
+    typedef x type; \
+    METAPROGRAMMING_ONLY(parameter_type) \
+}; \
+
+// Use the X-Macro
+FUNDAMENTAL_TYPES
+
+#undef X
 
 template<typename T, typename enable=void>
 struct TYPE_HIDDEN_VISIBILITY underlying_type
@@ -543,6 +565,31 @@ public:
     typedef typename ValueToTrueFalse<sizeof(test<T>(0)) == 1>::type type;
     METAPROGRAMMING_ONLY(is_struct_class_or_union)
 };
+
+template<typename T>
+struct TYPE_HIDDEN_VISIBILITY is_struct_class_or_union<T*> : false_type
+{
+    METAPROGRAMMING_ONLY(is_struct_class_or_union)
+};
+
+template<typename T>
+struct TYPE_HIDDEN_VISIBILITY is_struct_class_or_union<T&> : false_type
+{
+    METAPROGRAMMING_ONLY(is_struct_class_or_union)
+};
+
+#define X(x)template<> \
+struct TYPE_HIDDEN_VISIBILITY is_struct_class_or_union<x> : false_type \
+{ \
+    METAPROGRAMMING_ONLY(is_struct_class_or_union) \
+}; \
+
+// Use the X-Macro
+INTEGRAL_TYPES
+FLOATING_POINT_TYPES
+// Note that NULL_POINTER_TYPE is implemented as a struct, hence FUNDAMENTAL_TYPES macro was not used.
+
+#undef X
 
 
 struct TYPE_HIDDEN_VISIBILITY ArrayNoArg

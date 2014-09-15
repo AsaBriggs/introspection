@@ -481,9 +481,14 @@ void test_deduce_input_type()
   INTROSPECTION_STATIC_ASSERT2(( is_same<int, deduce_input_type<int>::type > ));
 }
 
+
+struct test_param {};
+
 void test_parameter_type()
 {
-  INTROSPECTION_STATIC_ASSERT2(( is_same<parameter_type<int>::type, int const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<parameter_type<test_param>::type, test_param const&> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<parameter_type<int>::type, int> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<parameter_type<int*>::type, int*> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<parameter_type<int&>::type, int&> ));
 }
 
