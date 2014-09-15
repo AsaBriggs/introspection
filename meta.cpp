@@ -2,6 +2,7 @@
 #include "storage.h"
 #include "storage_io.h"
 #include "function_signatures.h"
+#include "function_apply.h"
 #include "introspection_assert.h"
 
 #include <iostream>
@@ -2052,6 +2053,123 @@ void test_function_signatures()
   testMemberFun9<int, MemberFunctionTest*>(&MemberFunctionTest::intFun9);
 }
 
+int fun0(){ return 0;}
+int fun1(int a){ return a;}
+int fun2(int a, float b){ return a;}
+
+void test_apply_function_pointer_non_void_return()
+{
+  TEST(0 == apply(&fun0));
+  TEST(5 == apply(&fun1, 5));
+  TEST(78 == apply(&fun2, 78, 3.0f));
+}
+
+void voidfun0(){}
+void voidfun1(int){}
+void voidfun2(int, float){}
+
+void test_apply_function_pointer_void_return()
+{
+  apply(&voidfun0);
+  apply(&voidfun1, 5);
+  apply(&voidfun2, 78, 3.0f);
+}
+
+struct Func0
+{
+  typedef Func0 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  codomain_type operator()() const { return fun0(); }
+};
+
+struct Func1
+{
+  typedef Func1 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  codomain_type operator()(input_type_0 a) const { return fun1(a); }
+};
+
+struct Func2
+{
+  typedef Func2 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  codomain_type operator()(input_type_0 a, input_type_1 b) const { return fun2(a, b); }
+};
+
+void test_apply_functor_non_void_return()
+{
+  TEST(0 == apply(Func0()));
+  TEST(5 == apply(Func1(), 5));
+  TEST(78 == apply(Func2(), 78, 3.0f));
+}
+
+struct VoidFunc0
+{
+  typedef VoidFunc0 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  codomain_type operator()() const {}
+};
+
+struct VoidFunc1
+{
+  typedef VoidFunc1 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  typedef int input_type_0;
+  codomain_type operator()(input_type_0 a) const {}
+};
+
+struct VoidFunc2
+{
+  typedef VoidFunc2 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  codomain_type operator()(input_type_0 a, input_type_1 b) const {}
+};
+
+void test_apply_functor_void_return()
+{
+  apply(VoidFunc0());
+  apply(VoidFunc1(), 1);
+  apply(VoidFunc2(), 1, 3.0f);
+}
+
+void test_member_function_pointer_non_void_return()
+{
+  MemberFunctionTest tmp;
+  TEST(0 == apply(&MemberFunctionTest::intFun0, &tmp));
+  TEST(0 == apply(&MemberFunctionTest::intFun1, &tmp, 3));
+}
+
+void test_member_function_pointer_void_return()
+{
+  MemberFunctionTest tmp;
+  apply(&MemberFunctionTest::voidFun0, &tmp);
+  apply(&MemberFunctionTest::voidFun1, &tmp, 3);
+
+}
+
+void test_function_apply()
+{
+  test_apply_function_pointer_non_void_return();
+  test_apply_function_pointer_void_return();
+
+  test_apply_functor_non_void_return();
+  test_apply_functor_void_return();
+
+  test_member_function_pointer_non_void_return();
+  test_member_function_pointer_void_return();
+}
+
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
 INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(*)(int, int, int, int, int, int, int, int, int, int, int)> ));
 INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(MemberFunctionTest::*)(int, int, int, int, int, int, int, int, int, int)> ));
@@ -2125,4 +2243,5 @@ int main()
     test_visit();
 
     test_function_signatures();
+    test_function_apply();
 }

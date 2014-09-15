@@ -592,10 +592,9 @@ FLOATING_POINT_TYPES
 #undef X
 
 
-struct TYPE_HIDDEN_VISIBILITY ArrayNoArg
+struct TYPE_DEFAULT_VISIBILITY ArrayNoArg
 {
     typedef ArrayNoArg type;
-    METAPROGRAMMING_ONLY(ArrayNoArg)
 };
 
 
