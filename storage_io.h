@@ -27,16 +27,17 @@ struct TYPE_HIDDEN_VISIBILITY StreamIn_Visitor
     typedef typename std::basic_istream<charT, traits>::sentry Guard;
 
     template<typename T, int Index>
-    INLINE void operator()(T& x, Integer<Index>)
+    ALWAYS_INLINE void operator()(T& x, Integer<Index>)
     {
         Guard guard(*is);
-        if (guard) {
+        if (INTROSPECTION_LIKELY(guard)) {
             // Requires is is not 0
             *is >> x;
 	}
     }
 };
 
+// Try and make this function be shared as the single stream out function for T(/charT/traits)
 template<typename T, typename charT, typename traits>
 INLINE std::basic_istream<charT, traits>& stream_in(std::basic_istream<charT, traits>& is, T& x)
 {
@@ -58,13 +59,14 @@ struct TYPE_HIDDEN_VISIBILITY StreamOut_Visitor
     IntrospectionItem0 os;
 
     template<typename T, int Index>
-    INLINE void operator()(T const& x, Integer<Index>)
+    ALWAYS_INLINE void operator()(T const& x, Integer<Index>)
     {
         // Requires os is not 0
         *os << x << ' ' ;
     }
 };
 
+// Try and make this function be shared as the single stream in function for T(/charT/traits)
 template<typename T, typename charT, typename traits>
 INLINE std::basic_ostream<charT, traits>& stream_out(std::basic_ostream<charT, traits>& os, T const& x)
 {
@@ -81,14 +83,14 @@ struct TYPE_HIDDEN_VISIBILITY generate_introspected_streaming : IntrospectionEna
 
 
 template<typename T, typename charT, typename traits>
-INLINE typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_istream<charT, traits>& >::type
+ALWAYS_INLINE_HIDDEN typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_istream<charT, traits>& >::type
 operator>>(std::basic_istream<charT, traits>& is, T& x)
 {
     return StreamIn_impl::stream_in(is, get_storage(x));
 }
 
 template<typename T, typename charT, typename traits>
-INLINE typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_ostream<charT, traits>& >::type
+ALWAYS_INLINE_HIDDEN typename enable_if<typename generate_introspected_streaming<T>::type, std::basic_ostream<charT, traits>& >::type
 operator<<(std::basic_ostream<charT, traits>& os, T const& x)
 {
     return StreamOut_impl::stream_out(os, get_storage(x));

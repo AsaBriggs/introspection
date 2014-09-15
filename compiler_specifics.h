@@ -37,4 +37,16 @@
 #define METAPROGRAMMING_ONLY(x) private: x(); ~x(); public:
 #endif
 
+#ifndef INTROSPECTION_EXPECT
+#define INTROSPECTION_EXPECT(Expected, Actual) __builtin_expect(Expected, (Actual))
+#endif
+
+#ifndef INTROSPECTION_LIKELY
+#define INTROSPECTION_LIKELY(x) __builtin_expect(true, !!(x))
+#endif
+
+#ifndef INTROSPECTION_UNLIKELY
+#define INTROSPECTION_UNLIKELY(x) __builtin_expect(false, !!(x))
+#endif
+
 #endif
