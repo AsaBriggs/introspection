@@ -2056,23 +2056,53 @@ void test_function_signatures()
 int fun0(){ return 0;}
 int fun1(int a){ return a;}
 int fun2(int a, float b){ return a;}
+int fun3(int a, float b, long){ return a;}
+int fun4(int a, float b, long, double){ return a;}
+int fun5(int a, float b, long, double, char const*){ return a;}
+int fun6(int a, float b, long, double, char const*, int&){ return a;}
+int fun7(int a, float b, long, double, char const*, int&, bool){ return a;}
+int fun8(int a, float b, long, double, char const*, int&, bool, char){ return a;}
+int fun9(int a, float b, long, double, char const*, int&, bool, char, void*){ return a;}
 
 void test_apply_function_pointer_non_void_return()
 {
   TEST(0 == apply(&fun0));
   TEST(5 == apply(&fun1, 5));
   TEST(78 == apply(&fun2, 78, 3.0f));
+  TEST(78 == apply(&fun3, 78, 3.0f, 999L));
+  TEST(78 == apply(&fun4, 78, 3.0f, 999L, 44.5));
+  TEST(78 == apply(&fun5, 78, 3.0f, 999L, 44.5, "aaa" ));
+  int x = 0;
+  TEST(78 == apply(&fun6, 78, 3.0f, 999L, 44.5, "aaa", x));
+  TEST(78 == apply(&fun7, 78, 3.0f, 999L, 44.5, "aaa", x, true));
+  TEST(78 == apply(&fun8, 78, 3.0f, 999L, 44.5, "aaa", x, true, 'a'));
+  TEST(78 == apply(&fun9, 78, 3.0f, 999L, 44.5, "aaa", x, true, 'a', static_cast<void*>(0)));
 }
 
 void voidfun0(){}
 void voidfun1(int){}
 void voidfun2(int, float){}
+void voidfun3(int, float, long){}
+void voidfun4(int, float, long, double){}
+void voidfun5(int, float, long, double, char const*){}
+void voidfun6(int, float, long, double, char const*, int&){}
+void voidfun7(int, float, long, double, char const*, int&, bool){}
+void voidfun8(int, float, long, double, char const*, int&, bool, char){}
+void voidfun9(int, float, long, double, char const*, int&, bool, char, void*){}
 
 void test_apply_function_pointer_void_return()
 {
   apply(&voidfun0);
   apply(&voidfun1, 5);
   apply(&voidfun2, 78, 3.0f);
+  apply(&voidfun3, 78, 3.0f, 77L);
+  apply(&voidfun4, 78, 3.0f, 77L, 446.0);
+  apply(&voidfun5, 78, 3.0f, 77L, 446.0, "aaa ");
+  int x = 0;
+  apply(&voidfun6, 78, 3.0f, 77L, 446.0, "aaa ", x);
+  apply(&voidfun7, 78, 3.0f, 77L, 446.0, "aaa ", x, true);
+  apply(&voidfun8, 78, 3.0f, 77L, 446.0, "aaa ", x, true, 'a');
+  apply(&voidfun9, 78, 3.0f, 77L, 446.0, "aaa ", x, true, 'a', static_cast<void*>(0));
 }
 
 struct Func0
@@ -2102,11 +2132,99 @@ struct Func2
   codomain_type operator()(input_type_0 a, input_type_1 b) const { return fun2(a, b); }
 };
 
+struct Func3
+{
+  typedef Func3 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c) const { return fun2(a, b); }
+};
+
+struct Func4
+{
+  typedef Func4 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d) const { return fun2(a, b); }
+};
+
+struct Func5
+{
+  typedef Func5 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e) const { return fun2(a, b); }
+};
+
+struct Func6
+{
+  typedef Func6 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f) const { return fun2(a, b); }
+};
+
+struct Func7
+{
+  typedef Func7 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  typedef long input_type_6;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g) const { return fun2(a, b); }
+};
+
+struct Func8
+{
+  typedef Func8 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  typedef long input_type_6;
+  typedef char const* input_type_7;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g, input_type_7 h) const { return fun2(a, b); }
+};
+
 void test_apply_functor_non_void_return()
 {
   TEST(0 == apply(Func0()));
   TEST(5 == apply(Func1(), 5));
   TEST(78 == apply(Func2(), 78, 3.0f));
+  TEST(78 == apply(Func3(), 78, 3.0f, 7.5));
+  TEST(78 == apply(Func4(), 78, 3.0f, 7.5, 'a'));
+  TEST(78 == apply(Func5(), 78, 3.0f, 7.5, 'a', true));
+  int x = 0;
+  TEST(78 == apply(Func6(), 78, 3.0f, 7.5, 'a', true, x));
+  TEST(78 == apply(Func7(), 78, 3.0f, 7.5, 'a', true, x, 55L));
+  TEST(78 == apply(Func8(), 78, 3.0f, 7.5, 'a', true, x, 55L, "aaa"));
 }
 
 struct VoidFunc0
@@ -2136,18 +2254,134 @@ struct VoidFunc2
   codomain_type operator()(input_type_0 a, input_type_1 b) const {}
 };
 
+struct VoidFunc3
+{
+  typedef VoidFunc3 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c) const {}
+};
+
+struct VoidFunc4
+{
+  typedef VoidFunc4 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d) const {}
+};
+
+struct VoidFunc5
+{
+  typedef VoidFunc5 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e) const {}
+};
+
+struct VoidFunc6
+{
+  typedef VoidFunc6 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f) const {}
+};
+
+struct VoidFunc7
+{
+  typedef VoidFunc7 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  typedef long input_type_6;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g) const {}
+};
+
+struct VoidFunc8
+{
+  typedef VoidFunc8 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  typedef long input_type_6;
+  typedef char const* input_type_7;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g, input_type_7 h) const {}
+};
+
+
 void test_apply_functor_void_return()
 {
   apply(VoidFunc0());
   apply(VoidFunc1(), 1);
   apply(VoidFunc2(), 1, 3.0f);
+  apply(VoidFunc3(), 1, 3.0f, 7.5);
+  apply(VoidFunc4(), 1, 3.0f, 7.5, 'a');
+  apply(VoidFunc5(), 1, 3.0f, 7.5, 'a', true);
+  int x = 0;
+  apply(VoidFunc6(), 1, 3.0f, 7.5, 'a', true, x);
+  apply(VoidFunc7(), 1, 3.0f, 7.5, 'a', true, x, 55L);
+  apply(VoidFunc8(), 1, 3.0f, 7.5, 'a', true, x, 55L, "  ");
 }
+
+extern double UNKNOWN_LENGTH_DOUBLE_ARRAY[];
 
 void test_member_function_pointer_non_void_return()
 {
   MemberFunctionTest tmp;
   TEST(0 == apply(&MemberFunctionTest::intFun0, &tmp));
   TEST(0 == apply(&MemberFunctionTest::intFun1, &tmp, 3));
+
+  char tmp2 = 'a';
+  TEST(0 == apply(&MemberFunctionTest::intFun2, &tmp, 3, tmp2));
+
+  // Note had to use awkward explict template function parameterisation as UNKNOWN_LENGTH_DOUBLE_ARRAY is immediately decayed
+  // to double* when passed by value ... TODO, look to see if there is a better way of doing this.
+  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[]), MemberFunctionTest*, int, char&, double(&)[]>
+	 (&MemberFunctionTest::intFun3, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY)));
+
+  int const volatile arr[10] = {};
+  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10]), MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
+	 (&MemberFunctionTest::intFun4, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr)));
+
+  void(*func)() = 0;
+  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)()), MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
+	 (&MemberFunctionTest::intFun5, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func)));
+
+  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long), MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
+	 (&MemberFunctionTest::intFun6, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L)));
+
+  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long, float), MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
+	 (&MemberFunctionTest::intFun7, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f)));
+
+  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long, float, bool), MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
+	 (&MemberFunctionTest::intFun8, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true)));
 }
 
 void test_member_function_pointer_void_return()
@@ -2156,6 +2390,30 @@ void test_member_function_pointer_void_return()
   apply(&MemberFunctionTest::voidFun0, &tmp);
   apply(&MemberFunctionTest::voidFun1, &tmp, 3);
 
+  char tmp2 = 'a';
+  apply(&MemberFunctionTest::voidFun2, &tmp, 3, tmp2);
+
+  // Note had to use awkward explict template function parameterisation as UNKNOWN_LENGTH_DOUBLE_ARRAY is immediately decayed
+  // to double* when passed by value ... TODO, look to see if there is a better way of doing this.
+  apply<void(MemberFunctionTest::*)(int, char&, double(&)[]) const, MemberFunctionTest*, int, char&, double(&)[]>
+	 (&MemberFunctionTest::voidFun3, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY);
+
+  int const volatile arr[10] = {};
+  apply<void(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10]) const, MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
+	 (&MemberFunctionTest::voidFun4, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr);
+
+  void(*func)() = 0;
+  apply<void(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)()) const, MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
+	 (&MemberFunctionTest::voidFun5, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func);
+
+  apply<void(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long) const, MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
+	 (&MemberFunctionTest::voidFun6, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L);
+
+  apply<void(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long, float) const, MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
+	 (&MemberFunctionTest::voidFun7, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f);
+
+  apply<void(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long, float, bool) const, MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
+	 (&MemberFunctionTest::voidFun8, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true);
 }
 
 void test_function_apply()
@@ -2169,6 +2427,8 @@ void test_function_apply()
   test_member_function_pointer_non_void_return();
   test_member_function_pointer_void_return();
 }
+
+double UNKNOWN_LENGTH_DOUBLE_ARRAY[] = {0.0};
 
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
 INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(*)(int, int, int, int, int, int, int, int, int, int, int)> ));
