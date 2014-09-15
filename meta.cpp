@@ -2057,6 +2057,50 @@ INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(*)(int, int, int, i
 INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(MemberFunctionTest::*)(int, int, int, int, int, int, int, int, int, int)> ));
 #endif
 
+namespace Apply_stress_test {
+using namespace placeholders;
+
+template<int base>
+struct ArrayFrom : Array<Integer<base>,Integer<base + 1>,Integer<base + 2>,Integer<base + 3>,Integer<base + 4>,Integer<base + 5>,Integer<base + 6>,Integer<base + 7>,Integer<base + 8>,Integer<base + 9> > {};
+
+typedef ArrayTransform<ArrayFrom<0>::type, _0> Apply1;
+INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayFrom<0>::type, Apply1::type> ));
+
+#ifdef INTROSPECTION_APPLY_STRESS_TEST
+template<int base>
+struct ArrayArrayFrom : Array<typename ArrayFrom<base>::type, typename ArrayFrom<base + 10>::type, typename ArrayFrom<base + 20>::type, typename ArrayFrom<base + 30>::type, typename ArrayFrom<base + 40>::type, typename ArrayFrom<base + 50>::type, typename ArrayFrom<base + 60>::type, typename ArrayFrom<base + 70>::type, typename ArrayFrom<base + 80>::type, typename ArrayFrom<base + 90>::type > {};
+
+// Need to delay the evaluation of the right-hand _0 until later, using the identity_type
+typedef ArrayTransform<ArrayArrayFrom<10>::type, ArrayTransform<_0, identity_type<_0> > > Apply2;
+INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayArrayFrom<10>::type, Apply2::type> ));
+
+
+
+template<int base>
+struct ArrayArrayArrayFrom : Array<typename ArrayArrayFrom<base>::type, typename ArrayArrayFrom<base + 100>::type, typename ArrayArrayFrom<base + 200>::type, typename ArrayArrayFrom<base + 300>::type, typename ArrayArrayFrom<base + 400>::type, typename ArrayArrayFrom<base + 500>::type, typename ArrayArrayFrom<base + 600>::type, typename ArrayArrayFrom<base + 700>::type, typename ArrayArrayFrom<base + 800>::type, typename ArrayArrayFrom<base + 900>::type > {};
+
+typedef ArrayTransform<ArrayArrayArrayFrom<1000>::type, ArrayTransform<_0, ArrayTransform<_0, identity_type<_0> > > > Apply3;
+INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayArrayArrayFrom<1000>::type, Apply3::type> ));
+
+
+
+template<int base>
+struct ArrayArrayArrayArrayFrom : Array<typename ArrayArrayArrayFrom<base>::type, typename ArrayArrayArrayFrom<base + 1000>::type, typename ArrayArrayArrayFrom<base + 2000>::type, typename ArrayArrayArrayFrom<base + 3000>::type, typename ArrayArrayArrayFrom<base + 4000>::type, typename ArrayArrayArrayFrom<base + 5000>::type, typename ArrayArrayArrayFrom<base + 6000>::type, typename ArrayArrayArrayFrom<base + 7000>::type, typename ArrayArrayArrayFrom<base + 8000>::type, typename ArrayArrayArrayFrom<base + 9000>::type > {};
+
+typedef ArrayTransform<ArrayArrayArrayArrayFrom<10000>::type, ArrayTransform<_0, ArrayTransform<_0, ArrayTransform<_0, identity_type<_0> > > > > Apply4;
+INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayArrayArrayArrayFrom<10000>::type, Apply4::type> ));
+
+
+
+template<int base>
+struct ArrayArrayArrayArrayArrayFrom : Array<typename ArrayArrayArrayArrayFrom<base>::type, typename ArrayArrayArrayArrayFrom<base + 10000>::type, typename ArrayArrayArrayArrayFrom<base + 20000>::type, typename ArrayArrayArrayArrayFrom<base + 30000>::type, typename ArrayArrayArrayArrayFrom<base + 40000>::type, typename ArrayArrayArrayArrayFrom<base + 50000>::type, typename ArrayArrayArrayArrayFrom<base + 60000>::type, typename ArrayArrayArrayArrayFrom<base + 70000>::type, typename ArrayArrayArrayArrayFrom<base + 80000>::type, typename ArrayArrayArrayArrayFrom<base + 90000>::type > {};
+
+typedef ArrayTransform<ArrayArrayArrayArrayArrayFrom<100000>::type, ArrayTransform<_0, ArrayTransform<_0, ArrayTransform<_0, ArrayTransform<_0, identity_type<_0> > > > > > Apply5;
+INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayArrayArrayArrayArrayFrom<100000>::type, Apply5::type> ));
+#endif //INTROSPECTION_APPLY_STRESS_TEST
+
+} // namespace Apply_stress_test
+
 } // unnamed namespace
 } // namespace intro
 
