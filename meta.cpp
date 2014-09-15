@@ -2021,35 +2021,35 @@ void test_function_signatures()
   MyGenericFunctionObject::test();
   MyGenericFunctionObject2::test();
 
-  testMemberFun0<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun0);
-  testMemberFun0<int, MemberFunctionTest&>(&MemberFunctionTest::intFun0);
+  testMemberFun0<void, MemberFunctionTest const*>(&MemberFunctionTest::voidFun0);
+  testMemberFun0<int, MemberFunctionTest*>(&MemberFunctionTest::intFun0);
 
-  testMemberFun1<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun1);
-  testMemberFun1<int, MemberFunctionTest&>(&MemberFunctionTest::intFun1);
+  testMemberFun1<void, MemberFunctionTest const*>(&MemberFunctionTest::voidFun1);
+  testMemberFun1<int, MemberFunctionTest*>(&MemberFunctionTest::intFun1);
 
-  testMemberFun2<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun2);
-  testMemberFun2<int, MemberFunctionTest&>(&MemberFunctionTest::intFun2);
+  testMemberFun2<void, MemberFunctionTest const*>(&MemberFunctionTest::voidFun2);
+  testMemberFun2<int, MemberFunctionTest*>(&MemberFunctionTest::intFun2);
 
-  testMemberFun3<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun3);
-  testMemberFun3<int, MemberFunctionTest&>(&MemberFunctionTest::intFun3);
+  testMemberFun3<void, MemberFunctionTest const*>(&MemberFunctionTest::voidFun3);
+  testMemberFun3<int, MemberFunctionTest*>(&MemberFunctionTest::intFun3);
 
-  testMemberFun4<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun4);
-  testMemberFun4<int, MemberFunctionTest&>(&MemberFunctionTest::intFun4);
+  testMemberFun4<void, MemberFunctionTest const*>(&MemberFunctionTest::voidFun4);
+  testMemberFun4<int, MemberFunctionTest*>(&MemberFunctionTest::intFun4);
 
-  testMemberFun5<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun5);
-  testMemberFun5<int, MemberFunctionTest&>(&MemberFunctionTest::intFun5);
+  testMemberFun5<void, MemberFunctionTest const*>(&MemberFunctionTest::voidFun5);
+  testMemberFun5<int, MemberFunctionTest*>(&MemberFunctionTest::intFun5);
 
-  testMemberFun6<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun6);
-  testMemberFun6<int, MemberFunctionTest&>(&MemberFunctionTest::intFun6);
+  testMemberFun6<void, MemberFunctionTest const*>(&MemberFunctionTest::voidFun6);
+  testMemberFun6<int, MemberFunctionTest*>(&MemberFunctionTest::intFun6);
 
-  testMemberFun7<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun7);
-  testMemberFun7<int, MemberFunctionTest&>(&MemberFunctionTest::intFun7);
+  testMemberFun7<void, MemberFunctionTest const*>(&MemberFunctionTest::voidFun7);
+  testMemberFun7<int, MemberFunctionTest*>(&MemberFunctionTest::intFun7);
 
-  testMemberFun8<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun8);
-  testMemberFun8<int, MemberFunctionTest&>(&MemberFunctionTest::intFun8);
+  testMemberFun8<void, MemberFunctionTest const*>(&MemberFunctionTest::voidFun8);
+  testMemberFun8<int, MemberFunctionTest*>(&MemberFunctionTest::intFun8);
 
-  testMemberFun9<void, MemberFunctionTest const&>(&MemberFunctionTest::voidFun9);
-  testMemberFun9<int, MemberFunctionTest&>(&MemberFunctionTest::intFun9);
+  testMemberFun9<void, MemberFunctionTest const*>(&MemberFunctionTest::voidFun9);
+  testMemberFun9<int, MemberFunctionTest*>(&MemberFunctionTest::intFun9);
 }
 
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
