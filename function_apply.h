@@ -7,6 +7,8 @@
 
 namespace intro {
 
+namespace function_apply {
+
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY is_a_function_wrapper : false_type
 {
@@ -17,6 +19,13 @@ template<typename CodomainType, typename InputType, typename MemberFunction>
 struct TYPE_HIDDEN_VISIBILITY is_a_function_wrapper<function_pointer_specialisations::function_wrapper<CodomainType, InputType, MemberFunction> > : true_type
 {
     METAPROGRAMMING_ONLY(is_a_function_wrapper)
+};
+
+template<typename Func, typename Index>
+struct TYPE_HIDDEN_VISIBILITY GetParam :
+    parameter_type<typename ArrayIndex<typename GetInputTypeArray<Func>::type, Index>::type>
+{
+    METAPROGRAMMING_ONLY(GetParam)
 };
 
 template<typename Func, typename Enable=void>
@@ -34,7 +43,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
     typedef typename GetInputTypeArray<Func>::type FuncInputs;
     typedef typename ArrayConcat<Array<Func>, FuncInputs>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : ArrayIndex<FuncInputs, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func) const
@@ -154,7 +163,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
     typedef typename GetInputTypeArray<Func>::type FuncInputs;
     typedef typename ArrayConcat<Array<Func>, FuncInputs>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : ArrayIndex<FuncInputs, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func) const
@@ -271,7 +280,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     typedef CodomainType codomain_type;
     typedef typename ArrayConcat<Array<typename Spec::Func>, InputTypes>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : ArrayIndex<InputTypes, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(typename Spec::Func func) const
@@ -388,7 +397,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     typedef void codomain_type;
     typedef typename ArrayConcat<Array<typename Spec::Func>, InputTypes>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : ArrayIndex<InputTypes, Integer<N> > {};
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(typename Spec::Func func) const
@@ -505,7 +514,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     typedef CodomainType codomain_type;
     typedef typename ArrayConcat<Array<typename Spec::Func>, InputTypes>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : ArrayIndex<InputTypes, Integer<N> > {};
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(typename Spec::Func func,
@@ -617,7 +626,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     typedef void codomain_type;
     typedef typename ArrayConcat<Array<typename Spec::Func>, InputTypes>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : ArrayIndex<InputTypes, Integer<N> > {};
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(typename Spec::Func func,
@@ -720,202 +729,289 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
 };
 
 // Helper metafunction
-template<typename Fun>
-struct TYPE_HIDDEN_VISIBILITY GetApplyObj : ApplyObj<typename ResolveFunctionSignatureType<Fun>::type>
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY GetApplyObj : ApplyObj<typename ResolveFunctionSignatureType<Func>::type>
 {
     METAPROGRAMMING_ONLY(GetApplyObj)
 };
 
+// General pattern is to enable on a given arity and void/non-void return
+template<typename Func, typename Arity>
+struct TYPE_HIDDEN_VISIBILITY EnableApplyIfVoid :
+    enable_if<and_<is_same<Arity, typename GetFunctionArity<Func>::type>,
+                   is_same<void, typename GetCodomainType<Func>::type > >,
+              void>
+{
+    METAPROGRAMMING_ONLY(EnableApplyIfVoid)
+};
+
+template<typename Func, typename Arity>
+struct TYPE_HIDDEN_VISIBILITY EnableApplyIfNotVoid :
+    enable_if<and_<is_same<Arity, typename GetFunctionArity<Func>::type>,
+                   not_<is_same<void, typename GetCodomainType<Func>::type> > >,
+             typename GetCodomainType<Func>::type>
+{
+    METAPROGRAMMING_ONLY(EnableApplyIfNotVoid)
+};
+
+} // namespace function_apply
+
 
 template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename disable_if<is_same<void ,typename GetCodomainType<typename GetApplyObj<Func>::type>::type>,
-                    typename GetCodomainType<typename GetApplyObj<Func>::type>::type >::type
+typename function_apply::EnableApplyIfNotVoid<Func, Integer<0> >::type
 apply(Func func)
 {
-    return typename GetApplyObj<Func>::type()(func);
+    return typename function_apply::GetApplyObj<Func>::type()(func);
 }
 
 template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename enable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                   void>::type
+typename function_apply::EnableApplyIfVoid<Func, Integer<0> >::type
 apply(Func func)
 {
-    typename GetApplyObj<Func>::type()(func);
+    typename function_apply::GetApplyObj<Func>::type()(func);
 }
 
 
-template<typename Func, typename P0>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename disable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                    typename GetCodomainType<typename ApplyObj<Func>::type>::type >::type
-apply(Func func, P0 p0)
+typename function_apply::EnableApplyIfNotVoid<Func, Integer<1> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0)
 {
-    return typename GetApplyObj<Func>::type()(func, p0);
+    return typename function_apply::GetApplyObj<Func>::type()(func, p0);
 }
 
-template<typename Func, typename P0>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename enable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                   void>::type
-apply(Func func, P0 p0)
+typename function_apply::EnableApplyIfVoid<Func, Integer<1> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0)
 {
-    typename GetApplyObj<Func>::type()(func, p0);
+    typename function_apply::GetApplyObj<Func>::type()(func, p0);
 }
 
 
-template<typename Func, typename P0, typename P1>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename disable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                    typename GetCodomainType<typename ApplyObj<Func>::type>::type >::type
-apply(Func func, P0 p0, P1 p1)
+typename function_apply::EnableApplyIfNotVoid<Func, Integer<2> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1)
 {
-    return typename GetApplyObj<Func>::type()(func, p0, p1);
+    return typename function_apply::GetApplyObj<Func>::type()(func, p0, p1);
 }
 
-template<typename Func, typename P0, typename P1>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename enable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                   void>::type
-apply(Func func, P0 p0, P1 p1)
+typename function_apply::EnableApplyIfVoid<Func, Integer<2> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1)
 {
-    typename GetApplyObj<Func>::type()(func, p0, p1);
+    typename function_apply::GetApplyObj<Func>::type()(func, p0, p1);
 }
 
 
-template<typename Func, typename P0, typename P1, typename P2>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename disable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                    typename GetCodomainType<typename ApplyObj<Func>::type>::type >::type
-apply(Func func, P0 p0, P1 p1, P2 p2)
+typename function_apply::EnableApplyIfNotVoid<Func, Integer<3> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2)
 {
-  return typename GetApplyObj<Func>::type()(func, p0, p1, p2);
+    return typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2);
 }
 
-template<typename Func, typename P0, typename P1, typename P2>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename enable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                   void>::type
-apply(Func func, P0 p0, P1 p1, P2 p2)
+typename function_apply::EnableApplyIfVoid<Func, Integer<3> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2)
 {
-    typename GetApplyObj<Func>::type()(func, p0, p1, p2);
+    typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2);
 }
 
-
-template<typename Func, typename P0, typename P1, typename P2, typename P3>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename disable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                    typename GetCodomainType<typename ApplyObj<Func>::type>::type >::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3)
+typename function_apply::EnableApplyIfNotVoid<Func, Integer<4> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3)
 {
-    return typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3);
+    return typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3);
 }
 
-template<typename Func, typename P0, typename P1, typename P2, typename P3>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename enable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                   void>::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3)
+typename function_apply::EnableApplyIfVoid<Func, Integer<4> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3)
 {
-    typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3);
+    typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3);
 }
 
-
-template<typename Func, typename P0, typename P1, typename P2, typename P3, typename P4>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename disable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                    typename GetCodomainType<typename ApplyObj<Func>::type>::type >::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3, P4 p4)
+typename function_apply::EnableApplyIfNotVoid<Func, Integer<5> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4)
 {
-    return typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4);
+    return typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4);
 }
 
-template<typename Func, typename P0, typename P1, typename P2, typename P3, typename P4>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename enable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                   void>::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3, P4 p4)
+typename function_apply::EnableApplyIfVoid<Func, Integer<5> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4)
 {
-    typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4);
+    typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4);
 }
 
 
-template<typename Func, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename disable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                    typename GetCodomainType<typename ApplyObj<Func>::type>::type >::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5)
+typename function_apply::EnableApplyIfNotVoid<Func, Integer<6> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5)
 {
-    return typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5);
+    return typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5);
 }
 
-template<typename Func, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename enable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                   void>::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5)
+typename function_apply::EnableApplyIfVoid<Func, Integer<6> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5)
 {
-    typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5);
+    typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5);
 }
 
 
-template<typename Func, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename disable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                    typename GetCodomainType<typename ApplyObj<Func>::type>::type >::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6)
+typename function_apply::EnableApplyIfNotVoid<Func, Integer<7> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6)
 {
-    return typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6);
+    return typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6);
 }
 
-template<typename Func, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename enable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                   void>::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6)
+typename function_apply::EnableApplyIfVoid<Func, Integer<7> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6)
 {
-    typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6);
+    typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6);
 }
 
 
-template<typename Func, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename disable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                    typename GetCodomainType<typename ApplyObj<Func>::type>::type >::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6, P7 p7)
+typename function_apply::EnableApplyIfNotVoid<Func, Integer<8> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6,
+      typename function_apply::GetParam<Func, Integer<7> >::type p7)
 {
-    return typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6, p7);
+    return typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6, p7);
 }
 
-template<typename Func, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename enable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                   void>::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6, P7 p7)
+typename function_apply::EnableApplyIfVoid<Func, Integer<8> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6,
+      typename function_apply::GetParam<Func, Integer<7> >::type p7)
 {
-    typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6, p7);
+    typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6, p7);
 }
 
-
-template<typename Func, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename disable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                    typename GetCodomainType<typename ApplyObj<Func>::type>::type >::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6, P7 p7, P8 p8)
+typename function_apply::EnableApplyIfNotVoid<Func, Integer<9> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6,
+      typename function_apply::GetParam<Func, Integer<7> >::type p7,
+      typename function_apply::GetParam<Func, Integer<8> >::type p8)
 {
-    return typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6, p7, p8);
+    return typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6, p7, p8);
 }
 
-template<typename Func, typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
+template<typename Func>
 ALWAYS_INLINE_HIDDEN
-typename enable_if<is_same<void ,typename GetCodomainType<typename ApplyObj<Func>::type>::type>,
-                   void>::type
-apply(Func func, P0 p0, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5, P6 p6, P7 p7, P8 p8)
+typename function_apply::EnableApplyIfVoid<Func, Integer<9> >::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6,
+      typename function_apply::GetParam<Func, Integer<7> >::type p7,
+      typename function_apply::GetParam<Func, Integer<8> >::type p8)
 {
-    typename GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6, p7, p8);
+    typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6, p7, p8);
 }
-
 
 } // namespace intro
 

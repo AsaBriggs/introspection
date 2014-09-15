@@ -2361,27 +2361,19 @@ void test_member_function_pointer_non_void_return()
   char tmp2 = 'a';
   TEST(0 == apply(&MemberFunctionTest::intFun2, &tmp, 3, tmp2));
 
-  // Note had to use awkward explict template function parameterisation as UNKNOWN_LENGTH_DOUBLE_ARRAY is immediately decayed
-  // to double* when passed by value ... TODO, look to see if there is a better way of doing this.
-  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[]), MemberFunctionTest*, int, char&, double(&)[]>
-	 (&MemberFunctionTest::intFun3, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY)));
+  TEST(0 == apply(&MemberFunctionTest::intFun3, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY));
 
   int const volatile arr[10] = {};
-  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10]), MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
-	 (&MemberFunctionTest::intFun4, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr)));
+  TEST(0 == apply(&MemberFunctionTest::intFun4, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr));
 
   void(*func)() = 0;
-  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)()), MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
-	 (&MemberFunctionTest::intFun5, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func)));
+  TEST(0 == apply(&MemberFunctionTest::intFun5, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func));
 
-  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long), MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
-	 (&MemberFunctionTest::intFun6, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L)));
+  TEST(0 == apply(&MemberFunctionTest::intFun6, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L));
 
-  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long, float), MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
-	 (&MemberFunctionTest::intFun7, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f)));
+  TEST(0 == apply(&MemberFunctionTest::intFun7, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f));
 
-  TEST(( 0== apply<int(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long, float, bool), MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
-	 (&MemberFunctionTest::intFun8, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true)));
+  TEST(0 == apply(&MemberFunctionTest::intFun8, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true));
 }
 
 void test_member_function_pointer_void_return()
@@ -2393,27 +2385,19 @@ void test_member_function_pointer_void_return()
   char tmp2 = 'a';
   apply(&MemberFunctionTest::voidFun2, &tmp, 3, tmp2);
 
-  // Note had to use awkward explict template function parameterisation as UNKNOWN_LENGTH_DOUBLE_ARRAY is immediately decayed
-  // to double* when passed by value ... TODO, look to see if there is a better way of doing this.
-  apply<void(MemberFunctionTest::*)(int, char&, double(&)[]) const, MemberFunctionTest*, int, char&, double(&)[]>
-	 (&MemberFunctionTest::voidFun3, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY);
+  apply(&MemberFunctionTest::voidFun3, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY);
 
   int const volatile arr[10] = {};
-  apply<void(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10]) const, MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
-	 (&MemberFunctionTest::voidFun4, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr);
+  apply(&MemberFunctionTest::voidFun4, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr);
 
   void(*func)() = 0;
-  apply<void(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)()) const, MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
-	 (&MemberFunctionTest::voidFun5, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func);
+  apply(&MemberFunctionTest::voidFun5, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func);
 
-  apply<void(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long) const, MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
-	 (&MemberFunctionTest::voidFun6, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L);
+  apply(&MemberFunctionTest::voidFun6, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L);
 
-  apply<void(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long, float) const, MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
-	 (&MemberFunctionTest::voidFun7, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f);
+  apply(&MemberFunctionTest::voidFun7, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f);
 
-  apply<void(MemberFunctionTest::*)(int, char&, double(&)[], int const volatile (&)[10], void(*)(), long, float, bool) const, MemberFunctionTest*, int, char&, double(&)[], int const volatile (&)[10]>
-	 (&MemberFunctionTest::voidFun8, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true);
+  apply(&MemberFunctionTest::voidFun8, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true);
 }
 
 void test_function_apply()
