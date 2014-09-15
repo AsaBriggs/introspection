@@ -1,8 +1,8 @@
 CC=g++
 CFLAGS=-c -Wall -pedantic
 LDFLAGS=
-INCLUDES=compiler_specifics.h introspection_assert.h metaprogramming.h detect_traits.h storage.h function_signatures.h storage_io.h
-SOURCES=meta.cpp compiler_specifics.cpp introspection_assert.cpp metaprogramming.cpp detect_traits.cpp storage.cpp function_signatures.cpp storage_io.cpp
+INCLUDES=compiler_specifics.h introspection_assert.h metaprogramming.h detect_traits.h storage.h function_signatures.h storage_io.h introspection_numerics.h
+SOURCES=meta.cpp compiler_specifics.cpp introspection_assert.cpp metaprogramming.cpp detect_traits.cpp storage.cpp function_signatures.cpp storage_io.cpp introspection_numerics.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=meta
 
