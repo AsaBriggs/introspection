@@ -846,24 +846,59 @@ struct TYPE_HIDDEN_VISIBILITY ArrayRotate<T, F, L, L> : T {METAPROGRAMMING_ONLY(
 template<typename T, typename F, typename M, typename L>
 struct TYPE_HIDDEN_VISIBILITY ArrayRotate
 {
-  // Assert F <= M
-  // Assert M <= L
-  // Assert L <= ArraySize<T>
-  // Split into
-  // 0..F, F..M, M..L, L..End
-  //
-  typedef typename ArraySplit<T, F>::type SplitAtFirst; // T0 = 0..F
-  typedef typename ArraySplit<typename ArrayIndex<SplitAtFirst, Integer<1> >::type, typename Subtract<M, F>::type>::type SplitAtM; // T0 = F..M
-  typedef typename ArraySplit<typename ArrayIndex<SplitAtM, Integer<1> >::type, typename Subtract<L, M>::type>::type SplitAtL; // T0 = M..L, T1 = L..end
+    // Assert F <= M
+    // Assert M <= L
+    // Assert L <= ArraySize<T>
+    // Split into
+    // 0..F, F..M, M..L, L..End
+    //
+    typedef typename ArraySplit<T, F>::type SplitAtFirst; // T0 = 0..F
+    typedef typename ArraySplit<typename ArrayIndex<SplitAtFirst, Integer<1> >::type, typename Subtract<M, F>::type>::type SplitAtM; // T0 = F..M
+    typedef typename ArraySplit<typename ArrayIndex<SplitAtM, Integer<1> >::type, typename Subtract<L, M>::type>::type SplitAtL; // T0 = M..L, T1 = L..end
 
-  typedef typename ArrayConcat<typename ArrayIndex<SplitAtFirst, Integer<0> >::type, typename ArrayIndex<SplitAtL, Integer<0> >::type>::type A; // 0..F & M..L
-  typedef typename ArrayConcat<A, typename ArrayIndex<SplitAtM, Integer<0> >::type>::type B; // 0..F & M..L & F..M
-  typedef typename ArrayConcat<B, typename ArrayIndex<SplitAtL, Integer<1> >::type>::type type; // 0..F & M..L & F..M & L..End
+    typedef typename ArrayConcat<typename ArrayIndex<SplitAtFirst, Integer<0> >::type, typename ArrayIndex<SplitAtL, Integer<0> >::type>::type A; // 0..F & M..L
+    typedef typename ArrayConcat<A, typename ArrayIndex<SplitAtM, Integer<0> >::type>::type B; // 0..F & M..L & F..M
+    typedef typename ArrayConcat<B, typename ArrayIndex<SplitAtL, Integer<1> >::type>::type type; // 0..F & M..L & F..M & L..End
+    METAPROGRAMMING_ONLY(ArrayRotate)
 };
 
 
 template<typename T, typename M>
 struct TYPE_HIDDEN_VISIBILITY ArrayRotateDefault : ArrayRotate<T, Integer<0>, M, typename ArraySize<T>::type > {METAPROGRAMMING_ONLY(ArrayRotateDefault)};
+
+
+template<typename T, typename Index>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex;
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<0> > : Array<T1, T2, T3, T4, T5, T6, T7, T8, T9> {METAPROGRAMMING_ONLY(ArrayEraseIndex)};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<1> > : Array<T0, T2, T3, T4, T5, T6, T7, T8, T9> {METAPROGRAMMING_ONLY(ArrayEraseIndex)};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<2> > : Array<T0, T1, T3, T4, T5, T6, T7, T8, T9> {METAPROGRAMMING_ONLY(ArrayEraseIndex)};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<3> > : Array<T0, T1, T2, T4, T5, T6, T7, T8, T9> {METAPROGRAMMING_ONLY(ArrayEraseIndex)};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<4> > : Array<T0, T1, T2, T3, T5, T6, T7, T8, T9> {METAPROGRAMMING_ONLY(ArrayEraseIndex)};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<5> > : Array<T0, T1, T2, T3, T4, T6, T7, T8, T9> {METAPROGRAMMING_ONLY(ArrayEraseIndex)};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<6> > : Array<T0, T1, T2, T3, T4, T5, T7, T8, T9> {METAPROGRAMMING_ONLY(ArrayEraseIndex)};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<7> > : Array<T0, T1, T2, T3, T4, T5, T6, T8, T9> {METAPROGRAMMING_ONLY(ArrayEraseIndex)};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<8> > : Array<T0, T1, T2, T3, T4, T5, T6, T7, T9> {METAPROGRAMMING_ONLY(ArrayEraseIndex)};
+
+template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+struct TYPE_HIDDEN_VISIBILITY ArrayEraseIndex<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>, Integer<9> > : Array<T0, T1, T2, T3, T4, T5, T6, T7, T8> {METAPROGRAMMING_ONLY(ArrayEraseIndex)};
 
 
 namespace placeholders {

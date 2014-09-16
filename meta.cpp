@@ -160,6 +160,24 @@ void test_array_rotate()
   INTROSPECTION_STATIC_ASSERT2(( is_same<Expected2, ArrayRotateDefault<TestArray, Integer<5> >::type > ));
 }
 
+void test_array_erase()
+{
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, ArrayEraseIndex<Array<>, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<>, ArrayEraseIndex<Array<int>, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<long>, ArrayEraseIndex<Array<int, long>, Integer<0> >::type> ));
+
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<unsigned char, signed char, char, short, unsigned short, int, unsigned int, long, unsigned long>, ArrayEraseIndex<TestArray, Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<bool, signed char, char, short, unsigned short, int, unsigned int, long, unsigned long>, ArrayEraseIndex<TestArray, Integer<1> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<bool, unsigned char, char, short, unsigned short, int, unsigned int, long, unsigned long>, ArrayEraseIndex<TestArray, Integer<2> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<bool, unsigned char, signed char, short, unsigned short, int, unsigned int, long, unsigned long>, ArrayEraseIndex<TestArray, Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<bool, unsigned char, signed char, char, unsigned short, int, unsigned int, long, unsigned long>, ArrayEraseIndex<TestArray, Integer<4> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<bool, unsigned char, signed char, char, short, int, unsigned int, long, unsigned long>, ArrayEraseIndex<TestArray, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<bool, unsigned char, signed char, char, short, unsigned short, unsigned int, long, unsigned long>, ArrayEraseIndex<TestArray, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<bool, unsigned char, signed char, char, short, unsigned short, int, long, unsigned long>, ArrayEraseIndex<TestArray, Integer<7> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, unsigned long>, ArrayEraseIndex<TestArray, Integer<8> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Array<bool, unsigned char, signed char, char, short, unsigned short, int, unsigned int, long>, ArrayEraseIndex<TestArray, Integer<9> >::type> ));
+}
+
 struct AddOne
 {
   template<typename T>
@@ -593,6 +611,7 @@ void test_Array()
   test_array_split();
   test_array_reverse();
   test_array_rotate();
+  test_array_erase();
   test_array_transform();
   test_array_zip();
 }
