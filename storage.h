@@ -786,7 +786,7 @@ struct TYPE_HIDDEN_VISIBILITY Equal_Visitor
 
     typedef Equal_Visitor type;
     typedef true_type IntrospectionEnabled;
-    typedef bool IntrospectionItem0;
+    typedef Array<bool> IntrospectionItems;
 
     template<typename T, typename Index>
     ALWAYS_INLINE_HIDDEN void
@@ -803,7 +803,7 @@ struct TYPE_HIDDEN_VISIBILITY Less_Visitor
 
     typedef Less_Visitor type;
     typedef true_type IntrospectionEnabled;
-    typedef bool IntrospectionItem0;
+    typedef Array<bool> IntrospectionItems;
 
     template<typename T, typename Index>
     ALWAYS_INLINE_HIDDEN void

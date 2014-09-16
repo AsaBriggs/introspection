@@ -22,17 +22,18 @@ namespace StreamIn_impl {
 struct TYPE_HIDDEN_VISIBILITY StreamIn_Visitor
 {
     typedef true_type IntrospectionEnabled;
-    typedef std::basic_istream<charT, traits>* IntrospectionItem0;
-    IntrospectionItem0 is;
-    typedef typename std::basic_istream<charT, traits>::sentry Guard;
+    typedef std::basic_istream<charT, traits>* Stream;
+    typedef Array<Stream> IntrospectionItems;
+    Stream m0;
 
     template<typename U, int Index>
-    ALWAYS_INLINE void operator()(U& x, Integer<Index>)
+    ALWAYS_INLINE_HIDDEN void operator()(U& x, Integer<Index>)
     {
-        Guard guard(*is);
+        typedef typename std::basic_istream<charT, traits>::sentry Guard;
+        Guard guard(*m0);
         if (INTROSPECTION_LIKELY(guard)) {
-            // Requires is is not 0
-            *is >> x;
+            // Requires m0 is not 0
+            *m0 >> x;
 	}
     }
 };
@@ -77,24 +78,26 @@ template<typename T, typename charT, typename traits>
 struct TYPE_HIDDEN_VISIBILITY StreamOut_Visitor
 {
     typedef true_type IntrospectionEnabled;
-    typedef std::basic_ostream<charT, traits>* IntrospectionItem0;
+    typedef std::basic_ostream<charT, traits>* Stream ;
+    typedef Array<Stream> IntrospectionItems;
+
     typedef typename obtain_ostream_traits<T>::template apply<charT> StreamTraits;
-    IntrospectionItem0 os; // Requires os is not 0
+    Stream m0; // Requires m0 is not 0
 
     template<typename U, int Index>
-    ALWAYS_INLINE void operator()(U const& x, Integer<Index>) const
+    ALWAYS_INLINE_HIDDEN void operator()(U const& x, Integer<Index>) const
     {
-        *os << StreamTraits::field_start() << x << StreamTraits::field_end();
+        *m0 << StreamTraits::field_start() << x << StreamTraits::field_end();
     }
 
     ALWAYS_INLINE_HIDDEN void operator()(T const&, VisitStart) const
     {
-        *os << StreamTraits::stream_out_start();
+        *m0 << StreamTraits::stream_out_start();
     }
 
     ALWAYS_INLINE_HIDDEN void operator()(T const&, VisitEnd) const
     {
-        *os << StreamTraits::stream_out_end();
+        *m0 << StreamTraits::stream_out_end();
     }
 };
 

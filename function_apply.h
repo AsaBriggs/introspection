@@ -54,6 +54,8 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
         return func(p0, p1);
     }
 
+// Could not use a macro for 2 parameter function call as the , would not work out
+// on member function pointers.
 #define FUNCTION_CALL_3_9(FuncType, FunctionCall, ReturnStatement) \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(FuncType func, \
