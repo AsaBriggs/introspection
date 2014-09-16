@@ -3,6 +3,7 @@
 #include "storage_io.h"
 #include "function_signatures.h"
 #include "function_apply.h"
+#include "function_curry.h"
 #include "introspection_assert.h"
 
 #include <iostream>
@@ -2433,6 +2434,34 @@ void test_function_apply()
 
 double UNKNOWN_LENGTH_DOUBLE_ARRAY[] = {0.0};
 
+void test_bind()
+{
+   TEST(0 == perform_bind(&fun0, Integer<-1>())());
+   TEST(99 == perform_bind(&fun1, Integer<-1>())(99));
+   TEST(99 == perform_bind(&fun2, Integer<-1>())(99, 3.1f));
+   TEST(99 == perform_bind(&fun3, Integer<-1>())(99, 3.1f, 4343L));
+   TEST(99 == perform_bind(&fun4, Integer<-1>())(99, 3.1f, 4343L, 3458354.3));
+   TEST(99 == perform_bind(&fun5, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa"));
+   int x = 1;
+   TEST(99 == perform_bind(&fun6, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x));
+   TEST(99 == perform_bind(&fun7, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true));
+   TEST(99 == perform_bind(&fun8, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a'));
+   TEST(99 == perform_bind(&fun9, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a', static_cast<void*>(0)));
+
+   perform_bind(&fun0, Integer<-1>())();
+   perform_bind(&fun1, Integer<-1>())(99);
+   perform_bind(&fun2, Integer<-1>())(99, 3.1f);
+   perform_bind(&fun3, Integer<-1>())(99, 3.1f, 4343L);
+   perform_bind(&fun4, Integer<-1>())(99, 3.1f, 4343L, 3458354.3);
+   perform_bind(&fun5, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa");
+   int x2 = 1;
+   perform_bind(&fun6, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x2);
+   perform_bind(&fun7, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x2, true);
+   perform_bind(&fun8, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x2, true, 'a');
+   perform_bind(&fun9, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x2, true, 'a', static_cast<void*>(0));
+}
+
+
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
 INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(*)(int, int, int, int, int, int, int, int, int, int, int)> ));
 INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(MemberFunctionTest::*)(int, int, int, int, int, int, int, int, int, int)> ));
@@ -2507,4 +2536,5 @@ int main()
 
     test_function_signatures();
     test_function_apply();
+    test_bind();
 }
