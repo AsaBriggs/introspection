@@ -795,6 +795,28 @@ MEMBER_FUNCTION_POINTER_WRAPPERS(volatile)
 MEMBER_FUNCTION_POINTER_WRAPPERS(const volatile)
 
 #undef MEMBER_FUNCTION_POINTER_WRAPPERS
+
+namespace GetFunctionValueType_impl {
+
+template<typename T>
+struct TYPE_HIDDEN_VISIBILITY GetFunctionValueType
+{
+    typedef T type;
+    METAPROGRAMMING_ONLY(GetFunctionValueType)
+};
+
+template<typename CodomainType, typename InputType, typename MemberFunction>
+struct TYPE_HIDDEN_VISIBILITY GetFunctionValueType<function_pointer_specialisations::function_wrapper<CodomainType, InputType, MemberFunction> >
+{
+    typedef typename function_pointer_specialisations::function_wrapper<CodomainType, InputType, MemberFunction>::Func type;
+    METAPROGRAMMING_ONLY(GetFunctionValueType)
+};
+
+} // namespac GetFunctionValueType_impl
+
+template<typename T>
+struct TYPE_HIDDEN_VISIBILITY GetFunctionValueType : GetFunctionValueType_impl::GetFunctionValueType<typename ResolveFunctionSignatureType<T>::type>{METAPROGRAMMING_ONLY(GetFunctionValueType)};
+
 } // namespace intro
 
 #endif

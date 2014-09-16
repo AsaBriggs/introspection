@@ -2432,33 +2432,120 @@ void test_function_apply()
   test_member_function_pointer_void_return();
 }
 
-double UNKNOWN_LENGTH_DOUBLE_ARRAY[] = {0.0};
-
-void test_bind()
+void test_curry_function_pointer_non_void_return()
 {
-   TEST(0 == perform_bind(&fun0, Integer<-1>())());
-   TEST(99 == perform_bind(&fun1, Integer<-1>())(99));
-   TEST(99 == perform_bind(&fun2, Integer<-1>())(99, 3.1f));
-   TEST(99 == perform_bind(&fun3, Integer<-1>())(99, 3.1f, 4343L));
-   TEST(99 == perform_bind(&fun4, Integer<-1>())(99, 3.1f, 4343L, 3458354.3));
-   TEST(99 == perform_bind(&fun5, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa"));
+   TEST(0 == perform_curry(&fun0, Integer<-1>())());
+   TEST(99 == perform_curry(&fun1, Integer<-1>())(99));
+   TEST(99 == perform_curry(&fun2, Integer<-1>())(99, 3.1f));
+   TEST(99 == perform_curry(&fun3, Integer<-1>())(99, 3.1f, 4343L));
+   TEST(99 == perform_curry(&fun4, Integer<-1>())(99, 3.1f, 4343L, 3458354.3));
+   TEST(99 == perform_curry(&fun5, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa"));
    int x = 1;
-   TEST(99 == perform_bind(&fun6, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x));
-   TEST(99 == perform_bind(&fun7, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true));
-   TEST(99 == perform_bind(&fun8, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a'));
-   TEST(99 == perform_bind(&fun9, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a', static_cast<void*>(0)));
+   TEST(99 == perform_curry(&fun6, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x));
+   TEST(99 == perform_curry(&fun7, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true));
+   TEST(99 == perform_curry(&fun8, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a'));
+   TEST(99 == perform_curry(&fun9, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a', static_cast<void*>(0)));
+}
 
-   perform_bind(&fun0, Integer<-1>())();
-   perform_bind(&fun1, Integer<-1>())(99);
-   perform_bind(&fun2, Integer<-1>())(99, 3.1f);
-   perform_bind(&fun3, Integer<-1>())(99, 3.1f, 4343L);
-   perform_bind(&fun4, Integer<-1>())(99, 3.1f, 4343L, 3458354.3);
-   perform_bind(&fun5, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa");
-   int x2 = 1;
-   perform_bind(&fun6, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x2);
-   perform_bind(&fun7, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x2, true);
-   perform_bind(&fun8, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x2, true, 'a');
-   perform_bind(&fun9, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x2, true, 'a', static_cast<void*>(0));
+void test_curry_function_pointer_void_return()
+{
+   perform_curry(&fun0, Integer<-1>())();
+   perform_curry(&fun1, Integer<-1>())(99);
+   perform_curry(&fun2, Integer<-1>())(99, 3.1f);
+   perform_curry(&fun3, Integer<-1>())(99, 3.1f, 4343L);
+   perform_curry(&fun4, Integer<-1>())(99, 3.1f, 4343L, 3458354.3);
+   perform_curry(&fun5, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa");
+   int x = 1;
+   perform_curry(&fun6, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x);
+   perform_curry(&fun7, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true);
+   perform_curry(&fun8, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a');
+   perform_curry(&fun9, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a', static_cast<void*>(0));
+}
+
+void test_perform_curry_functor_non_void_return()
+{
+  TEST(0 == curry_function(Func0())());
+  TEST(5 == curry_function(Func1()) (5));
+  TEST(78 == curry_function(Func2())( 78, 3.0f));
+  TEST(78 == curry_function(Func3())( 78, 3.0f, 7.5));
+  TEST(78 == curry_function(Func4())( 78, 3.0f, 7.5, 'a'));
+  TEST(78 == curry_function(Func5())( 78, 3.0f, 7.5, 'a', true));
+  int x = 0;
+  TEST(78 == curry_function(Func6())( 78, 3.0f, 7.5, 'a', true, x));
+  TEST(78 == curry_function(Func7())( 78, 3.0f, 7.5, 'a', true, x, 55L));
+  TEST(78 == curry_function(Func8())( 78, 3.0f, 7.5, 'a', true, x, 55L, "aaa"));
+}
+
+void test_perform_curry_functor_void_return()
+{
+  curry_function(VoidFunc0())();
+  curry_function(VoidFunc1())(1);
+  curry_function(VoidFunc2())(1, 3.0f);
+  curry_function(VoidFunc3())(1, 3.0f, 7.5);
+  curry_function(VoidFunc4())(1, 3.0f, 7.5, 'a');
+  curry_function(VoidFunc5())(1, 3.0f, 7.5, 'a', true);
+  int x = 0;
+  curry_function(VoidFunc6())(1, 3.0f, 7.5, 'a', true, x);
+  curry_function(VoidFunc7())(1, 3.0f, 7.5, 'a', true, x, 55L);
+  curry_function(VoidFunc8())(1, 3.0f, 7.5, 'a', true, x, 55L, "  ");
+}
+
+void test_curry_member_function_pointer_non_void_return()
+{
+  MemberFunctionTest tmp;
+  TEST(0 == curry_function(&MemberFunctionTest::intFun0)(&tmp));
+  TEST(0 == curry_function(&MemberFunctionTest::intFun1)(&tmp, 3));
+
+  char tmp2 = 'a';
+  TEST(0 == curry_function(&MemberFunctionTest::intFun2)(&tmp, 3, tmp2));
+
+  TEST(0 == curry_function(&MemberFunctionTest::intFun3)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY));
+
+  int const volatile arr[10] = {};
+  TEST(0 == curry_function(&MemberFunctionTest::intFun4)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr));
+
+  void(*func)() = 0;
+  TEST(0 == curry_function(&MemberFunctionTest::intFun5)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func));
+
+  TEST(0 == curry_function(&MemberFunctionTest::intFun6)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L));
+
+  TEST(0 == curry_function(&MemberFunctionTest::intFun7)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f));
+
+  TEST(0 == curry_function(&MemberFunctionTest::intFun8)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true));
+}
+
+void test_curry_member_function_pointer_void_return()
+{
+  MemberFunctionTest tmp;
+  curry_function(&MemberFunctionTest::voidFun0)(&tmp);
+  curry_function(&MemberFunctionTest::voidFun1)(&tmp, 3);
+
+  char tmp2 = 'a';
+  curry_function(&MemberFunctionTest::voidFun2)(&tmp, 3, tmp2);
+
+  curry_function(&MemberFunctionTest::voidFun3)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY);
+
+  int const volatile arr[10] = {};
+  curry_function(&MemberFunctionTest::voidFun4)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr);
+
+  void(*func)() = 0;
+  curry_function(&MemberFunctionTest::voidFun5)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func);
+
+  curry_function(&MemberFunctionTest::voidFun6)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L);
+
+  curry_function(&MemberFunctionTest::voidFun7)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f);
+
+  curry_function(&MemberFunctionTest::voidFun8)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true);
+}
+
+void test_function_curry()
+{
+  test_curry_function_pointer_non_void_return();
+  test_curry_function_pointer_void_return();
+  test_perform_curry_functor_non_void_return();
+  test_perform_curry_functor_void_return();
+  test_curry_member_function_pointer_non_void_return();
+  test_curry_member_function_pointer_void_return();
 }
 
 
@@ -2511,6 +2598,8 @@ INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayArrayArrayArrayArrayFrom<100000>::ty
 
 } // namespace Apply_stress_test
 
+double UNKNOWN_LENGTH_DOUBLE_ARRAY[] = {0.0};
+
 } // unnamed namespace
 } // namespace intro
 
@@ -2536,5 +2625,5 @@ int main()
 
     test_function_signatures();
     test_function_apply();
-    test_bind();
+    test_function_curry();
 }

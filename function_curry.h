@@ -11,7 +11,7 @@ namespace intro {
 // May want to bind the function or one of the parameters...
 //
 
-namespace Bind_impl {
+namespace Curry_impl {
 
 template<typename Func>
 struct TYPE_HIDDEN_VISIBILITY enable_if_void_codomain : enable_if<is_same<void, typename GetCodomainType<Func>::type>, void> {METAPROGRAMMING_ONLY(enable_if_void_codomain)};
@@ -19,23 +19,23 @@ struct TYPE_HIDDEN_VISIBILITY enable_if_void_codomain : enable_if<is_same<void, 
 template<typename Func>
 struct TYPE_HIDDEN_VISIBILITY enable_if_not_void_codomain : enable_if<not_<is_same<void, typename GetCodomainType<Func>::type> >, void> {METAPROGRAMMING_ONLY(enable_if_not_void_codomain)};
 
-} // namespace Bind_impl
+} // namespace Curry_impl
 
 template<typename Func, typename P, typename Index, typename Enable=void>
-struct Bind;
+struct Curry;
 
 #define RETURN_STATEMENT() return
-#define ENABLE_NOT_VOID_MF() Bind_impl::enable_if_not_void_codomain
+#define ENABLE_NOT_VOID_MF() Curry_impl::enable_if_not_void_codomain
 
 #define NO_RETURN_STATEMENT()
-#define ENABLE_VOID_MF() Bind_impl::enable_if_void_codomain
+#define ENABLE_VOID_MF() Curry_impl::enable_if_void_codomain
 
 
 #define GENERATE_BIND_0(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Bind<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
     typedef Array<P> IntrospectionItems; \
  \
@@ -159,9 +159,9 @@ GENERATE_BIND_0(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_1(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Bind<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
     typedef Array<P> IntrospectionItems; \
  \
@@ -279,9 +279,9 @@ GENERATE_BIND_1(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_2(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Bind<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
     typedef Array<P> IntrospectionItems; \
  \
@@ -392,9 +392,9 @@ GENERATE_BIND_2(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_3(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Bind<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
     typedef Array<P> IntrospectionItems; \
  \
@@ -497,9 +497,9 @@ GENERATE_BIND_3(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_4(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Bind<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
     typedef Array<P> IntrospectionItems; \
  \
@@ -593,9 +593,9 @@ GENERATE_BIND_4(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_5(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Bind<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
     typedef Array<P> IntrospectionItems; \
  \
@@ -679,9 +679,9 @@ GENERATE_BIND_5(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_6(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Bind<Func, P, Integer<6>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, P, Integer<6>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
     typedef Array<P> IntrospectionItems; \
  \
@@ -754,9 +754,9 @@ GENERATE_BIND_6(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_7(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Bind<Func, P, Integer<7>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, P, Integer<7>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
     typedef Array<P> IntrospectionItems; \
  \
@@ -817,9 +817,9 @@ GENERATE_BIND_7(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_8(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Bind<Func, P, Integer<8>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, P, Integer<8>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
     typedef Array<P> IntrospectionItems; \
  \
@@ -867,9 +867,9 @@ GENERATE_BIND_8(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_9(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Bind<Func, P, Integer<9>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, P, Integer<9>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
     typedef Array<P> IntrospectionItems; \
  \
@@ -902,15 +902,16 @@ GENERATE_BIND_9(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_FUNC(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename Func2>						\
-struct Bind<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::type> \
+struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::type> \
 { \
-    typedef Bind type; \
+    typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<typename Func::Func> IntrospectionItems;	\
+    typedef typename GetFunctionValueType<Func>::type FuncType;\
+    typedef Array<FuncType> IntrospectionItems;	\
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename GetInputTypeArray<Func>::type input_types; \
-    typename Func::Func m0;							\
+    FuncType m0;							\
  \
     template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
@@ -1037,26 +1038,26 @@ GENERATE_BIND_FUNC(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 #undef ENABLE_VOID_MF
 
 template<typename Func, typename Obj, typename Index>
-ALWAYS_INLINE_HIDDEN Bind<typename ResolveFunctionSignatureType<Func>::type, Obj, Index>
-perform_bind(Obj obj, Index)
+ALWAYS_INLINE_HIDDEN Curry<typename ResolveFunctionSignatureType<Func>::type, Obj, Index>
+perform_curry(Obj obj, Index)
 {
-    Bind<typename ResolveFunctionSignatureType<Func>::type, Obj, Index> tmp = {obj};
+    Curry<typename ResolveFunctionSignatureType<Func>::type, Obj, Index> tmp = {obj};
     return tmp;
 }
 
 template<typename Func>
-ALWAYS_INLINE_HIDDEN Bind<typename ResolveFunctionSignatureType<Func>::type, typename ResolveFunctionSignatureType<Func>::type, Integer<-1> >
-perform_bind(Func func, Integer<-1>)
+ALWAYS_INLINE_HIDDEN Curry<typename ResolveFunctionSignatureType<Func>::type, typename ResolveFunctionSignatureType<Func>::type, Integer<-1> >
+perform_curry(Func func, Integer<-1>)
 {
-    Bind<typename ResolveFunctionSignatureType<Func>::type, typename ResolveFunctionSignatureType<Func>::type, Integer<-1> > tmp = {func};
+    Curry<typename ResolveFunctionSignatureType<Func>::type, typename ResolveFunctionSignatureType<Func>::type, Integer<-1> > tmp = {func};
     return tmp;
 }
 
 template<typename Func>
-ALWAYS_INLINE_HIDDEN Bind<typename ResolveFunctionSignatureType<Func>::type, typename ResolveFunctionSignatureType<Func>::type, Integer<-1> >
-bind_function(Func func)
+ALWAYS_INLINE_HIDDEN Curry<typename ResolveFunctionSignatureType<Func>::type, typename ResolveFunctionSignatureType<Func>::type, Integer<-1> >
+curry_function(Func func)
 {
-    return perform_bind(func, Integer<-1>());
+    return perform_curry(func, Integer<-1>());
 }
 
 } // namespace intro
