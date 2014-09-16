@@ -18,7 +18,7 @@ namespace intro {
 
 namespace StreamIn_impl {
 
-template<typename charT, typename traits>
+  template<typename T, typename charT, typename traits>
 struct TYPE_HIDDEN_VISIBILITY StreamIn_Visitor
 {
     typedef true_type IntrospectionEnabled;
@@ -26,8 +26,8 @@ struct TYPE_HIDDEN_VISIBILITY StreamIn_Visitor
     IntrospectionItem0 is;
     typedef typename std::basic_istream<charT, traits>::sentry Guard;
 
-    template<typename T, int Index>
-    ALWAYS_INLINE void operator()(T& x, Integer<Index>)
+    template<typename U, int Index>
+    ALWAYS_INLINE void operator()(U& x, Integer<Index>)
     {
         Guard guard(*is);
         if (INTROSPECTION_LIKELY(guard)) {
@@ -41,28 +41,60 @@ struct TYPE_HIDDEN_VISIBILITY StreamIn_Visitor
 template<typename T, typename charT, typename traits>
 INLINE std::basic_istream<charT, traits>& stream_in(std::basic_istream<charT, traits>& is, T& x)
 {
-    StreamIn_Visitor<charT, traits> visitor = {&is};
+    StreamIn_Visitor<T, charT, traits> visitor = {&is};
     visit(x, visitor);
     return is;
 }
 
 } // namespace StreamIn_impl
 
+namespace StreamOut_impl {
+
+struct TYPE_HIDDEN_VISIBILITY default_ostream_traits
+{
+    template<typename charT>
+    struct apply
+    {
+        typedef default_ostream_traits type;
+        static ALWAYS_INLINE_HIDDEN charT const * field_start () { return  ""; }
+        static ALWAYS_INLINE_HIDDEN charT const * field_end() { return " "; }
+        static ALWAYS_INLINE_HIDDEN charT const * stream_out_start () { return  ""; }
+        static ALWAYS_INLINE_HIDDEN charT const * stream_out_end() { return ""; }
+        METAPROGRAMMING_ONLY(apply)
+    };
+
+    METAPROGRAMMING_ONLY(default_ostream_traits)
+};
+
+} // namespace StreamOut_impl
+
+template<typename T, typename enable=void>
+struct TYPE_HIDDEN_VISIBILITY obtain_ostream_traits : StreamOut_impl::default_ostream_traits {METAPROGRAMMING_ONLY(obtain_ostream_traits)};
 
 namespace StreamOut_impl {
 
-template<typename charT, typename traits>
+template<typename T, typename charT, typename traits>
 struct TYPE_HIDDEN_VISIBILITY StreamOut_Visitor
 {
     typedef true_type IntrospectionEnabled;
     typedef std::basic_ostream<charT, traits>* IntrospectionItem0;
-    IntrospectionItem0 os;
+    typedef typename obtain_ostream_traits<T>::template apply<charT> StreamTraits;
+    IntrospectionItem0 os; // Requires os is not 0
 
-    template<typename T, int Index>
-    ALWAYS_INLINE void operator()(T const& x, Integer<Index>)
+    template<typename U, int Index>
+    ALWAYS_INLINE void operator()(U const& x, Integer<Index>) const
     {
-        // Requires os is not 0
-        *os << x << ' ' ;
+        *os << StreamTraits::field_start() << x << StreamTraits::field_end();
+    }
+
+    ALWAYS_INLINE_HIDDEN void operator()(T const&, VisitStart) const
+    {
+        *os << StreamTraits::stream_out_start();
+    }
+
+    ALWAYS_INLINE_HIDDEN void operator()(T const&, VisitEnd) const
+    {
+        *os << StreamTraits::stream_out_end();
     }
 };
 
@@ -70,8 +102,8 @@ struct TYPE_HIDDEN_VISIBILITY StreamOut_Visitor
 template<typename T, typename charT, typename traits>
 INLINE std::basic_ostream<charT, traits>& stream_out(std::basic_ostream<charT, traits>& os, T const& x)
 {
-    StreamOut_Visitor<charT, traits> visitor = {&os};
-    visit(x, visitor);
+    StreamOut_Visitor<T, charT, traits> visitor = {&os};
+    visit_with_start_end(x, visitor);
     return os;
 }
 

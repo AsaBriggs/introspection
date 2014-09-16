@@ -736,18 +736,18 @@ ALWAYS_INLINE_HIDDEN Proc visit(T& x, T& y, Proc p)
 template<typename T, typename Proc>
 ALWAYS_INLINE_HIDDEN Proc visit2(T& x, Proc p)
 {
-    p(VisitStart());
+    p(x, VisitStart());
     p =  Visit1<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, p);
-    p(VisitEnd());
+    p(x, VisitEnd());
     return p;
 }
 
 template<typename T, typename Proc>
 ALWAYS_INLINE_HIDDEN Proc visit2(T& x, T& y, Proc p)
 {
-    p(VisitStart());
+    p(x, y, VisitStart());
     p = Visit2<T, Proc, Integer<0>, typename IntrospectionArity<T>::type>()(x, y, p);
-    p(VisitEnd());
+    p(x, y, VisitEnd());
     return p;
 }
 

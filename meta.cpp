@@ -1335,8 +1335,8 @@ struct TestVisitor
   void operator()(int const&, Integer<0>) { visit0 = true; }
   void operator()(long const&, Integer<1>) { visit1 = true; }
   void operator()(char const&, Integer<2>) { visit2 = true; }
-  void operator()(VisitStart) { visitStart = true; }
-  void operator()(VisitEnd) { visitEnd = true; }
+  void operator()(VisitorTestType const&, VisitStart) { visitStart = true; }
+  void operator()(VisitorTestType const&, VisitEnd) { visitEnd = true; }
 };
 
 struct TestVisitor2
@@ -1349,8 +1349,8 @@ struct TestVisitor2
   void operator()(int const&, int const&, Integer<0>) { visit0 = true; }
   void operator()(long const&, long const&, Integer<1>) { visit1 = true; }
   void operator()(char const&, char const&, Integer<2>) { visit2 = true; }
-  void operator()(VisitStart) { visitStart = true; }
-  void operator()(VisitEnd) { visitEnd = true; }
+  void operator()(VisitorTestType const&, VisitorTestType const&, VisitStart) { visitStart = true; }
+  void operator()(VisitorTestType const&, VisitorTestType const&, VisitEnd) { visitEnd = true; }
 };
 
 void test_visit()
