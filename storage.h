@@ -642,10 +642,10 @@ namespace Visit_impl {
 
 // Note that T may be const-qualified
 template<typename T, typename Proc, typename Index, typename Arity>
-struct TYPE_DEFAULT_VISIBILITY Visit1;
+struct TYPE_HIDDEN_VISIBILITY Visit1;
 
 template<typename T, typename Proc, typename Arity>
-struct TYPE_DEFAULT_VISIBILITY Visit1<T, Proc, Arity, Arity>
+struct TYPE_HIDDEN_VISIBILITY Visit1<T, Proc, Arity, Arity>
 {
     typedef Visit1 type;
     typedef true_type IntrospectionEnabled;
@@ -661,7 +661,7 @@ struct TYPE_DEFAULT_VISIBILITY Visit1<T, Proc, Arity, Arity>
 };
 
 template<typename T, typename Proc, typename Index, typename Arity>
-struct TYPE_DEFAULT_VISIBILITY Visit1
+struct TYPE_HIDDEN_VISIBILITY Visit1
 {
     typedef Visit1 type;
     typedef true_type IntrospectionEnabled;
@@ -680,10 +680,10 @@ struct TYPE_DEFAULT_VISIBILITY Visit1
 
 // Note that T may be const-qualified
 template<typename T, typename Proc, typename Index, typename Arity>
-struct TYPE_DEFAULT_VISIBILITY Visit2;
+struct TYPE_HIDDEN_VISIBILITY Visit2;
 
 template<typename T, typename Proc, typename Arity>
-struct TYPE_DEFAULT_VISIBILITY Visit2<T, Proc, Arity, Arity>
+struct TYPE_HIDDEN_VISIBILITY Visit2<T, Proc, Arity, Arity>
 {
     typedef Visit2 type;
     typedef true_type IntrospectionEnabled;
@@ -700,7 +700,7 @@ struct TYPE_DEFAULT_VISIBILITY Visit2<T, Proc, Arity, Arity>
 };
 
 template<typename T, typename Proc, typename Index, typename Arity>
-struct TYPE_DEFAULT_VISIBILITY Visit2
+struct TYPE_HIDDEN_VISIBILITY Visit2
 {
     typedef Visit2 type;
     typedef true_type IntrospectionEnabled;
@@ -780,7 +780,7 @@ ALWAYS_INLINE_HIDDEN Proc visit_with_start_end(T& x, U& y, Proc p)
 namespace introspected_comparisons_impl {
 
 template<typename GetComparator>
-struct TYPE_DEFAULT_VISIBILITY Equal_Visitor
+struct TYPE_HIDDEN_VISIBILITY Equal_Visitor
 {
     bool value; // Should be initialised to true, but want to keep POD-ness of the type
 
@@ -797,7 +797,7 @@ struct TYPE_DEFAULT_VISIBILITY Equal_Visitor
 };
 
 template<typename GetComparator>
-struct TYPE_DEFAULT_VISIBILITY Less_Visitor
+struct TYPE_HIDDEN_VISIBILITY Less_Visitor
 {
     bool value; // Should be initialised to false, but want to keep POD-ness of the type
 

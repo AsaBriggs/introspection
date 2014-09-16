@@ -688,6 +688,18 @@ struct TYPE_HIDDEN_VISIBILITY function_wrapper<CodomainType, Array<A, B, C, D, E
     METAPROGRAMMING_ONLY(function_wrapper)
 };
 
+template<typename T>
+struct TYPE_HIDDEN_VISIBILITY is_a_function_wrapper : false_type
+{
+    METAPROGRAMMING_ONLY(is_a_function_wrapper)
+};
+
+template<typename CodomainType, typename InputType, typename MemberFunction>
+struct TYPE_HIDDEN_VISIBILITY is_a_function_wrapper<function_pointer_specialisations::function_wrapper<CodomainType, InputType, MemberFunction> > : true_type
+{
+    METAPROGRAMMING_ONLY(is_a_function_wrapper)
+};
+
 } // namespace function_pointer_specialisations
  
 template<typename R>

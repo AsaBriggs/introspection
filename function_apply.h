@@ -9,18 +9,6 @@ namespace intro {
 
 namespace function_apply {
 
-template<typename T>
-struct TYPE_HIDDEN_VISIBILITY is_a_function_wrapper : false_type
-{
-    METAPROGRAMMING_ONLY(is_a_function_wrapper)
-};
-
-template<typename CodomainType, typename InputType, typename MemberFunction>
-struct TYPE_HIDDEN_VISIBILITY is_a_function_wrapper<function_pointer_specialisations::function_wrapper<CodomainType, InputType, MemberFunction> > : true_type
-{
-    METAPROGRAMMING_ONLY(is_a_function_wrapper)
-};
-
 template<typename Func, typename Index>
 struct TYPE_HIDDEN_VISIBILITY GetParam :
     parameter_type<typename ArrayIndex<typename GetInputTypeArray<Func>::type, Index>::type>
@@ -34,7 +22,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj;
 template<typename Func>
 struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                 typename disable_if<or_<is_same<void, typename GetCodomainType<Func>::type>,
-                                        is_a_function_wrapper<Func> >,
+                                        function_pointer_specialisations::is_a_function_wrapper<Func> >,
                                     void>::type>
 {
     typedef ApplyObj type;
@@ -154,7 +142,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
 template<typename Func>
 struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                 typename enable_if<and_<is_same<void, typename GetCodomainType<Func>::type>,
-                                        not_<is_a_function_wrapper<Func> > >,
+                                        not_<function_pointer_specialisations::is_a_function_wrapper<Func> > >,
                                    void>::type>
 {
     typedef ApplyObj type;
