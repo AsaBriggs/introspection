@@ -54,89 +54,96 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
         return func(p0, p1);
     }
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2) const
-    {
-        return func(p0, p1, p2);
+#define FUNCTION_CALL_3_9(FuncType, FunctionCall, ReturnStatement) \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(FuncType func, \
+               typename lookup<0>::type p0, \
+               typename lookup<1>::type p1, \
+               typename lookup<2>::type p2) const \
+    { \
+        ReturnStatement() FunctionCall() p1, p2); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(FuncType func, \
+               typename lookup<0>::type p0, \
+               typename lookup<1>::type p1, \
+               typename lookup<2>::type p2, \
+               typename lookup<3>::type p3) const \
+    { \
+        ReturnStatement() FunctionCall() p1, p2, p3); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(FuncType func, \
+               typename lookup<0>::type p0, \
+               typename lookup<1>::type p1, \
+               typename lookup<2>::type p2, \
+               typename lookup<3>::type p3, \
+               typename lookup<4>::type p4) const \
+    { \
+        ReturnStatement() FunctionCall() p1, p2, p3, p4); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(FuncType func, \
+               typename lookup<0>::type p0, \
+               typename lookup<1>::type p1, \
+               typename lookup<2>::type p2, \
+               typename lookup<3>::type p3, \
+               typename lookup<4>::type p4, \
+               typename lookup<5>::type p5) const \
+    { \
+        ReturnStatement() FunctionCall() p1, p2, p3, p4, p5); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(FuncType func, \
+               typename lookup<0>::type p0, \
+               typename lookup<1>::type p1, \
+               typename lookup<2>::type p2, \
+               typename lookup<3>::type p3, \
+               typename lookup<4>::type p4, \
+               typename lookup<5>::type p5, \
+               typename lookup<6>::type p6) const \
+    { \
+        ReturnStatement() FunctionCall() p1, p2, p3, p4, p5, p6); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(FuncType func, \
+               typename lookup<0>::type p0, \
+               typename lookup<1>::type p1, \
+               typename lookup<2>::type p2, \
+               typename lookup<3>::type p3, \
+               typename lookup<4>::type p4, \
+               typename lookup<5>::type p5, \
+               typename lookup<6>::type p6, \
+               typename lookup<7>::type p7) const \
+    { \
+        ReturnStatement() FunctionCall() p1, p2, p3, p4, p5, p6, p7); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(FuncType func, \
+               typename lookup<0>::type p0, \
+               typename lookup<1>::type p1, \
+               typename lookup<2>::type p2, \
+               typename lookup<3>::type p3, \
+               typename lookup<4>::type p4, \
+               typename lookup<5>::type p5, \
+               typename lookup<6>::type p6, \
+               typename lookup<7>::type p7, \
+               typename lookup<8>::type p8) const \
+    { \
+        ReturnStatement() FunctionCall() p1, p2, p3, p4, p5, p6, p7, p8); \
     }
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3) const
-    {
-        return func(p0, p1, p2, p3);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4) const
-    {
-        return func(p0, p1, p2, p3, p4);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5) const
-    {
-        return func(p0, p1, p2, p3, p4, p5);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6) const
-    {
-        return func(p0, p1, p2, p3, p4, p5, p6);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7) const
-    {
-        return func(p0, p1, p2, p3, p4, p5, p6, p7);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7,
-               typename lookup<8>::type p8) const
-    {
-        return func(p0, p1, p2, p3, p4, p5, p6, p7, p8);
-    }
+#define FUNCTION_CALL_MACRO() func(p0,
+#define RETURN_MACRO() return
+FUNCTION_CALL_3_9(Func, FUNCTION_CALL_MACRO, RETURN_MACRO)
+#undef FUNCTION_CALL_MACRO
+#undef RETURN_MACRO
 };
 
 template<typename Func>
@@ -174,89 +181,12 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
         func(p0, p1);
     }
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2) const
-    {
-        func(p0, p1, p2);
-    }
+#define FUNCTION_CALL_MACRO() func(p0,
+#define RETURN_MACRO()
+FUNCTION_CALL_3_9(Func, FUNCTION_CALL_MACRO, RETURN_MACRO)
+#undef FUNCTION_CALL_MACRO
+#undef RETURN_MACRO
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3) const
-    {
-        func(p0, p1, p2, p3);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4) const
-    {
-        func(p0, p1, p2, p3, p4);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5) const
-    {
-        func(p0, p1, p2, p3, p4, p5);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6) const
-    {
-        func(p0, p1, p2, p3, p4, p5, p6);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7) const
-    {
-        func(p0, p1, p2, p3, p4, p5, p6, p7);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7,
-               typename lookup<8>::type p8) const
-    {
-        func(p0, p1, p2, p3, p4, p5, p6, p7, p8);
-    }
 };
 
 template<typename CodomainType, typename InputTypes>
@@ -291,89 +221,12 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
         return (*func)(p0, p1);
     }
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2) const
-    {
-        return (*func)(p0, p1, p2);
-    }
+#define FUNCTION_CALL_MACRO() (*func)(p0, 
+#define RETURN_MACRO() return
+FUNCTION_CALL_3_9(typename Spec::Func, FUNCTION_CALL_MACRO, RETURN_MACRO)
+#undef FUNCTION_CALL_MACRO
+#undef RETURN_MACRO
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3) const
-    {
-        return (*func)(p0, p1, p2, p3);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4) const
-    {
-        return (*func)(p0, p1, p2, p3, p4);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5) const
-    {
-        return (*func)(p0, p1, p2, p3, p4, p5);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6) const
-    {
-        return (*func)(p0, p1, p2, p3, p4, p5, p6);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7) const
-    {
-        return (*func)(p0, p1, p2, p3, p4, p5, p6, p7);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7,
-               typename lookup<8>::type p8) const
-    {
-        return (*func)(p0, p1, p2, p3, p4, p5, p6, p7, p8);
-    }
 };
 
 template<typename InputTypes>
@@ -408,89 +261,12 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
         (*func)(p0, p1);
     }
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2) const
-    {
-        (*func)(p0, p1, p2);
-    }
+#define FUNCTION_CALL_MACRO() (*func)(p0, 
+#define RETURN_MACRO()
+FUNCTION_CALL_3_9(typename Spec::Func, FUNCTION_CALL_MACRO, RETURN_MACRO)
+#undef FUNCTION_CALL_MACRO
+#undef RETURN_MACRO
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3) const
-    {
-        (*func)(p0, p1, p2, p3);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4) const
-    {
-        (*func)(p0, p1, p2, p3, p4);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5) const
-    {
-        (*func)(p0, p1, p2, p3, p4, p5);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6) const
-    {
-        (*func)(p0, p1, p2, p3, p4, p5, p6);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7) const
-    {
-        (*func)(p0, p1, p2, p3, p4, p5, p6, p7);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7,
-               typename lookup<8>::type p8) const
-    {
-        (*func)(p0, p1, p2, p3, p4, p5, p6, p7, p8);
-    }
 };
 
 template<typename CodomainType, typename InputTypes>
@@ -519,89 +295,12 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
         return (p0->*func)(p1);
     }
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2) const
-    {
-        return (p0->*func)(p1, p2);
-    }
+#define FUNCTION_CALL_MACRO() (p0->*func)(
+#define RETURN_MACRO() return
+FUNCTION_CALL_3_9(typename Spec::Func, FUNCTION_CALL_MACRO, RETURN_MACRO)
+#undef FUNCTION_CALL_MACRO
+#undef RETURN_MACRO
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3) const
-    {
-        return (p0->*func)(p1, p2, p3);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4) const
-    {
-        return (p0->*func)(p1, p2, p3, p4);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5) const
-    {
-        return (p0->*func)(p1, p2, p3, p4, p5);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6) const
-    {
-        return (p0->*func)(p1, p2, p3, p4, p5, p6);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7) const
-    {
-        return (p0->*func)(p1, p2, p3, p4, p5, p6, p7);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7,
-               typename lookup<8>::type p8) const
-    {
-        return (p0->*func)(p1, p2, p3, p4, p5, p6, p7, p8);
-    }
 };
 
 
@@ -631,90 +330,15 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
         (p0->*func)(p1);
     }
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2) const
-    {
-        (p0->*func)(p1, p2);
-    }
+#define FUNCTION_CALL_MACRO() (p0->*func)(
+#define RETURN_MACRO() 
+FUNCTION_CALL_3_9(typename Spec::Func, FUNCTION_CALL_MACRO, RETURN_MACRO)
+#undef FUNCTION_CALL_MACRO
+#undef RETURN_MACRO
 
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3) const
-    {
-        (p0->*func)(p1, p2, p3);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4) const
-    {
-        (p0->*func)(p1, p2, p3, p4);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5) const
-    {
-        (p0->*func)(p1, p2, p3, p4, p5);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6) const
-    {
-        (p0->*func)(p1, p2, p3, p4, p5, p6);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7) const
-    {
-        (p0->*func)(p1, p2, p3, p4, p5, p6, p7);
-    }
-
-    ALWAYS_INLINE_HIDDEN codomain_type
-    operator()(typename Spec::Func func,
-               typename lookup<0>::type p0,
-               typename lookup<1>::type p1,
-               typename lookup<2>::type p2,
-               typename lookup<3>::type p3,
-               typename lookup<4>::type p4,
-               typename lookup<5>::type p5,
-               typename lookup<6>::type p6,
-               typename lookup<7>::type p7,
-               typename lookup<8>::type p8) const
-    {
-        (p0->*func)(p1, p2, p3, p4, p5, p6, p7, p8);
-    }
 };
+
+#undef FUNCTION_CALL_3_9
 
 // Helper metafunction
 template<typename Func>

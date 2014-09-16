@@ -413,145 +413,84 @@ struct TYPE_HIDDEN_VISIBILITY function_pointer_signature<CodomainType, Array<A, 
 template<typename CodomainType, typename InputTypes>
 struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature;
 
-template<typename CodomainType, typename A>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const*, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)() const;
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
+
+#define MEMBER_FUNCTION_POINTER_SIGNATURES(CV)\
+template<typename CodomainType, typename A> \
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A CV*, ArrayNoArg> > \
+{ \
+    typedef CodomainType(A::*type)() CV; \
+    METAPROGRAMMING_ONLY(member_function_pointer_signature) \
+}; \
+ \
+template<typename CodomainType, typename A, typename B> \
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A CV*, B, ArrayNoArg> > \
+{ \
+    typedef CodomainType(A::*type)(B) CV; \
+    METAPROGRAMMING_ONLY(member_function_pointer_signature) \
+}; \
+ \
+template<typename CodomainType, typename A, typename B, typename C> \
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A CV*, B, C, ArrayNoArg> > \
+{ \
+    typedef CodomainType(A::*type)(B, C) CV; \
+    METAPROGRAMMING_ONLY(member_function_pointer_signature) \
+}; \
+ \
+template<typename CodomainType, typename A, typename B, typename C, typename D> \
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A CV*, B, C, D, ArrayNoArg> > \
+{ \
+    typedef CodomainType(A::*type)(B, C, D) CV; \
+    METAPROGRAMMING_ONLY(member_function_pointer_signature) \
+}; \
+ \
+template<typename CodomainType, typename A, typename B, typename C, typename D, typename E> \
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A CV*, B, C, D, E, ArrayNoArg> > \
+{ \
+    typedef CodomainType(A::*type)(B, C, D, E) CV; \
+    METAPROGRAMMING_ONLY(member_function_pointer_signature) \
+}; \
+ \
+template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F> \
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A CV*, B, C, D, E, F, ArrayNoArg> > \
+{ \
+    typedef CodomainType(A::*type)(B, C, D, E, F) CV; \
+    METAPROGRAMMING_ONLY(member_function_pointer_signature) \
+}; \
+ \
+template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G> \
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A CV*, B, C, D, E, F, G, ArrayNoArg> > \
+{ \
+    typedef CodomainType(A::*type)(B, C, D, E, F, G) CV; \
+    METAPROGRAMMING_ONLY(member_function_pointer_signature) \
+}; \
+ \
+template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H> \
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A CV*, B, C, D, E, F, G, H, ArrayNoArg> > \
+{ \
+    typedef CodomainType(A::*type)(B, C, D, E, F, G, H) CV; \
+    METAPROGRAMMING_ONLY(member_function_pointer_signature) \
+}; \
+ \
+template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I> \
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A CV*, B, C, D, E, F, G, H, I, ArrayNoArg> > \
+{ \
+    typedef CodomainType(A::*type)(B, C, D, E, F, G, H, I) CV; \
+    METAPROGRAMMING_ONLY(member_function_pointer_signature) \
+}; \
+ \
+template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I, typename J> \
+struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A CV*, B, C, D, E, F, G, H, I, J> > \
+{ \
+    typedef CodomainType(A::*type)(B, C, D, E, F, G, H, I, J) CV; \
+    METAPROGRAMMING_ONLY(member_function_pointer_signature) \
 };
 
-template<typename CodomainType, typename A>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A*, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)();
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
+MEMBER_FUNCTION_POINTER_SIGNATURES()
+MEMBER_FUNCTION_POINTER_SIGNATURES(const)
+MEMBER_FUNCTION_POINTER_SIGNATURES(volatile)
+MEMBER_FUNCTION_POINTER_SIGNATURES(const volatile)
+#undef MEMBER_FUNCTION_POINTER_SIGNATURES
 
-template<typename CodomainType, typename A, typename B>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const*, B, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B) const;
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A*, B, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B);
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const*, B, C, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C) const;
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A*, B, C, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C);
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const*, B, C, D, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D) const;
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A*, B, C, D, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D);
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const*, B, C, D, E, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E) const;
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A*, B, C, D, E, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E);
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const*, B, C, D, E, F, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E, F) const;
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A*, B, C, D, E, F, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E, F);
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const*, B, C, D, E, F, G, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E, F, G) const;
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A*, B, C, D, E, F, G, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E, F, G);
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const*, B, C, D, E, F, G, H, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E, F, G, H) const;
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A*, B, C, D, E, F, G, H, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E, F, G, H);
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const*, B, C, D, E, F, G, H, I, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E, F, G, H, I) const;
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A*, B, C, D, E, F, G, H, I, ArrayNoArg> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E, F, G, H, I);
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I, typename J>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A const*, B, C, D, E, F, G, H, I, J> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E, F, G, H, I, J) const;
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
-
-template<typename CodomainType, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I, typename J>
-struct TYPE_HIDDEN_VISIBILITY member_function_pointer_signature<CodomainType, Array<A*, B, C, D, E, F, G, H, I, J> >
-{
-    typedef CodomainType(A::*type)(B, C, D, E, F, G, H, I, J);
-    METAPROGRAMMING_ONLY(member_function_pointer_signature)
-};
 
 template<typename CodomainType, typename InputTypes, typename MemberFunction>
 struct TYPE_HIDDEN_VISIBILITY get_function_pointer_signature :
@@ -561,7 +500,6 @@ struct TYPE_HIDDEN_VISIBILITY get_function_pointer_signature :
 {
     METAPROGRAMMING_ONLY(get_function_pointer_signature)
 };
-
 
 template<typename CodomainType, typename InputTypes, typename MemberFunction>
 struct TYPE_HIDDEN_VISIBILITY function_wrapper;
@@ -780,152 +718,83 @@ struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(*)(A, B, C, D, E, F
 };
 
 
-
-template<typename R, typename A>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)()> :
-    function_pointer_specialisations::function_wrapper<R, Array<A*>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
+#define MEMBER_FUNCTION_POINTER_WRAPPERS(CV)\
+template<typename R, typename A> \
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)() CV> : \
+    function_pointer_specialisations::function_wrapper<R, Array<A CV*>, true_type> \
+{ \
+    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType) \
+}; \
+ \
+template<typename R, typename A, typename B> \
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B) CV> : \
+    function_pointer_specialisations::function_wrapper<R, Array<A CV*, B>, true_type> \
+{ \
+    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType) \
+}; \
+ \
+template<typename R, typename A, typename B, typename C> \
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C) CV> : \
+    function_pointer_specialisations::function_wrapper<R, Array<A CV*, B, C>, true_type> \
+{ \
+    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType) \
+}; \
+ \
+template<typename R, typename A, typename B, typename C, typename D> \
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D) CV> : \
+    function_pointer_specialisations::function_wrapper<R, Array<A CV*, B, C, D>, true_type> \
+{ \
+    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType) \
+}; \
+ \
+template<typename R, typename A, typename B, typename C, typename D, typename E> \
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E) CV> : \
+    function_pointer_specialisations::function_wrapper<R, Array<A CV*, B, C, D, E>, true_type> \
+{ \
+    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType) \
+}; \
+ \
+template<typename R, typename A, typename B, typename C, typename D, typename E, typename F> \
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F) CV> : \
+    function_pointer_specialisations::function_wrapper<R, Array<A CV*, B, C, D, E, F>, true_type> \
+{ \
+    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType) \
+}; \
+ \
+template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G> \
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G) CV> : \
+    function_pointer_specialisations::function_wrapper<R, Array<A CV*, B, C, D, E, F, G>, true_type> \
+{ \
+    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType) \
+}; \
+ \
+template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H> \
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H) CV> : \
+    function_pointer_specialisations::function_wrapper<R, Array<A CV*, B, C, D, E, F, G, H>, true_type> \
+{ \
+    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType) \
+}; \
+ \
+template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I> \
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H, I) CV> : \
+    function_pointer_specialisations::function_wrapper<R, Array<A CV*, B, C, D, E, F, G, H, I>, true_type> \
+{ \
+    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType) \
+}; \
+ \
+template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I, typename J> \
+struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H, I, J) CV> : \
+    function_pointer_specialisations::function_wrapper<R, Array<A CV*, B, C, D, E, F, G, H, I, J>, true_type> \
+{ \
+    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType) \
 };
 
-template<typename R, typename A>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)() const> :
-    function_pointer_specialisations::function_wrapper<R, Array<A const*>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
+MEMBER_FUNCTION_POINTER_WRAPPERS()
+MEMBER_FUNCTION_POINTER_WRAPPERS(const)
+MEMBER_FUNCTION_POINTER_WRAPPERS(volatile)
+MEMBER_FUNCTION_POINTER_WRAPPERS(const volatile)
 
-
-template<typename R, typename A, typename B>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B)> :
-    function_pointer_specialisations::function_wrapper<R, Array<A*, B>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B) const> :
-    function_pointer_specialisations::function_wrapper<R, Array<A const*, B>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-
-template<typename R, typename A, typename B, typename C>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C)> :
-    function_pointer_specialisations::function_wrapper<R, Array<A*, B, C>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C) const> :
-    function_pointer_specialisations::function_wrapper<R, Array<A const*, B, C>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-
-template<typename R, typename A, typename B, typename C, typename D>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D)> :
-    function_pointer_specialisations::function_wrapper<R, Array<A*, B, C, D>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D) const> :
-    function_pointer_specialisations::function_wrapper<R, Array<A const*, B, C, D>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-
-template<typename R, typename A, typename B, typename C, typename D, typename E>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E)> :
-    function_pointer_specialisations::function_wrapper<R, Array<A*, B, C, D, E>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D, typename E>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E) const> :
-    function_pointer_specialisations::function_wrapper<R, Array<A const*, B, C, D, E>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D, typename E, typename F>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F)> :
-    function_pointer_specialisations::function_wrapper<R, Array<A*, B, C, D, E, F>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D, typename E, typename F>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F) const> :
-    function_pointer_specialisations::function_wrapper<R, Array<A const*, B, C, D, E, F>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G)> :
-    function_pointer_specialisations::function_wrapper<R, Array<A*, B, C, D, E, F, G>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G) const> :
-    function_pointer_specialisations::function_wrapper<R, Array<A const*, B, C, D, E, F, G>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H)> :
-    function_pointer_specialisations::function_wrapper<R, Array<A*, B, C, D, E, F, G, H>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H) const> :
-    function_pointer_specialisations::function_wrapper<R, Array<A const*, B, C, D, E, F, G, H>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H, I)> :
-    function_pointer_specialisations::function_wrapper<R, Array<A*, B, C, D, E, F, G, H, I>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H, I) const> :
-    function_pointer_specialisations::function_wrapper<R, Array<A const*, B, C, D, E, F, G, H, I>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-
-template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I, typename J>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H, I, J)> :
-    function_pointer_specialisations::function_wrapper<R, Array<A*, B, C, D, E, F, G, H, I, J>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
-template<typename R, typename A, typename B, typename C, typename D, typename E, typename F, typename G, typename H, typename I, typename J>
-struct TYPE_HIDDEN_VISIBILITY ResolveFunctionSignatureType<R(A::*)(B, C, D, E, F, G, H, I, J) const> :
-    function_pointer_specialisations::function_wrapper<R, Array<A const*, B, C, D, E, F, G, H, I, J>, true_type>
-{
-    METAPROGRAMMING_ONLY(ResolveFunctionSignatureType)
-};
-
+#undef MEMBER_FUNCTION_POINTER_WRAPPERS
 } // namespace intro
 
 #endif
