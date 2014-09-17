@@ -5,6 +5,10 @@
 #include "function_apply.h"
 #endif
 
+#ifndef INCLUDED_INTROSPECTION_ASSERT
+#include "introspection_assert.h"
+#endif
+
 namespace intro {
 
 // Takes a function object of arity N and turns is into a function object of arity N-1
@@ -51,12 +55,14 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()() \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<1>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(m1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(m1, p0); \
     } \
  \
@@ -64,6 +70,7 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
     operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(m1, p0, p1); \
     } \
  \
@@ -72,6 +79,7 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<4>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(m1, p0, p1, p2); \
     } \
  \
@@ -81,6 +89,7 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<5>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(m1, p0, p1, p2, p3); \
     } \
  \
@@ -91,6 +100,7 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(m1, p0, p1, p2, p3, p4); \
     } \
  \
@@ -102,6 +112,7 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(m1, p0, p1, p2, p3, p4, p5); \
     } \
  \
@@ -114,6 +125,7 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(m1, p0, p1, p2, p3, p4, p5, p6); \
     } \
  \
@@ -127,6 +139,7 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(m1, p0, p1, p2, p3, p4, p5, p6, p7); \
     } \
  \
@@ -141,6 +154,7 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(m1, p0, p1, p2, p3, p4, p5, p6, p7, p8); \
     } \
 };
@@ -168,6 +182,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, m1); \
     } \
  \
@@ -175,6 +190,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
     operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, m1, p1); \
     } \
  \
@@ -183,6 +199,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<4>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, m1, p1, p2); \
     } \
  \
@@ -192,6 +209,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<5>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, m1, p1, p2, p3); \
     } \
  \
@@ -202,6 +220,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, m1, p1, p2, p3, p4); \
     } \
  \
@@ -213,6 +232,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, m1, p1, p2, p3, p4, p5); \
     } \
  \
@@ -225,6 +245,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, m1, p1, p2, p3, p4, p5, p6); \
     } \
  \
@@ -238,6 +259,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, m1, p1, p2, p3, p4, p5, p6, p7); \
     } \
  \
@@ -252,6 +274,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, m1, p1, p2, p3, p4, p5, p6, p7, p8); \
     } \
 };
@@ -280,6 +303,7 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
     operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, m1); \
     } \
  \
@@ -288,6 +312,7 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<4>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, m1, p2); \
     } \
  \
@@ -297,6 +322,7 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<5>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, m1, p2, p3); \
     } \
  \
@@ -307,6 +333,7 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, m1, p2, p3, p4); \
     } \
  \
@@ -318,6 +345,7 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, m1, p2, p3, p4, p5); \
     } \
  \
@@ -330,6 +358,7 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, m1, p2, p3, p4, p5, p6); \
     } \
  \
@@ -343,6 +372,7 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, m1, p2, p3, p4, p5, p6, p7); \
     } \
  \
@@ -357,6 +387,7 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, m1, p2, p3, p4, p5, p6, p7, p8); \
     } \
 };
@@ -386,6 +417,7 @@ struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<4>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, m1); \
     } \
  \
@@ -395,6 +427,7 @@ struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<5>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, m1, p3); \
     } \
  \
@@ -405,6 +438,7 @@ struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, m1, p3, p4); \
     } \
  \
@@ -416,6 +450,7 @@ struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, m1, p3, p4, p5); \
     } \
  \
@@ -428,6 +463,7 @@ struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, m1, p3, p4, p5, p6); \
     } \
  \
@@ -441,6 +477,7 @@ struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, m1, p3, p4, p5, p6, p7); \
     } \
  \
@@ -455,6 +492,7 @@ struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, m1, p3, p4, p5, p6, p7, p8); \
     } \
 };
@@ -485,6 +523,7 @@ struct Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<5>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, m1); \
     } \
  \
@@ -495,6 +534,7 @@ struct Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, m1, p4); \
     } \
  \
@@ -506,6 +546,7 @@ struct Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, m1, p4, p5); \
     } \
  \
@@ -518,6 +559,7 @@ struct Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, m1, p4, p5, p6); \
     } \
  \
@@ -531,6 +573,7 @@ struct Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, m1, p4, p5, p6, p7); \
     } \
  \
@@ -545,6 +588,7 @@ struct Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, m1, p4, p5, p6, p7, p8); \
     } \
 };
@@ -576,6 +620,7 @@ struct Curry<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, m1); \
     } \
  \
@@ -587,6 +632,7 @@ struct Curry<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, m1, p5); \
     } \
  \
@@ -599,6 +645,7 @@ struct Curry<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, m1, p5, p6); \
     } \
  \
@@ -612,6 +659,7 @@ struct Curry<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, m1, p5, p6, p7); \
     } \
  \
@@ -626,6 +674,7 @@ struct Curry<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, m1, p5, p6, p7, p8); \
     } \
 };
@@ -658,6 +707,7 @@ struct Curry<Func, P, Integer<6>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, p5, m1); \
     } \
  \
@@ -670,6 +720,7 @@ struct Curry<Func, P, Integer<6>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, p5, m1, p6); \
     } \
  \
@@ -683,6 +734,7 @@ struct Curry<Func, P, Integer<6>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, p5, m1, p6, p7); \
     } \
  \
@@ -697,6 +749,7 @@ struct Curry<Func, P, Integer<6>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, p5, m1, p6, p7, p8); \
     } \
 };
@@ -730,6 +783,7 @@ struct Curry<Func, P, Integer<7>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, m1); \
     } \
  \
@@ -743,6 +797,7 @@ struct Curry<Func, P, Integer<7>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, m1, p7); \
     } \
  \
@@ -757,6 +812,7 @@ struct Curry<Func, P, Integer<7>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
       ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, m1, p7, p8); \
     } \
 };
@@ -791,6 +847,7 @@ struct Curry<Func, P, Integer<8>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, p7, m1); \
     } \
  \
@@ -805,6 +862,7 @@ struct Curry<Func, P, Integer<8>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, p7, m1, p8); \
     } \
 };
@@ -840,6 +898,7 @@ struct Curry<Func, P, Integer<9>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, p7, p8, m1); \
     } \
 };
@@ -867,12 +926,14 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()() \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<0>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<1>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0, p0); \
     } \
  \
@@ -880,6 +941,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
     operator()(typename lookup<0>::type p0, \
                typename lookup<1>::type p1) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0, p0, p1); \
     } \
  \
@@ -888,6 +950,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<1>::type p1, \
                typename lookup<2>::type p2) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0, p0, p1, p2); \
     } \
  \
@@ -897,6 +960,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<2>::type p2, \
                typename lookup<3>::type p3) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<4>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0, p0, p1, p2, p3); \
     } \
  \
@@ -907,6 +971,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<3>::type p3, \
                typename lookup<4>::type p4) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<5>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0, p0, p1, p2, p3, p4); \
     } \
  \
@@ -918,6 +983,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<4>::type p4, \
                typename lookup<5>::type p5) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0, p0, p1, p2, p3, p4, p5); \
     } \
  \
@@ -930,6 +996,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<5>::type p5, \
                typename lookup<6>::type p6) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0, p0, p1, p2, p3, p4, p5, p6); \
     } \
  \
@@ -943,6 +1010,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<6>::type p6, \
                typename lookup<7>::type p7) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0, p0, p1, p2, p3, p4, p5, p6, p7); \
     } \
  \
@@ -957,6 +1025,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<7>::type p7, \
                typename lookup<8>::type p8) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0, p0, p1, p2, p3, p4, p5, p6, p7, p8); \
     } \
  \
@@ -972,6 +1041,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<8>::type p8, \
                typename lookup<9>::type p9) \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<typename GetInputTypeArray<Func>::type>::type> )); \
         ReturnStatement() apply(m0, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9); \
     } \
 };

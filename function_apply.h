@@ -5,6 +5,18 @@
 #include "function_signatures.h"
 #endif
 
+#ifndef INCLUDED_INTROSPECTION_ASSERT
+#include "introspection_assert.h"
+#endif
+
+#ifndef INCLUDED_METAPROGRAMMING
+#include "metaprogramming.h"
+#endif
+
+#ifndef INCLUDED_COMPILER_SPECIFICS
+#include "compiler_specifics.h"
+#endif
+
 namespace intro {
 
 namespace function_apply {
@@ -36,6 +48,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<1>, typename ArraySize<input_types>::type> ));
         return func();
     }
 
@@ -43,6 +56,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
     operator()(Func func,
                typename lookup<0>::type p0) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename ArraySize<input_types>::type> ));
         return func(p0);
     }
 
@@ -51,6 +65,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                typename lookup<0>::type p0,
                typename lookup<1>::type p1) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename ArraySize<input_types>::type> ));
         return func(p0, p1);
     }
 
@@ -63,6 +78,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                typename lookup<1>::type p1, \
                typename lookup<2>::type p2) const \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<4>, typename ArraySize<input_types>::type> )); \
         ReturnStatement() FunctionCall() p1, p2); \
     } \
  \
@@ -73,6 +89,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                typename lookup<2>::type p2, \
                typename lookup<3>::type p3) const \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<5>, typename ArraySize<input_types>::type> )); \
         ReturnStatement() FunctionCall() p1, p2, p3); \
     } \
  \
@@ -84,6 +101,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                typename lookup<3>::type p3, \
                typename lookup<4>::type p4) const \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename ArraySize<input_types>::type> )); \
         ReturnStatement() FunctionCall() p1, p2, p3, p4); \
     } \
  \
@@ -96,6 +114,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                typename lookup<4>::type p4, \
                typename lookup<5>::type p5) const \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename ArraySize<input_types>::type> )); \
         ReturnStatement() FunctionCall() p1, p2, p3, p4, p5); \
     } \
  \
@@ -109,6 +128,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                typename lookup<5>::type p5, \
                typename lookup<6>::type p6) const \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename ArraySize<input_types>::type> )); \
         ReturnStatement() FunctionCall() p1, p2, p3, p4, p5, p6); \
     } \
  \
@@ -123,6 +143,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                typename lookup<6>::type p6, \
                typename lookup<7>::type p7) const \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename ArraySize<input_types>::type> )); \
         ReturnStatement() FunctionCall() p1, p2, p3, p4, p5, p6, p7); \
     } \
  \
@@ -138,6 +159,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                typename lookup<7>::type p7, \
                typename lookup<8>::type p8) const \
     { \
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename ArraySize<input_types>::type> )); \
         ReturnStatement() FunctionCall() p1, p2, p3, p4, p5, p6, p7, p8); \
     }
 
@@ -165,6 +187,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<1>, typename ArraySize<input_types>::type> ));
         func();
     }
 
@@ -172,6 +195,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
     operator()(Func func,
                typename lookup<0>::type p0) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename ArraySize<input_types>::type> ));
         func(p0);
     }
 
@@ -180,6 +204,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
                typename lookup<0>::type p0,
                typename lookup<1>::type p1) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename ArraySize<input_types>::type> ));
         func(p0, p1);
     }
 
@@ -205,6 +230,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(typename Spec::Func func) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<1>, typename ArraySize<input_types>::type> ));
         return (*func)();
     }
 
@@ -212,6 +238,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     operator()(typename Spec::Func func,
                typename lookup<0>::type p0) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename ArraySize<input_types>::type> ));
         return (*func)(p0);
     }
 
@@ -220,6 +247,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
                typename lookup<0>::type p0,
                typename lookup<1>::type p1) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename ArraySize<input_types>::type> ));
         return (*func)(p0, p1);
     }
 
@@ -245,6 +273,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(typename Spec::Func func) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<1>, typename ArraySize<input_types>::type> ));
         (*func)();
     }
 
@@ -252,6 +281,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     operator()(typename Spec::Func func,
                typename lookup<0>::type p0) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename ArraySize<input_types>::type> ));
         (*func)(p0);
     }
 
@@ -260,6 +290,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
                typename lookup<0>::type p0,
                typename lookup<1>::type p1) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename ArraySize<input_types>::type> ));
         (*func)(p0, p1);
     }
 
@@ -286,6 +317,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     operator()(typename Spec::Func func,
                typename lookup<0>::type p0) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename ArraySize<input_types>::type> ));
         return (p0->*func)();
     }
 
@@ -294,6 +326,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
                typename lookup<0>::type p0,
                typename lookup<1>::type p1) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename ArraySize<input_types>::type> ));
         return (p0->*func)(p1);
     }
 
@@ -321,6 +354,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     operator()(typename Spec::Func func,
                typename lookup<0>::type p0) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename ArraySize<input_types>::type> ));
         (p0->*func)();
     }
 
@@ -329,6 +363,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
                typename lookup<0>::type p0,
                typename lookup<1>::type p1) const
     {
+        INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename ArraySize<input_types>::type> ));
         (p0->*func)(p1);
     }
 
@@ -382,11 +417,10 @@ template<typename Func>
 struct TYPE_HIDDEN_VISIBILITY IsMemberFunctionPointer_impl : false_type {METAPROGRAMMING_ONLY(IsMemberFunctionPointer_impl)};
 
 template<typename CodomainType, typename InputType>
-  struct TYPE_HIDDEN_VISIBILITY IsMemberFunctionPointer_impl<function_pointer_specialisations::function_wrapper<CodomainType, InputType, true_type> > : true_type {METAPROGRAMMING_ONLY(IsMemberFunctionPointer_impl)};
+struct TYPE_HIDDEN_VISIBILITY IsMemberFunctionPointer_impl<function_pointer_specialisations::function_wrapper<CodomainType, InputType, true_type> > : true_type {METAPROGRAMMING_ONLY(IsMemberFunctionPointer_impl)};
 
 template<typename Func>
 struct TYPE_HIDDEN_VISIBILITY IsMemberFunctionPointer : IsMemberFunctionPointer_impl<typename ResolveFunctionSignatureType<Func>::type> {METAPROGRAMMING_ONLY(IsMemberFunctionPointer)};
-
 
 
 template<typename Func>
