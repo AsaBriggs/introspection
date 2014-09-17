@@ -18,7 +18,7 @@ namespace intro {
 
 namespace StreamIn_impl {
 
-  template<typename T, typename charT, typename traits>
+template<typename T, typename charT, typename traits>
 struct TYPE_HIDDEN_VISIBILITY StreamIn_Visitor
 {
     typedef true_type IntrospectionEnabled;
