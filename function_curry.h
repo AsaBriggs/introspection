@@ -19,6 +19,9 @@ struct TYPE_HIDDEN_VISIBILITY enable_if_void_codomain : enable_if<is_same<void, 
 template<typename Func>
 struct TYPE_HIDDEN_VISIBILITY enable_if_not_void_codomain : enable_if<not_<is_same<void, typename GetCodomainType<Func>::type> >, void> {METAPROGRAMMING_ONLY(enable_if_not_void_codomain)};
 
+template<typename T, typename Index>
+struct GetParamFromArray : parameter_type<typename ArrayIndex<T, Index>::type>{METAPROGRAMMING_ONLY(GetParamFromArray)};
+
 } // namespace Curry_impl
 
 template<typename Func, typename P, typename Index, typename Enable=void>
@@ -30,75 +33,80 @@ struct Curry;
 #define NO_RETURN_STATEMENT()
 #define ENABLE_VOID_MF() Curry_impl::enable_if_void_codomain
 
-
 #define GENERATE_BIND_0(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
 struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<P> IntrospectionItems; \
+    typedef Array<Func, P> IntrospectionItems;   \
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
-    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<0> >::type updated_input_types; \
-    typedef typename ArrayConcat<Func, updated_input_types>::type input_types; \
-    P m0; \
+    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<0> >::type input_types; \
+    Func m0; \
+    P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func) \
+    operator()() \
     { \
-        ReturnStatement() apply(func, this->m0); \
+        ReturnStatement() m0(m1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-               typename lookup<1>::type p1) \
+    operator()(typename lookup<0>::type p0) \
     { \
-        ReturnStatement() apply(func, this->m0, p1); \
+        ReturnStatement() m0(m1, p0); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1) \
+    { \
+        ReturnStatement() m0(m1, p0, p1); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2) \
     { \
-        ReturnStatement() apply(func, this->m0, p1, p2); \
+        ReturnStatement() m0(m1, p0, p1, p2); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3) \
     { \
-        ReturnStatement() apply(func, this->m0, p1, p2, p3); \
+        ReturnStatement() m0(m1, p0, p1, p2, p3); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
-        ReturnStatement() apply(func, this->m0, p1, p2, p3, p4); \
+        ReturnStatement() m0(m1, p0, p1, p2, p3, p4); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
-        ReturnStatement() apply(func, this->m0, p1, p2, p3, p4, p5); \
+        ReturnStatement() m0(m1, p0, p1, p2, p3, p4, p5); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
@@ -106,11 +114,11 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
-        ReturnStatement() apply(func, this->m0, p1, p2, p3, p4, p5, p6); \
+        ReturnStatement() m0(m1, p0, p1, p2, p3, p4, p5, p6); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
@@ -119,11 +127,11 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
-        ReturnStatement() apply(func, this->m0, p1, p2, p3, p4, p5, p6, p7); \
+        ReturnStatement() m0(m1, p0, p1, p2, p3, p4, p5, p6, p7); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
@@ -133,22 +141,7 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(func, this->m0, p1, p2, p3, p4, p5, p6, p7, p8); \
-    } \
- \
-    ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<1>::type p1, \
-	       typename lookup<2>::type p2, \
-	       typename lookup<3>::type p3, \
-	       typename lookup<4>::type p4, \
-	       typename lookup<5>::type p5, \
-	       typename lookup<6>::type p6, \
-	       typename lookup<7>::type p7, \
-	       typename lookup<8>::type p8, \
-	       typename lookup<9>::type p9) \
-    { \
-      ReturnStatement() apply(func, this->m0, p1, p2, p3, p4, p5, p6, p7, p8, p9); \
+        ReturnStatement() m0(m1, p0, p1, p2, p3, p4, p5, p6, p7, p8); \
     } \
 };
 
@@ -163,75 +156,81 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<P> IntrospectionItems; \
+    typedef Array<Func, P> IntrospectionItems; \
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
-    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<1> >::type updated_input_types; \
-    typedef typename ArrayConcat<Func, updated_input_types>::type input_types; \
-    P m0; \
+    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<1> >::type input_types; \
+    Func m0; \
+    P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-               typename lookup<0>::type p0) \
+    operator()(typename lookup<0>::type p0) \
     { \
-      ReturnStatement() apply(func, p0, this->m0);	\
+        ReturnStatement() m0(p0, m1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1) \
+    { \
+        ReturnStatement() m0(p0, m1, p1); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2) \
     { \
-        ReturnStatement() apply(func, p0, this->m0, p2); \
+        ReturnStatement() m0(p0, m1, p1, p2); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3) \
     { \
-        ReturnStatement() apply(func, p0, this->m0, p2, p3); \
+        ReturnStatement() m0(p0, m1, p1, p2, p3); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
-        ReturnStatement() apply(func, p0, this->m0, p2, p3, p4); \
+        ReturnStatement() m0(p0, m1, p1, p2, p3, p4); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
-        ReturnStatement() apply(func, p0, this->m0, p2, p3, p4, p5); \
+        ReturnStatement() m0(p0, m1, p1, p2, p3, p4, p5); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
-        ReturnStatement() apply(func, p0, this->m0, p2, p3, p4, p5, p6); \
+        ReturnStatement() m0(p0, m1, p1, p2, p3, p4, p5, p6); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
@@ -239,12 +238,12 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
-        ReturnStatement() apply(func, p0, this->m0, p2, p3, p4, p5, p6, p7); \
+        ReturnStatement() m0(p0, m1, p1, p2, p3, p4, p5, p6, p7); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
@@ -253,22 +252,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(func, p0, this->m0, p2, p3, p4, p5, p6, p7, p8); \
-    } \
- \
-    ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
-	       typename lookup<2>::type p2, \
-	       typename lookup<3>::type p3, \
-	       typename lookup<4>::type p4, \
-	       typename lookup<5>::type p5, \
-	       typename lookup<6>::type p6, \
-	       typename lookup<7>::type p7, \
-	       typename lookup<8>::type p8, \
-	       typename lookup<9>::type p9) \
-    { \
-      ReturnStatement() apply(func, p0, this->m0, p2, p3, p4, p5, p6, p7, p8, p9); \
+        ReturnStatement() m0(p0, m1, p1, p2, p3, p4, p5, p6, p7, p8); \
     } \
 };
 
@@ -283,82 +267,89 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<P> IntrospectionItems; \
+    typedef Array<Func, P> IntrospectionItems; \
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
-    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<2> >::type updated_input_types; \
-    typedef typename ArrayConcat<Func, updated_input_types>::type input_types; \
-    P m0; \
+    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<2> >::type input_types; \
+    Func m0; \
+    P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1) \
     { \
-        ReturnStatement() apply(func, p0, p1, this->m0); \
+        ReturnStatement() m0(p0, p1, m1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2) \
+    { \
+        ReturnStatement() m0(p0, p1, m1, p2); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3) \
     { \
-        ReturnStatement() apply(func, p0, p1, this->m0, p3); \
+        ReturnStatement() m0(p0, p1, m1, p2, p3); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
-        ReturnStatement() apply(func, p0, p1, this->m0, p3, p4); \
+        ReturnStatement() m0(p0, p1, m1, p2, p3, p4); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
-        ReturnStatement() apply(func, p0, p1, this->m0, p3, p4, p5); \
+        ReturnStatement() m0(p0, p1, m1, p2, p3, p4, p5); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
-        ReturnStatement() apply(func, p0, p1, this->m0, p3, p4, p5, p6); \
+        ReturnStatement() m0(p0, p1, m1, p2, p3, p4, p5, p6); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
-        ReturnStatement() apply(func, p0, p1, this->m0, p3, p4, p5, p6, p7); \
+        ReturnStatement() m0(p0, p1, m1, p2, p3, p4, p5, p6, p7); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
@@ -366,22 +357,7 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(func, p0, p1, this->m0, p3, p4, p5, p6, p7, p8); \
-    } \
- \
-    ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
-	       typename lookup<1>::type p1, \
-	       typename lookup<3>::type p3, \
-	       typename lookup<4>::type p4, \
-	       typename lookup<5>::type p5, \
-	       typename lookup<6>::type p6, \
-	       typename lookup<7>::type p7, \
-	       typename lookup<8>::type p8, \
-	       typename lookup<9>::type p9) \
-    { \
-      ReturnStatement() apply(func, p0, p1, this->m0, p3, p4, p5, p6, p7, p8, p9); \
+        ReturnStatement() m0(p0, p1, m1, p2, p3, p4, p5, p6, p7, p8); \
     } \
 };
 
@@ -396,97 +372,90 @@ struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<P> IntrospectionItems; \
+    typedef Array<Func, P> IntrospectionItems; \
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
-    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<3> >::type updated_input_types; \
-    typedef typename ArrayConcat<Func, updated_input_types>::type input_types; \
-    P m0; \
+    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<3> >::type input_types; \
+    Func m0; \
+    P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, this->m0); \
+        ReturnStatement() m0(p0, p1, p2, m1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
+	       typename lookup<3>::type p3) \
+    { \
+        ReturnStatement() m0(p0, p1, p2, m1, p3); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
+	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, this->m0, p4); \
+        ReturnStatement() m0(p0, p1, p2, m1, p3, p4); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
+	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, this->m0, p4, p5); \
+        ReturnStatement() m0(p0, p1, p2, m1, p3, p4, p5); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
+	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, this->m0, p4, p5, p6); \
+        ReturnStatement() m0(p0, p1, p2, m1, p3, p4, p5, p6); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
+	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, this->m0, p4, p5, p6, p7); \
+        ReturnStatement() m0(p0, p1, p2, m1, p3, p4, p5, p6, p7); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
+	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, this->m0, p4, p5, p6, p7, p8); \
-    } \
- \
-    ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
-	       typename lookup<1>::type p1, \
-	       typename lookup<2>::type p2, \
-	       typename lookup<4>::type p4, \
-	       typename lookup<5>::type p5, \
-	       typename lookup<6>::type p6, \
-	       typename lookup<7>::type p7, \
-	       typename lookup<8>::type p8, \
-	       typename lookup<9>::type p9) \
-    { \
-      ReturnStatement() apply(func, p0, p1, p2, this->m0, p4, p5, p6, p7, p8, p9); \
+        ReturnStatement() m0(p0, p1, p2, m1, p3, p4, p5, p6, p7, p8); \
     } \
 };
 
@@ -501,88 +470,82 @@ struct Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<P> IntrospectionItems; \
+    typedef Array<Func, P> IntrospectionItems; \
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
-    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<4> >::type updated_input_types; \
-    typedef typename ArrayConcat<Func, updated_input_types>::type input_types; \
-    P m0; \
+    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<4> >::type input_types; \
+    Func m0; \
+    P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, this->m0); \
+        ReturnStatement() m0(p0, p1, p2, p3, m1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
+	       typename lookup<4>::type p4) \
+    { \
+        ReturnStatement() m0(p0, p1, p2, p3, m1, p4); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
+	       typename lookup<3>::type p3, \
+	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, this->m0, p5); \
+        ReturnStatement() m0(p0, p1, p2, p3, m1, p4, p5); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
-	       typename lookup<3>::type p3, \
+	       typename lookup<2>::type p3, \
+	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, this->m0, p5, p6); \
+        ReturnStatement() m0(p0, p1, p2, p3, m1, p4, p5, p6); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
+	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, this->m0, p5, p6, p7); \
+        ReturnStatement() m0(p0, p1, p2, p3, m1, p4, p5, p6, p7); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
+	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, this->m0, p5, p6, p7, p8); \
-    } \
- \
-    ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
-	       typename lookup<1>::type p1, \
-	       typename lookup<2>::type p2, \
-	       typename lookup<3>::type p3, \
-	       typename lookup<5>::type p5, \
-	       typename lookup<6>::type p6, \
-	       typename lookup<7>::type p7, \
-	       typename lookup<8>::type p8, \
-	       typename lookup<9>::type p9) \
-    { \
-      ReturnStatement() apply(func, p0, p1, p2, p3, this->m0, p5, p6, p7, p8, p9); \
+        ReturnStatement() m0(p0, p1, p2, p3, m1, p4, p5, p6, p7, p8); \
     } \
 };
 
@@ -597,78 +560,73 @@ struct Curry<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<P> IntrospectionItems; \
+    typedef Array<Func, P> IntrospectionItems; \
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
-    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<5> >::type updated_input_types; \
-    typedef typename ArrayConcat<Func, updated_input_types>::type input_types; \
-    P m0; \
+    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<5> >::type input_types; \
+    Func m0; \
+    P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, this->m0); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, m1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
+	       typename lookup<5>::type p5) \
+    { \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, m1, p5); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
+	       typename lookup<3>::type p3, \
+	       typename lookup<4>::type p4, \
+	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, this->m0, p6); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, m1, p5, p6); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
+	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, this->m0, p6, p7); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, m1, p5, p6, p7); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
+	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, this->m0, p6, p7, p8); \
-    } \
- \
-    ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
-	       typename lookup<1>::type p1, \
-	       typename lookup<2>::type p2, \
-	       typename lookup<3>::type p3, \
-	       typename lookup<4>::type p4, \
-	       typename lookup<6>::type p6, \
-	       typename lookup<7>::type p7, \
-	       typename lookup<8>::type p8, \
-	       typename lookup<9>::type p9) \
-    { \
-      ReturnStatement() apply(func, p0, p1, p2, p3, p4, this->m0, p6, p7, p8, p9); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, m1, p5, p6, p7, p8); \
     } \
 };
 
@@ -683,67 +641,63 @@ struct Curry<Func, P, Integer<6>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<P> IntrospectionItems; \
+    typedef Array<Func, P> IntrospectionItems; \
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
-    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<6> >::type updated_input_types; \
-    typedef typename ArrayConcat<Func, updated_input_types>::type input_types; \
-    P m0; \
+    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<6> >::type input_types; \
+    Func m0; \
+    P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, p5, this->m0); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, p5, m1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
+	       typename lookup<6>::type p6) \
+    { \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, p5, m1, p6); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
+	       typename lookup<3>::type p3, \
+	       typename lookup<4>::type p4, \
+	       typename lookup<5>::type p5, \
+	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, p5, this->m0, p7); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, p5, m1, p6, p7); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
+	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, p5, this->m0, p7, p8); \
-    } \
- \
-    ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
-	       typename lookup<1>::type p1, \
-	       typename lookup<2>::type p2, \
-	       typename lookup<3>::type p3, \
-	       typename lookup<4>::type p4, \
-	       typename lookup<5>::type p5, \
-	       typename lookup<7>::type p7, \
-	       typename lookup<8>::type p8, \
-	       typename lookup<9>::type p9) \
-    { \
-      ReturnStatement() apply(func, p0, p1, p2, p3, p4, p5, this->m0, p7, p8, p9); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, p5, m1, p6, p7, p8); \
     } \
 };
 
@@ -758,18 +712,17 @@ struct Curry<Func, P, Integer<7>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<P> IntrospectionItems; \
+    typedef Array<Func, P> IntrospectionItems; \
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
-    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<7> >::type updated_input_types; \
-    typedef typename ArrayConcat<Func, updated_input_types>::type input_types; \
-    P m0; \
+    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<7> >::type input_types; \
+    Func m0; \
+    P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
@@ -777,36 +730,34 @@ struct Curry<Func, P, Integer<7>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, p5, p6, this->m0); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, m1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
 	       typename lookup<4>::type p4, \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6, \
+	       typename lookup<7>::type p7) \
+    { \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, m1, p7); \
+    } \
+ \
+    ALWAYS_INLINE_HIDDEN codomain_type \
+    operator()(typename lookup<0>::type p0, \
+	       typename lookup<1>::type p1, \
+	       typename lookup<2>::type p2, \
+	       typename lookup<3>::type p3, \
+	       typename lookup<4>::type p4, \
+	       typename lookup<5>::type p5, \
+	       typename lookup<6>::type p6, \
+	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, p5, p6, this->m0, p8); \
-    } \
- \
-    ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
-	       typename lookup<1>::type p1, \
-	       typename lookup<2>::type p2, \
-	       typename lookup<3>::type p3, \
-	       typename lookup<4>::type p4, \
-	       typename lookup<5>::type p5, \
-	       typename lookup<6>::type p6, \
-	       typename lookup<8>::type p8, \
-	       typename lookup<9>::type p9) \
-    { \
-      ReturnStatement() apply(func, p0, p1, p2, p3, p4, p5, p6, this->m0, p8, p9); \
+      ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, m1, p7, p8); \
     } \
 };
 
@@ -821,18 +772,17 @@ struct Curry<Func, P, Integer<8>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<P> IntrospectionItems; \
+    typedef Array<Func, P> IntrospectionItems; \
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
-    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<8> >::type updated_input_types; \
-    typedef typename ArrayConcat<Func, updated_input_types>::type input_types; \
-    P m0; \
+    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<8> >::type input_types; \
+    Func m0; \
+    P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
@@ -841,12 +791,11 @@ struct Curry<Func, P, Integer<8>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, p5, p6, p7, this->m0); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, p7, m1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
@@ -854,9 +803,9 @@ struct Curry<Func, P, Integer<8>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<5>::type p5, \
 	       typename lookup<6>::type p6, \
 	       typename lookup<7>::type p7, \
-	       typename lookup<9>::type p9) \
+	       typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, p5, p6, p7, this->m0, p9); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, p7, m1, p8); \
     } \
 };
 
@@ -871,18 +820,17 @@ struct Curry<Func, P, Integer<9>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
-    typedef Array<P> IntrospectionItems; \
+    typedef Array<Func, P> IntrospectionItems; \
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
-    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<9> >::type updated_input_types; \
-    typedef typename ArrayConcat<Func, updated_input_types>::type input_types; \
-    P m0; \
+    typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<9> >::type input_types; \
+    Func m0; \
+    P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
-    operator()(Func func, \
-	       typename lookup<0>::type p0, \
+    operator()(typename lookup<0>::type p0, \
 	       typename lookup<1>::type p1, \
 	       typename lookup<2>::type p2, \
 	       typename lookup<3>::type p3, \
@@ -892,13 +840,14 @@ struct Curry<Func, P, Integer<9>, typename EnableMetafunction() <Func>::type> \
 	       typename lookup<7>::type p7, \
 	       typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(func, p0, p1, p2, p3, p4, p5, p6, p7, p8, this->m0); \
+        ReturnStatement() m0(p0, p1, p2, p3, p4, p5, p6, p7, p8, m1); \
     } \
 };
 
 GENERATE_BIND_9(RETURN_STATEMENT, ENABLE_NOT_VOID_MF)
 GENERATE_BIND_9(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 #undef GENERATE_BIND_9
+
 
 #define GENERATE_BIND_FUNC(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename Func2>						\
@@ -913,25 +862,25 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
     typedef typename GetInputTypeArray<Func>::type input_types; \
     FuncType m0;							\
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : function_apply::GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()() \
     { \
-        ReturnStatement() apply(this->m0); \
+        ReturnStatement() apply(m0); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0) \
     { \
-        ReturnStatement() apply(this->m0, p0); \
+        ReturnStatement() apply(m0, p0); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0, \
                typename lookup<1>::type p1) \
     { \
-        ReturnStatement() apply(this->m0, p0, p1); \
+        ReturnStatement() apply(m0, p0, p1); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
@@ -939,7 +888,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<1>::type p1, \
                typename lookup<2>::type p2) \
     { \
-        ReturnStatement() apply(this->m0, p0, p1, p2); \
+        ReturnStatement() apply(m0, p0, p1, p2); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
@@ -948,7 +897,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<2>::type p2, \
                typename lookup<3>::type p3) \
     { \
-        ReturnStatement() apply(this->m0, p0, p1, p2, p3); \
+        ReturnStatement() apply(m0, p0, p1, p2, p3); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
@@ -958,7 +907,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<3>::type p3, \
                typename lookup<4>::type p4) \
     { \
-        ReturnStatement() apply(this->m0, p0, p1, p2, p3, p4); \
+        ReturnStatement() apply(m0, p0, p1, p2, p3, p4); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
@@ -969,7 +918,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<4>::type p4, \
                typename lookup<5>::type p5) \
     { \
-        ReturnStatement() apply(this->m0, p0, p1, p2, p3, p4, p5); \
+        ReturnStatement() apply(m0, p0, p1, p2, p3, p4, p5); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
@@ -981,7 +930,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<5>::type p5, \
                typename lookup<6>::type p6) \
     { \
-        ReturnStatement() apply(this->m0, p0, p1, p2, p3, p4, p5, p6); \
+        ReturnStatement() apply(m0, p0, p1, p2, p3, p4, p5, p6); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
@@ -994,7 +943,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<6>::type p6, \
                typename lookup<7>::type p7) \
     { \
-        ReturnStatement() apply(this->m0, p0, p1, p2, p3, p4, p5, p6, p7); \
+        ReturnStatement() apply(m0, p0, p1, p2, p3, p4, p5, p6, p7); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
@@ -1008,7 +957,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<7>::type p7, \
                typename lookup<8>::type p8) \
     { \
-        ReturnStatement() apply(this->m0, p0, p1, p2, p3, p4, p5, p6, p7, p8); \
+        ReturnStatement() apply(m0, p0, p1, p2, p3, p4, p5, p6, p7, p8); \
     } \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
@@ -1023,7 +972,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
                typename lookup<8>::type p8, \
                typename lookup<9>::type p9) \
     { \
-        ReturnStatement() apply(this->m0, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9); \
+        ReturnStatement() apply(m0, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9); \
     } \
 };
 
@@ -1039,9 +988,9 @@ GENERATE_BIND_FUNC(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 template<typename Func, typename Obj, typename Index>
 ALWAYS_INLINE_HIDDEN Curry<typename ResolveFunctionSignatureType<Func>::type, Obj, Index>
-perform_curry(Obj obj, Index)
+perform_curry(Func func, Obj obj, Index)
 {
-    Curry<typename ResolveFunctionSignatureType<Func>::type, Obj, Index> tmp = {obj};
+    Curry<typename ResolveFunctionSignatureType<Func>::type, Obj, Index> tmp = {func, obj};
     return tmp;
 }
 

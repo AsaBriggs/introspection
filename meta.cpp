@@ -2548,6 +2548,169 @@ void test_function_curry()
   test_curry_member_function_pointer_void_return();
 }
 
+struct Func9
+{
+  typedef Func9 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  typedef long input_type_6;
+  typedef char const* input_type_7;
+  typedef void* input_type_8;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g, input_type_7 h, input_type_8 i) const { return fun2(a, b); }
+};
+
+void test_function_parameter_non_void_curry()
+{
+  Curry<Func0, Func0, Integer<-1> > c0 = curry_function(Func0());
+  TEST(0 == c0());
+
+  Curry<Func1, Func1, Integer<-1> > c1 = curry_function(Func1());
+  TEST(5 == c1(5));
+  TEST(5 == perform_curry(c1, 5, Integer<0>())());
+
+  Curry<Func2, Func2, Integer<-1> > c2 = curry_function(Func2());
+  TEST(5 == c2(5, 4.5f));
+  TEST(5 == perform_curry(c2, 5, Integer<0>())(4.5f));
+  TEST(5 == perform_curry(c2, 4.5f, Integer<1>())(5));
+
+  Curry<Func3, Func3, Integer<-1> > c3 = curry_function(Func3());
+  TEST(5 == c3(5, 4.5f, 7.5));
+  TEST(5 == perform_curry(c3, 5, Integer<0>())(4.5f, 7.5));
+  TEST(5 == perform_curry(c3, 4.5f, Integer<1>())(5, 7.5));
+  TEST(5 == perform_curry(c3, 7.5, Integer<2>())(5, 4.5f));
+
+  Curry<Func4, Func4, Integer<-1> > c4 = curry_function(Func4());
+  TEST(5 == c4(5, 4.5f, 7.5, 'a'));
+  TEST(5 == perform_curry(c4, 5, Integer<0>())(4.5f, 7.5, 'a'));
+  TEST(5 == perform_curry(c4, 4.5f, Integer<1>())(5, 7.5, 'a'));
+  TEST(5 == perform_curry(c4, 7.5, Integer<2>())(5, 4.5f, 'a'));
+  TEST(5 == perform_curry(c4, 'a', Integer<3>())(5, 4.5f, 7.5));
+
+  Curry<Func5, Func5, Integer<-1> > c5 = curry_function(Func5());
+  TEST(5 == c5(5, 4.5f, 7.5, 'a', true));
+  TEST(5 == perform_curry(c5, 5, Integer<0>())(4.5f, 7.5, 'a', true));
+  TEST(5 == perform_curry(c5, 4.5f, Integer<1>())(5, 7.5, 'a', true));
+  TEST(5 == perform_curry(c5, 7.5, Integer<2>())(5, 4.5f, 'a', true));
+  TEST(5 == perform_curry(c5, 'a', Integer<3>())(5, 4.5f, 7.5, true));
+  TEST(5 == perform_curry(c5, true, Integer<4>())(5, 4.5f, 7.5, 'a'));
+
+  int x = 0;
+  Curry<Func6, Func6, Integer<-1> > c6 = curry_function(Func6());
+  TEST(5 == c6(5, 4.5f, 7.5, 'a', true, make_ref(x)));
+  TEST(5 == perform_curry(c6, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x)));
+  TEST(5 == perform_curry(c6, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x)));
+  TEST(5 == perform_curry(c6, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x)));
+  TEST(5 == perform_curry(c6, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x)));
+  TEST(5 == perform_curry(c6, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x)));
+  TEST(5 == perform_curry(c6, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true));
+
+  Curry<Func7, Func7, Integer<-1> > c7 = curry_function(Func7());
+  TEST(5 == c7(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L));
+  TEST(5 == perform_curry(c7, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x), 66L));
+  TEST(5 == perform_curry(c7, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x), 66L));
+  TEST(5 == perform_curry(c7, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x), 66L));
+  TEST(5 == perform_curry(c7, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x), 66L));
+  TEST(5 == perform_curry(c7, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x), 66L));
+  TEST(5 == perform_curry(c7, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L));
+  TEST(5 == perform_curry(c7, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x)));
+
+  Curry<Func8, Func8, Integer<-1> > c8 = curry_function(Func8());
+  TEST(5 == c8(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c8, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c8, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c8, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c8, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c8, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c8, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L, "aaa"));
+  TEST(5 == perform_curry(c8, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x), "aaa"));
+  TEST(5 == perform_curry(c8, "aaa", Integer<7>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L));
+
+  /*
+  Curry<Func9, Func9, Integer<-1> > c9 = curry_function(Func9());
+  TEST(5 == c9(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c9, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c9, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c9, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c9, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c9, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x), 66L, "aaa"));
+  TEST(5 == perform_curry(c9, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L, "aaa"));
+  TEST(5 == perform_curry(c9, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x), "aaa"));
+  TEST(5 == perform_curry(c9, "aaa", Integer<7>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L));
+  */
+}
+
+void test_function_parameter_void_curry()
+{
+  Curry<VoidFunc0, VoidFunc0, Integer<-1> > c0 = curry_function(VoidFunc0());
+  c0();
+
+  Curry<VoidFunc1, VoidFunc1, Integer<-1> > c1 = curry_function(VoidFunc1());
+  c1(5);
+  perform_curry(c1, 5, Integer<0>())();
+
+  Curry<VoidFunc2, VoidFunc2, Integer<-1> > c2 = curry_function(VoidFunc2());
+  c2(5, 4.5f);
+  perform_curry(c2, 5, Integer<0>())(4.5f);
+  perform_curry(c2, 4.5f, Integer<1>())(5);
+
+  Curry<VoidFunc3, VoidFunc3, Integer<-1> > c3 = curry_function(VoidFunc3());
+  c3(5, 4.5f, 7.5);
+  perform_curry(c3, 5, Integer<0>())(4.5f, 7.5);
+  perform_curry(c3, 4.5f, Integer<1>())(5, 7.5);
+  perform_curry(c3, 7.5, Integer<2>())(5, 4.5f);
+
+  Curry<VoidFunc4, VoidFunc4, Integer<-1> > c4 = curry_function(VoidFunc4());
+  c4(5, 4.5f, 7.5, 'a');
+  perform_curry(c4, 5, Integer<0>())(4.5f, 7.5, 'a');
+  perform_curry(c4, 4.5f, Integer<1>())(5, 7.5, 'a');
+  perform_curry(c4, 7.5, Integer<2>())(5, 4.5f, 'a');
+  perform_curry(c4, 'a', Integer<3>())(5, 4.5f, 7.5);
+
+  Curry<VoidFunc5, VoidFunc5, Integer<-1> > c5 = curry_function(VoidFunc5());
+  c5(5, 4.5f, 7.5, 'a', true);
+  perform_curry(c5, 5, Integer<0>())(4.5f, 7.5, 'a', true);
+  perform_curry(c5, 4.5f, Integer<1>())(5, 7.5, 'a', true);
+  perform_curry(c5, 7.5, Integer<2>())(5, 4.5f, 'a', true);
+  perform_curry(c5, 'a', Integer<3>())(5, 4.5f, 7.5, true);
+  perform_curry(c5, true, Integer<4>())(5, 4.5f, 7.5, 'a');
+
+  int x = 0;
+  Curry<VoidFunc6, VoidFunc6, Integer<-1> > c6 = curry_function(VoidFunc6());
+  c6(5, 4.5f, 7.5, 'a', true, make_ref(x));
+  perform_curry(c6, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x));
+  perform_curry(c6, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x));
+  perform_curry(c6, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x));
+  perform_curry(c6, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x));
+  perform_curry(c6, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x));
+  perform_curry(c6, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true);
+
+  Curry<VoidFunc7, VoidFunc7, Integer<-1> > c7 = curry_function(VoidFunc7());
+  c7(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L);
+  perform_curry(c7, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x), 66L);
+  perform_curry(c7, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x), 66L);
+  perform_curry(c7, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x), 66L);
+  perform_curry(c7, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x), 66L);
+  perform_curry(c7, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x), 66L);
+  perform_curry(c7, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L);
+  perform_curry(c7, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x));
+
+  Curry<VoidFunc8, VoidFunc8, Integer<-1> > c8 = curry_function(VoidFunc8());
+  c8(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa");
+  perform_curry(c8, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa");
+  perform_curry(c8, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x), 66L, "aaa");
+  perform_curry(c8, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x), 66L, "aaa");
+  perform_curry(c8, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x), 66L, "aaa");
+  perform_curry(c8, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x), 66L, "aaa");
+  perform_curry(c8, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L, "aaa");
+  perform_curry(c8, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x), "aaa");
+  perform_curry(c8, "aaa", Integer<7>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L);
+}
 
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
 INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(*)(int, int, int, int, int, int, int, int, int, int, int)> ));
@@ -2626,4 +2789,6 @@ int main()
     test_function_signatures();
     test_function_apply();
     test_function_curry();
+    test_function_parameter_non_void_curry();
+    test_function_parameter_void_curry();
 }
