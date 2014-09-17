@@ -34,12 +34,14 @@ struct TYPE_DEFAULT_VISIBILITY false_type
     ALWAYS_INLINE_HIDDEN operator bool() const { return value ; }
 };
 
-template<int num>
+typedef long IntegerValueType;
+
+template<IntegerValueType num>
 struct TYPE_DEFAULT_VISIBILITY Integer
 {
     typedef Integer type;
-    static const int value = num;
-    ALWAYS_INLINE_HIDDEN operator int() const { return value ; }
+    static const IntegerValueType value = num;
+    ALWAYS_INLINE_HIDDEN operator IntegerValueType() const { return value ; }
 };
 
 struct TYPE_HIDDEN_VISIBILITY DefaultTag
@@ -97,14 +99,14 @@ struct TYPE_HIDDEN_VISIBILITY ValueToTrueFalse<true> : true_type {METAPROGRAMMIN
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY Successor;
 
-template<int num>
+template<IntegerValueType num>
 struct TYPE_HIDDEN_VISIBILITY Successor<Integer<num> > : Integer<num+1> {METAPROGRAMMING_ONLY(Successor)};
 
 
 template<typename T>
 struct TYPE_HIDDEN_VISIBILITY Predecessor;
 
-template<int num>
+template<IntegerValueType num>
 struct TYPE_HIDDEN_VISIBILITY Predecessor<Integer<num> > : Integer<num-1> {METAPROGRAMMING_ONLY(Predecessor)};
 
 
@@ -145,35 +147,35 @@ struct TYPE_HIDDEN_VISIBILITY Max : Max_impl::Max<T, U, U::type::value < T::type
 template<typename T0, typename T1>
 struct TYPE_HIDDEN_VISIBILITY Subtract;
 
-template<int num0, int num1>
+template<IntegerValueType num0, IntegerValueType num1>
 struct TYPE_HIDDEN_VISIBILITY Subtract<Integer<num0>, Integer<num1> > : Integer<num0 - num1> {METAPROGRAMMING_ONLY(Subtract)};
 
 
 template<typename T0, typename T1>
 struct TYPE_HIDDEN_VISIBILITY Add;
 
-template<int num0, int num1>
+template<IntegerValueType num0, IntegerValueType num1>
 struct TYPE_HIDDEN_VISIBILITY Add<Integer<num0>, Integer<num1> > : Integer<num0 + num1> {METAPROGRAMMING_ONLY(Add)};
 
 
 template<typename T0, typename T1>
 struct TYPE_HIDDEN_VISIBILITY Multiply;
 
-template<int num0, int num1>
+template<IntegerValueType num0, IntegerValueType num1>
 struct TYPE_HIDDEN_VISIBILITY Multiply<Integer<num0>, Integer<num1> > : Integer<num0 * num1> {METAPROGRAMMING_ONLY(Multiply)};
 
 
 template<typename T0, typename T1>
 struct TYPE_HIDDEN_VISIBILITY Divide;
 
-template<int num0, int num1>
+template<IntegerValueType num0, IntegerValueType num1>
 struct TYPE_HIDDEN_VISIBILITY Divide<Integer<num0>, Integer<num1> > : Integer<num0 / num1> {METAPROGRAMMING_ONLY(Divide)};
 
 
 template<typename T0>
 struct TYPE_HIDDEN_VISIBILITY Negate;
 
-template<int num>
+template<IntegerValueType num>
 struct TYPE_HIDDEN_VISIBILITY Negate<Integer<num> > : Integer<-num> {METAPROGRAMMING_ONLY(Negate)};
 
 
@@ -418,7 +420,7 @@ struct TYPE_HIDDEN_VISIBILITY parameter_type<T&>
     METAPROGRAMMING_ONLY(parameter_type)
 };
 
-template<int num>
+template<IntegerValueType num>
 struct TYPE_HIDDEN_VISIBILITY parameter_type<Integer<num> >
 {
     typedef Integer<num> type;

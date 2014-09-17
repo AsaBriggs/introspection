@@ -26,7 +26,7 @@ struct TYPE_HIDDEN_VISIBILITY StreamIn_Visitor
     typedef Array<Stream> IntrospectionItems;
     Stream m0;
 
-    template<typename U, int Index>
+    template<typename U, IntegerValueType Index>
     ALWAYS_INLINE_HIDDEN void operator()(U& x, Integer<Index>)
     {
         typedef typename std::basic_istream<charT, traits>::sentry Guard;
@@ -84,7 +84,7 @@ struct TYPE_HIDDEN_VISIBILITY StreamOut_Visitor
     typedef typename obtain_ostream_traits<T>::template apply<charT> StreamTraits;
     Stream m0; // Requires m0 is not 0
 
-    template<typename U, int Index>
+    template<typename U, IntegerValueType Index>
     ALWAYS_INLINE_HIDDEN void operator()(U const& x, Integer<Index>) const
     {
         *m0 << StreamTraits::field_start() << x << StreamTraits::field_end();

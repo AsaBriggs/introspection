@@ -50,7 +50,7 @@ struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
     Func m0; \
     P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()() \
@@ -177,7 +177,7 @@ struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
     Func m0; \
     P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0) \
@@ -297,7 +297,7 @@ struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
     Func m0; \
     P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0, \
@@ -410,7 +410,7 @@ struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
     Func m0; \
     P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0, \
@@ -515,7 +515,7 @@ struct Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
     Func m0; \
     P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0, \
@@ -611,7 +611,7 @@ struct Curry<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
     Func m0; \
     P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0, \
@@ -697,7 +697,7 @@ struct Curry<Func, P, Integer<6>, typename EnableMetafunction() <Func>::type> \
     Func m0; \
     P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0, \
@@ -772,7 +772,7 @@ struct Curry<Func, P, Integer<7>, typename EnableMetafunction() <Func>::type> \
     Func m0; \
     P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0, \
@@ -835,7 +835,7 @@ struct Curry<Func, P, Integer<8>, typename EnableMetafunction() <Func>::type> \
     Func m0; \
     P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0, \
@@ -885,7 +885,7 @@ struct Curry<Func, P, Integer<9>, typename EnableMetafunction() <Func>::type> \
     Func m0; \
     P m1; \
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()(typename lookup<0>::type p0, \
@@ -921,7 +921,7 @@ struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::typ
     typedef typename GetInputTypeArray<Func>::type input_types; \
     FuncType m0;							\
  \
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \
     ALWAYS_INLINE_HIDDEN codomain_type \
     operator()() \

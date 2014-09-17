@@ -43,7 +43,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
     typedef typename GetInputTypeArray<Func>::type FuncInputs;
     typedef typename ArrayConcat<Array<Func>, FuncInputs>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func) const
@@ -182,7 +182,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<Func,
     typedef typename GetInputTypeArray<Func>::type FuncInputs;
     typedef typename ArrayConcat<Array<Func>, FuncInputs>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Func, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(Func func) const
@@ -225,7 +225,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     typedef CodomainType codomain_type;
     typedef typename ArrayConcat<Array<typename Spec::Func>, InputTypes>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(typename Spec::Func func) const
@@ -268,7 +268,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     typedef void codomain_type;
     typedef typename ArrayConcat<Array<typename Spec::Func>, InputTypes>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(typename Spec::Func func) const
@@ -311,7 +311,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     typedef CodomainType codomain_type;
     typedef typename ArrayConcat<Array<typename Spec::Func>, InputTypes>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(typename Spec::Func func,
@@ -348,7 +348,7 @@ struct TYPE_HIDDEN_VISIBILITY ApplyObj<function_pointer_specialisations::functio
     typedef void codomain_type;
     typedef typename ArrayConcat<Array<typename Spec::Func>, InputTypes>::type input_types;
 
-    template<int N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
+    template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : GetParam<Spec, Integer<N> > {METAPROGRAMMING_ONLY(lookup)};
 
     ALWAYS_INLINE_HIDDEN codomain_type
     operator()(typename Spec::Func func,
