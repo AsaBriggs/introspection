@@ -238,6 +238,22 @@ struct TYPE_DEFAULT_VISIBILITY nonuple
     }
 };
 
+template<typename Tag>
+struct TYPE_HIDDEN_VISIBILITY parameter_type<empty_type<Tag> >
+{
+    typedef empty_type<Tag> type;
+    METAPROGRAMMING_ONLY(parameter_type)
+};
+
+template<typename T, typename Tag>
+struct TYPE_HIDDEN_VISIBILITY parameter_type<singleton<T, Tag>,
+                                             typename enable_if<is_same<T, typename parameter_type<T>::type>, void>::type>
+{
+    typedef singleton<T, Tag> type;
+    METAPROGRAMMING_ONLY(parameter_type)
+};
+
+
 // Note that to keep the requirements of storage within the Arity limits of Apply (N=10)
 // It was decided that implementing storage containing N types would be troublesome and so was abandoned.
 // If it is deemed necessary then the limits of Apply, Array and the number of placeholders should be
@@ -1048,7 +1064,6 @@ ALWAYS_INLINE_HIDDEN typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, 
     typedef typename deduce_type<Array<T0, T1, T2, T3, T4, T5, T6, T7, T8>, Tag>::type T;
     return T::make(m0, m1, m2, m3, m4, m5, m6, m7, m8);
 }
-
 
 } // namespace intro
 

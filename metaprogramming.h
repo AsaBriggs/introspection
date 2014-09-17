@@ -78,6 +78,11 @@ ALWAYS_INLINE_HIDDEN Ref<T> make_ref(T& x)
     return Ref<T>::make(x);
 }
 
+struct TYPE_DEFAULT_VISIBILITY ArrayNoArg
+{
+    typedef ArrayNoArg type;
+};
+
 
 template<bool value>
 struct TYPE_HIDDEN_VISIBILITY ValueToTrueFalse;
@@ -392,7 +397,7 @@ struct TYPE_HIDDEN_VISIBILITY deduce_input_type<T const&>
 };
 
 
-template<typename T>
+template<typename T, typename Enable=void>
 struct TYPE_HIDDEN_VISIBILITY parameter_type
 {
     typedef T const& type;
@@ -413,6 +418,20 @@ struct TYPE_HIDDEN_VISIBILITY parameter_type<T&>
     METAPROGRAMMING_ONLY(parameter_type)
 };
 
+template<int num>
+struct TYPE_HIDDEN_VISIBILITY parameter_type<Integer<num> >
+{
+    typedef Integer<num> type;
+    METAPROGRAMMING_ONLY(parameter_type)
+};
+
+template<typename T>
+struct TYPE_HIDDEN_VISIBILITY parameter_type<Ref<T> >
+{
+    typedef Ref<T> type;
+    METAPROGRAMMING_ONLY(parameter_type)
+};
+
 #define X(x)template<> \
 struct TYPE_HIDDEN_VISIBILITY parameter_type<x> \
 { \
@@ -423,7 +442,14 @@ struct TYPE_HIDDEN_VISIBILITY parameter_type<x> \
 // Use the X-Macro
 FUNDAMENTAL_TYPES
 
+X(true_type)
+X(false_type)
+X(DefaultTag)
+X(ArrayNoArg)
+
 #undef X
+
+
 
 template<typename T, typename enable=void>
 struct TYPE_HIDDEN_VISIBILITY underlying_type
@@ -590,13 +616,6 @@ FLOATING_POINT_TYPES
 // Note that NULL_POINTER_TYPE is implemented as a struct, hence FUNDAMENTAL_TYPES macro was not used.
 
 #undef X
-
-
-struct TYPE_DEFAULT_VISIBILITY ArrayNoArg
-{
-    typedef ArrayNoArg type;
-};
-
 
 // Note that Array has as many types as Apply can handle with placeholder expressions.
 // Attempting to expand the interface would destroy the ability of Apply to handle all Arrays passed to it.
