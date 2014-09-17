@@ -392,6 +392,12 @@ void test_integer_operations()
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Subtract<Integer<0>, Integer<5> >::type> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Subtract<Integer<47>, Integer<5> >::type> ));
 
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<77>, Increment<Integer<76> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Increment<Integer<41> >::type> ));
+
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<77>, Decrement<Integer<78> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<40>, Decrement<Integer<41> >::type> ));
+
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Add<Integer<0>, Integer<-5> >::type> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Add<Integer<37>, Integer<5> >::type> ));
 

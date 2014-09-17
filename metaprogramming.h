@@ -143,6 +143,18 @@ struct TYPE_HIDDEN_VISIBILITY Max<T, U, true> : T {METAPROGRAMMING_ONLY(Max)};
 template<typename T, typename U>
 struct TYPE_HIDDEN_VISIBILITY Max : Max_impl::Max<T, U, U::type::value < T::type::value> {METAPROGRAMMING_ONLY(Max)};
 
+template<typename T0>
+struct TYPE_HIDDEN_VISIBILITY Increment;
+
+template<IntegerValueType num0>
+struct TYPE_HIDDEN_VISIBILITY Increment<Integer<num0> > : Integer<num0 + 1> {METAPROGRAMMING_ONLY(Increment)};
+
+template<typename T0>
+struct TYPE_HIDDEN_VISIBILITY Decrement;
+
+template<IntegerValueType num0>
+struct TYPE_HIDDEN_VISIBILITY Decrement<Integer<num0> > : Integer<num0 - 1> {METAPROGRAMMING_ONLY(Decrement)};
+
 
 template<typename T0, typename T1>
 struct TYPE_HIDDEN_VISIBILITY Subtract;
