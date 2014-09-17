@@ -31,6 +31,7 @@ struct TYPE_DEFAULT_VISIBILITY empty_type
 {
     typedef empty_type type;
     typedef true_type IntrospectionEnabled;
+    typedef Tag IntrospectionStorageTag;
 
     static INLINE type make()
     {
@@ -44,6 +45,7 @@ struct TYPE_DEFAULT_VISIBILITY singleton
 {
     typedef singleton type;
     typedef true_type IntrospectionEnabled;
+    typedef Tag IntrospectionStorageTag;
     typedef Array<T0> IntrospectionItems;
 
     T0 m0;
@@ -61,6 +63,7 @@ struct TYPE_DEFAULT_VISIBILITY pair
 {
     typedef pair type;
     typedef true_type IntrospectionEnabled;
+    typedef Tag IntrospectionStorageTag;
     typedef Array<T0, T1> IntrospectionItems;
 
     T0 m0;
@@ -79,6 +82,7 @@ struct TYPE_DEFAULT_VISIBILITY triple
 {
     typedef triple type;
     typedef true_type IntrospectionEnabled;
+    typedef Tag IntrospectionStorageTag;
     typedef Array<T0, T1, T2> IntrospectionItems;
 
     T0 m0;
@@ -98,6 +102,7 @@ struct TYPE_DEFAULT_VISIBILITY quadruple
 {
     typedef quadruple type;
     typedef true_type IntrospectionEnabled;
+    typedef Tag IntrospectionStorageTag;
     typedef Array<T0, T1, T2, T3> IntrospectionItems;
 
     T0 m0;
@@ -118,6 +123,7 @@ struct TYPE_DEFAULT_VISIBILITY quintuple
 {
     typedef quintuple type;
     typedef true_type IntrospectionEnabled;
+    typedef Tag IntrospectionStorageTag;
     typedef Array<T0, T1, T2, T3, T4> IntrospectionItems;
 
     T0 m0;
@@ -139,6 +145,7 @@ struct TYPE_DEFAULT_VISIBILITY sextuple
 {
     typedef sextuple type;
     typedef true_type IntrospectionEnabled;
+    typedef Tag IntrospectionStorageTag;
     typedef Array<T0, T1, T2, T3, T4, T5> IntrospectionItems;
 
     T0 m0;
@@ -161,6 +168,7 @@ struct TYPE_DEFAULT_VISIBILITY septuple
 {
     typedef septuple type;
     typedef true_type IntrospectionEnabled;
+    typedef Tag IntrospectionStorageTag;
     typedef Array<T0, T1, T2, T3, T4, T5, T6> IntrospectionItems;
 
     T0 m0;
@@ -184,6 +192,7 @@ struct TYPE_DEFAULT_VISIBILITY octuple
 {
     typedef octuple type;
     typedef true_type IntrospectionEnabled;
+    typedef Tag IntrospectionStorageTag;
     typedef Array<T0, T1, T2, T3, T4, T5, T6, T7> IntrospectionItems;
 
     T0 m0;
@@ -208,6 +217,7 @@ struct TYPE_DEFAULT_VISIBILITY nonuple
 {
     typedef nonuple type;
     typedef true_type IntrospectionEnabled;
+    typedef Tag IntrospectionStorageTag;
     typedef Array<T0, T1, T2, T3, T4, T5, T6, T7, T8> IntrospectionItems;
 
     T0 m0;
@@ -249,7 +259,7 @@ template<typename T>
 struct TYPE_HIDDEN_VISIBILITY IntrospectionStorageTag :
     eval_if<HasMemberType_IntrospectionStorageTag<T>,
             GetMemberType_IntrospectionStorageTag<T>,
-            DefaultTag>
+            T>
 {
     INTROSPECTION_STATIC_ASSERT(( IntrospectionEnabled<T> ));
     METAPROGRAMMING_ONLY(IntrospectionStorageTag)
@@ -635,8 +645,18 @@ typename disable_if<IntrospectionIndirectStorage<T>, T>::type const& get_storage
     return x;
 }
 
-struct TYPE_DEFAULT_VISIBILITY VisitStart { typedef VisitStart type; };
-struct TYPE_DEFAULT_VISIBILITY VisitEnd { typedef VisitEnd type; };
+struct TYPE_DEFAULT_VISIBILITY VisitStart
+{
+    typedef VisitStart type;
+    typedef true_type IntrospectionEnabled;
+};
+struct TYPE_DEFAULT_VISIBILITY VisitEnd
+{
+    typedef VisitEnd type;
+    typedef true_type IntrospectionEnabled;
+};
+
+
 
 namespace Visit_impl {
 
