@@ -158,7 +158,7 @@ void test_array_rotate()
 
   typedef Array<unsigned short, int, unsigned int, long, unsigned long, bool, unsigned char, signed char, char, short> Expected2;
   // rotate test array about index 5, i.e. from bool up to but not including unsigned short is rotated
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Expected2, ArrayRotateDefault<TestArray, Integer<5> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Expected2, ArrayRotateDefault<TestArray, Integer<5> >::type> ));
 }
 
 void test_array_erase()
@@ -224,7 +224,7 @@ void test_Apply()
   INTROSPECTION_STATIC_ASSERT2(( is_same<int, Apply<placeholders::_0, int>::type> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<float, Apply<placeholders::_2,int, bool, float>::type> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<int> >::type> ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<int>, short, double, char, float, void >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<int>, short, double, char, float, void>::type> ));
 
   INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<bool>, Apply<empty_type<placeholders::_0>, bool, int, long, float, short>::type> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<empty_type<int>, Apply<empty_type<placeholders::_1>, bool, int, long, float, short>::type> ));
@@ -373,13 +373,13 @@ void test_integer_operations()
   INTROSPECTION_STATIC_ASSERT_NOT2(( ValueToTrueFalse<false> ));
   INTROSPECTION_STATIC_ASSERT_NOT2(( ValueToTrueFalse<0> ));
 
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<1>, Successor<Integer<0> >::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<4>, Successor<Integer<3> >::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-2>, Successor<Integer<-3> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<1>, Successor<Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<4>, Successor<Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-2>, Successor<Integer<-3> >::type> ));
 
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-1>, Predecessor<Integer<0> >::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<2>, Predecessor<Integer<3> >::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-4>, Predecessor<Integer<-3> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-1>, Predecessor<Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<2>, Predecessor<Integer<3> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-4>, Predecessor<Integer<-3> >::type> ));
 
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Min<Integer<0>, Integer<2> >::type> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<3>, Min<Integer<4>, Integer<3> >::type> ));
@@ -389,21 +389,21 @@ void test_integer_operations()
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<3>, Max<Integer<2>, Integer<3> >::type> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Max<Integer<-5>, Integer<-7> >::type> ));
 
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Subtract<Integer<0>, Integer<5> >::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Subtract<Integer<47>, Integer<5> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Subtract<Integer<0>, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Subtract<Integer<47>, Integer<5> >::type> ));
 
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Add<Integer<0>, Integer<-5> >::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Add<Integer<37>, Integer<5> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-5>, Add<Integer<0>, Integer<-5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Add<Integer<37>, Integer<5> >::type> ));
 
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<10>, Multiply<Integer<2>, Integer<5> >::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Multiply<Integer<37>, Integer<0> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<10>, Multiply<Integer<2>, Integer<5> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Multiply<Integer<37>, Integer<0> >::type> ));
 
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<7>, Divide<Integer<42>, Integer<6> >::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Divide<Integer<0>, Integer<1> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<7>, Divide<Integer<42>, Integer<6> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Divide<Integer<0>, Integer<1> >::type> ));
 
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-10>, Negate<Integer<10> >::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Negate<Integer<0> >::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Negate<Integer<-42> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<-10>, Negate<Integer<10> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<0>, Negate<Integer<0> >::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<Integer<42>, Negate<Integer<-42> >::type> ));
 }
 
 void test_boolean_operations()
@@ -465,7 +465,7 @@ void test_is_reference()
 
 void test_is_same()
 {
-  INTROSPECTION_STATIC_ASSERT2(( is_same<int, identity_type<identity_type<int> >::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int, identity_type<identity_type<int> >::type> ));
 
   INTROSPECTION_STATIC_ASSERT2(( is_same<if_<true_type, int, void>::type, int> ));
   INTROSPECTION_STATIC_ASSERT2(( is_same<if_<false_type, void, int>::type, int> ));
@@ -496,9 +496,9 @@ void test_is_same()
 
 void test_deduce_input_type()
 {
-  INTROSPECTION_STATIC_ASSERT2(( is_same<int&, deduce_input_type<int&>::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<int, deduce_input_type<int const&>::type > ));
-  INTROSPECTION_STATIC_ASSERT2(( is_same<int, deduce_input_type<int>::type > ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int&, deduce_input_type<int&>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int, deduce_input_type<int const&>::type> ));
+  INTROSPECTION_STATIC_ASSERT2(( is_same<int, deduce_input_type<int>::type> ));
 }
 
 
@@ -1812,7 +1812,7 @@ void testMemberFun0(T func)
   INTROSPECTION_STATIC_ASSERT(( HasInputType<T, Integer<0> > ));
   INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<1> > ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
-  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<1>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<1>, typename GetFunctionArity<T>::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0>, typename GetInputTypeArray<T>::type> ));
 }
 
@@ -1827,7 +1827,7 @@ void testMemberFun1(T func)
   INTROSPECTION_STATIC_ASSERT_NOT(( HasInputType<T, Integer<2> > ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
-  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<2>, typename GetFunctionArity<T>::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int>, typename GetInputTypeArray<T>::type> ));
 }
 
@@ -1844,7 +1844,7 @@ void testMemberFun2(T func)
   INTROSPECTION_STATIC_ASSERT(( is_same<Input0, typename GetInputType<T, Integer<0> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
-  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<3>, typename GetFunctionArity<T>::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&>, typename GetInputTypeArray<T>::type> ));
 }
 
@@ -1863,7 +1863,7 @@ void testMemberFun3(T func)
   INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<1> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
-  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<4>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<4>, typename GetFunctionArity<T>::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[]>, typename GetInputTypeArray<T>::type> ));
 }
 
@@ -1884,7 +1884,7 @@ void testMemberFun4(T func)
   INTROSPECTION_STATIC_ASSERT(( is_same<char&, typename GetInputType<T, Integer<2> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
-  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<5>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<5>, typename GetFunctionArity<T>::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10]>, typename GetInputTypeArray<T>::type> ));
 }
 
@@ -1907,7 +1907,7 @@ void testMemberFun5(T func)
   INTROSPECTION_STATIC_ASSERT(( is_same<double (&)[], typename GetInputType<T, Integer<3> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
-  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<6>, typename GetFunctionArity<T>::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)()>, typename GetInputTypeArray<T>::type> ));
 }
 
@@ -1932,7 +1932,7 @@ void testMemberFun6(T func)
   INTROSPECTION_STATIC_ASSERT(( is_same<int const volatile (&)[10], typename GetInputType<T, Integer<4> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
-  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<7>, typename GetFunctionArity<T>::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long>, typename GetInputTypeArray<T>::type> ));
 }
 
@@ -1959,7 +1959,7 @@ void testMemberFun7(T func)
   INTROSPECTION_STATIC_ASSERT(( is_same<void(*)(), typename GetInputType<T, Integer<5> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
-  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<8>, typename GetFunctionArity<T>::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float>, typename GetInputTypeArray<T>::type> ));
 }
 
@@ -1988,7 +1988,7 @@ void testMemberFun8(T func)
   INTROSPECTION_STATIC_ASSERT(( is_same<long, typename GetInputType<T, Integer<6> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<bool, typename GetInputType<T, Integer<8> >::type> ));
-  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<9>, typename GetFunctionArity<T>::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool>, typename GetInputTypeArray<T>::type> ));
 }
 
@@ -2019,7 +2019,7 @@ void testMemberFun9(T func)
   INTROSPECTION_STATIC_ASSERT(( is_same<float, typename GetInputType<T, Integer<7> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<bool, typename GetInputType<T, Integer<8> >::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<int, typename GetInputType<T, Integer<9> >::type> ));
-  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename GetFunctionArity<T>::type > ));
+  INTROSPECTION_STATIC_ASSERT(( is_same<Integer<10>, typename GetFunctionArity<T>::type> ));
   INTROSPECTION_STATIC_ASSERT(( is_same<Array<Input0, int, char&, double (&)[], int const volatile (&)[10], void(*)(), long, float, bool, int>, typename GetInputTypeArray<T>::type> ));
 }
 
@@ -2831,15 +2831,15 @@ INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(MemberFunctionTest:
 namespace Apply_stress_test {
 using namespace placeholders;
 
-template<int base>
+template<IntegerValueType base>
 struct ArrayFrom : Array<Integer<base>,Integer<base + 1>,Integer<base + 2>,Integer<base + 3>,Integer<base + 4>,Integer<base + 5>,Integer<base + 6>,Integer<base + 7>,Integer<base + 8>,Integer<base + 9> > {};
 
 typedef ArrayTransform<ArrayFrom<0>::type, _0> Apply1;
 INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayFrom<0>::type, Apply1::type> ));
 
 #ifdef INTROSPECTION_APPLY_STRESS_TEST
-template<int base>
-struct ArrayArrayFrom : Array<typename ArrayFrom<base>::type, typename ArrayFrom<base + 10>::type, typename ArrayFrom<base + 20>::type, typename ArrayFrom<base + 30>::type, typename ArrayFrom<base + 40>::type, typename ArrayFrom<base + 50>::type, typename ArrayFrom<base + 60>::type, typename ArrayFrom<base + 70>::type, typename ArrayFrom<base + 80>::type, typename ArrayFrom<base + 90>::type > {};
+template<IntegerValueType base>
+struct ArrayArrayFrom : Array<typename ArrayFrom<base>::type, typename ArrayFrom<base + 10>::type, typename ArrayFrom<base + 20>::type, typename ArrayFrom<base + 30>::type, typename ArrayFrom<base + 40>::type, typename ArrayFrom<base + 50>::type, typename ArrayFrom<base + 60>::type, typename ArrayFrom<base + 70>::type, typename ArrayFrom<base + 80>::type, typename ArrayFrom<base + 90>::type> {};
 
 // Need to delay the evaluation of the right-hand _0 until later, using the identity_type
 typedef ArrayTransform<ArrayArrayFrom<10>::type, ArrayTransform<_0, identity_type<_0> > > Apply2;
@@ -2847,7 +2847,7 @@ INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayArrayFrom<10>::type, Apply2::type> )
 
 
 
-template<int base>
+template<IntegerValueType base>
 struct ArrayArrayArrayFrom : Array<typename ArrayArrayFrom<base>::type, typename ArrayArrayFrom<base + 100>::type, typename ArrayArrayFrom<base + 200>::type, typename ArrayArrayFrom<base + 300>::type, typename ArrayArrayFrom<base + 400>::type, typename ArrayArrayFrom<base + 500>::type, typename ArrayArrayFrom<base + 600>::type, typename ArrayArrayFrom<base + 700>::type, typename ArrayArrayFrom<base + 800>::type, typename ArrayArrayFrom<base + 900>::type > {};
 
 typedef ArrayTransform<ArrayArrayArrayFrom<1000>::type, ArrayTransform<_0, ArrayTransform<_0, identity_type<_0> > > > Apply3;
@@ -2855,16 +2855,16 @@ INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayArrayArrayFrom<1000>::type, Apply3::
 
 
 
-template<int base>
-struct ArrayArrayArrayArrayFrom : Array<typename ArrayArrayArrayFrom<base>::type, typename ArrayArrayArrayFrom<base + 1000>::type, typename ArrayArrayArrayFrom<base + 2000>::type, typename ArrayArrayArrayFrom<base + 3000>::type, typename ArrayArrayArrayFrom<base + 4000>::type, typename ArrayArrayArrayFrom<base + 5000>::type, typename ArrayArrayArrayFrom<base + 6000>::type, typename ArrayArrayArrayFrom<base + 7000>::type, typename ArrayArrayArrayFrom<base + 8000>::type, typename ArrayArrayArrayFrom<base + 9000>::type > {};
+template<IntegerValueType base>
+struct ArrayArrayArrayArrayFrom : Array<typename ArrayArrayArrayFrom<base>::type, typename ArrayArrayArrayFrom<base + 1000>::type, typename ArrayArrayArrayFrom<base + 2000>::type, typename ArrayArrayArrayFrom<base + 3000>::type, typename ArrayArrayArrayFrom<base + 4000>::type, typename ArrayArrayArrayFrom<base + 5000>::type, typename ArrayArrayArrayFrom<base + 6000>::type, typename ArrayArrayArrayFrom<base + 7000>::type, typename ArrayArrayArrayFrom<base + 8000>::type, typename ArrayArrayArrayFrom<base + 9000>::type> {};
 
 typedef ArrayTransform<ArrayArrayArrayArrayFrom<10000>::type, ArrayTransform<_0, ArrayTransform<_0, ArrayTransform<_0, identity_type<_0> > > > > Apply4;
 INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayArrayArrayArrayFrom<10000>::type, Apply4::type> ));
 
 
 
-template<int base>
-struct ArrayArrayArrayArrayArrayFrom : Array<typename ArrayArrayArrayArrayFrom<base>::type, typename ArrayArrayArrayArrayFrom<base + 10000>::type, typename ArrayArrayArrayArrayFrom<base + 20000>::type, typename ArrayArrayArrayArrayFrom<base + 30000>::type, typename ArrayArrayArrayArrayFrom<base + 40000>::type, typename ArrayArrayArrayArrayFrom<base + 50000>::type, typename ArrayArrayArrayArrayFrom<base + 60000>::type, typename ArrayArrayArrayArrayFrom<base + 70000>::type, typename ArrayArrayArrayArrayFrom<base + 80000>::type, typename ArrayArrayArrayArrayFrom<base + 90000>::type > {};
+template<IntegerValueType base>
+struct ArrayArrayArrayArrayArrayFrom : Array<typename ArrayArrayArrayArrayFrom<base>::type, typename ArrayArrayArrayArrayFrom<base + 10000>::type, typename ArrayArrayArrayArrayFrom<base + 20000>::type, typename ArrayArrayArrayArrayFrom<base + 30000>::type, typename ArrayArrayArrayArrayFrom<base + 40000>::type, typename ArrayArrayArrayArrayFrom<base + 50000>::type, typename ArrayArrayArrayArrayFrom<base + 60000>::type, typename ArrayArrayArrayArrayFrom<base + 70000>::type, typename ArrayArrayArrayArrayFrom<base + 80000>::type, typename ArrayArrayArrayArrayFrom<base + 90000>::type> {};
 
 typedef ArrayTransform<ArrayArrayArrayArrayArrayFrom<100000>::type, ArrayTransform<_0, ArrayTransform<_0, ArrayTransform<_0, ArrayTransform<_0, identity_type<_0> > > > > > Apply5;
 INTROSPECTION_STATIC_ASSERT2(( is_same<ArrayArrayArrayArrayArrayFrom<100000>::type, Apply5::type> ));

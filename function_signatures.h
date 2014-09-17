@@ -102,7 +102,7 @@ struct TYPE_HIDDEN_VISIBILITY HasNumberedInputType<T, Integer<10> > : false_type
 
 template<typename T, typename Index>
 struct TYPE_HIDDEN_VISIBILITY HasArrayInputItem :
-    not_<is_same<ArrayNoArg, typename ArrayIndex<typename Get_input_types<T>::type, Index>::type > >
+    not_<is_same<ArrayNoArg, typename ArrayIndex<typename Get_input_types<T>::type, Index>::type> >
 {
     METAPROGRAMMING_ONLY(HasArrayInputItem)
 };

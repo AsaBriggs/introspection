@@ -885,7 +885,7 @@ struct TYPE_HIDDEN_VISIBILITY ArrayRotate
 
 
 template<typename T, typename M>
-struct TYPE_HIDDEN_VISIBILITY ArrayRotateDefault : ArrayRotate<T, Integer<0>, M, typename ArraySize<T>::type > {METAPROGRAMMING_ONLY(ArrayRotateDefault)};
+struct TYPE_HIDDEN_VISIBILITY ArrayRotateDefault : ArrayRotate<T, Integer<0>, M, typename ArraySize<T>::type> {METAPROGRAMMING_ONLY(ArrayRotateDefault)};
 
 
 template<typename T, typename Index>
@@ -1246,7 +1246,7 @@ struct TYPE_HIDDEN_VISIBILITY AddPlaceholders<T, Integer<10> >
 // an infinte loop when the Environment is empty
 template<typename T, typename Environment>
 struct TYPE_HIDDEN_VISIBILITY Apply :
-    BindArguments<typename AddPlaceholders<T, typename EnvironmentArity<Environment>::type >::type, Environment>
+    BindArguments<typename AddPlaceholders<T, typename EnvironmentArity<Environment>::type>::type, Environment>
 {
     METAPROGRAMMING_ONLY(Apply)
 };

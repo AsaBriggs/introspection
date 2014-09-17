@@ -348,7 +348,7 @@ struct TYPE_HIDDEN_VISIBILITY HasNumberedIntrospectionItem<T, Integer<9> > : fal
 
 template<typename T, typename Index>
 struct TYPE_HIDDEN_VISIBILITY HasArrayIntrospectionItem :
-    not_<is_same<ArrayNoArg, typename ArrayIndex<typename GetMemberType_IntrospectionItems<T>::type, Index>::type > >
+    not_<is_same<ArrayNoArg, typename ArrayIndex<typename GetMemberType_IntrospectionItems<T>::type, Index>::type> >
 {
     METAPROGRAMMING_ONLY(HasArrayIntrospectionItem)
 };
@@ -583,10 +583,10 @@ struct TYPE_DEFAULT_VISIBILITY DefaultGet;
 
 #define MAKE_DEFAULT_GET_N(Idx)\
 template<typename T>\
-struct TYPE_DEFAULT_VISIBILITY DefaultGet<T const, Integer< Idx > >\
+struct TYPE_DEFAULT_VISIBILITY DefaultGet<T const, Integer<Idx> >\
 {\
     typedef DefaultGet type;\
-    typedef Integer< Idx > Index;\
+    typedef Integer<Idx> Index;\
     typedef true_type IntrospectionEnabled;\
     typedef T const& input_type_0;\
     typedef typename make_const_ref<typename GetIntrospectionItem<T, Index>::type>::type codomain_type; \
@@ -598,10 +598,10 @@ struct TYPE_DEFAULT_VISIBILITY DefaultGet<T const, Integer< Idx > >\
     }\
 };\
 template<typename T>\
-struct TYPE_DEFAULT_VISIBILITY DefaultGet<T, Integer< Idx > >\
+struct TYPE_DEFAULT_VISIBILITY DefaultGet<T, Integer<Idx> >\
 {\
     typedef DefaultGet type;\
-    typedef Integer< Idx > Index;\
+    typedef Integer<Idx> Index;\
     typedef true_type IntrospectionEnabled;\
     typedef T& input_type_0;\
     typedef typename make_ref_type<typename GetIntrospectionItem<T, Index>::type>::type codomain_type; \
