@@ -51,7 +51,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<0>, typename EnableMetafun
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<0> >::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
     typedef true_type IntrospectionIndirectStorage; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
@@ -178,7 +178,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<1>, typename EnableMetafun
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<1> >::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
     typedef true_type IntrospectionIndirectStorage; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
@@ -298,7 +298,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<2>, typename EnableMetafun
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<2> >::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
     typedef true_type IntrospectionIndirectStorage; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
@@ -411,7 +411,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<3>, typename EnableMetafun
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<3> >::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
     typedef true_type IntrospectionIndirectStorage; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
@@ -516,7 +516,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<4>, typename EnableMetafun
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<4> >::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
     typedef true_type IntrospectionIndirectStorage; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
@@ -612,7 +612,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<5>, typename EnableMetafun
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<5> >::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
     typedef true_type IntrospectionIndirectStorage; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
@@ -698,7 +698,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<6>, typename EnableMetafun
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<6> >::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
     typedef true_type IntrospectionIndirectStorage; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
@@ -773,7 +773,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<7>, typename EnableMetafun
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<7> >::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
     typedef true_type IntrospectionIndirectStorage; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
@@ -836,7 +836,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<8>, typename EnableMetafun
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<8> >::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
     typedef true_type IntrospectionIndirectStorage; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
@@ -886,7 +886,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<9>, typename EnableMetafun
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename ArrayEraseIndex<typename GetInputTypeArray<Func>::type, Integer<9> >::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
     typedef true_type IntrospectionIndirectStorage; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
@@ -923,7 +923,7 @@ struct TYPE_DEFAULT_VISIBILITY Curry<Func, Func2, Integer<-1>, typename EnableMe
  \
     typedef typename GetCodomainType<Func>::type codomain_type; \
     typedef typename GetInputTypeArray<Func>::type input_types; \
-    typename GenerateStorage_impl::GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
+    typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type m0; \
  \
     template<IntegerValueType N> struct TYPE_HIDDEN_VISIBILITY lookup : Curry_impl::GetParamFromArray<input_types, Integer<N> > {METAPROGRAMMING_ONLY(lookup)}; \
  \

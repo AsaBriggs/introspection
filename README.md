@@ -56,7 +56,7 @@ struct A_Type
     typedef true_type IntrospectionEnabled;
     typedef Array<int, float, bool> IntrospectionItems;
     typedef A_Type type; // self evaluating metafunction
-    typedef typename GenerateStorage<type>::type Storage;
+    typedef typename GenerateStorageFromArray<IntrospectionItems, DefaultTag>::type Storage;
 
     Storage m0;
 };
@@ -76,7 +76,7 @@ struct A_Type
     typedef A_Type type; // self evaluating metafunction
     typedef true_type IntrospectionIndirectStorage;
 
-    typename GenerateStorage<type>::type m0;
+    typename GenerateStorageFromArray<IntrospectioItems, DefaultTag>::type m0;
 };
 ```
 
