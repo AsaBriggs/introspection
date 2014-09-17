@@ -2083,6 +2083,7 @@ int fun6(int a, float b, long, double, char const*, int&){ return a;}
 int fun7(int a, float b, long, double, char const*, int&, bool){ return a;}
 int fun8(int a, float b, long, double, char const*, int&, bool, char){ return a;}
 int fun9(int a, float b, long, double, char const*, int&, bool, char, void*){ return a;}
+int fun10(int a, float b, long, double, char const*, int&, bool, char, void*, true_type){ return a;}
 
 void test_apply_function_pointer_non_void_return()
 {
@@ -2097,6 +2098,7 @@ void test_apply_function_pointer_non_void_return()
   TEST(78 == apply(&fun7, 78, 3.0f, 999L, 44.5, "aaa", x, true));
   TEST(78 == apply(&fun8, 78, 3.0f, 999L, 44.5, "aaa", x, true, 'a'));
   TEST(78 == apply(&fun9, 78, 3.0f, 999L, 44.5, "aaa", x, true, 'a', static_cast<void*>(0)));
+  TEST(78 == apply(&fun10, 78, 3.0f, 999L, 44.5, "aaa", x, true, 'a', static_cast<void*>(0), true_type()));
 }
 
 void voidfun0(){}
@@ -2109,6 +2111,7 @@ void voidfun6(int, float, long, double, char const*, int&){}
 void voidfun7(int, float, long, double, char const*, int&, bool){}
 void voidfun8(int, float, long, double, char const*, int&, bool, char){}
 void voidfun9(int, float, long, double, char const*, int&, bool, char, void*){}
+void voidfun10(int, float, long, double, char const*, int&, bool, char, void*, true_type){}
 
 void test_apply_function_pointer_void_return()
 {
@@ -2123,6 +2126,7 @@ void test_apply_function_pointer_void_return()
   apply(&voidfun7, 78, 3.0f, 77L, 446.0, "aaa ", x, true);
   apply(&voidfun8, 78, 3.0f, 77L, 446.0, "aaa ", x, true, 'a');
   apply(&voidfun9, 78, 3.0f, 77L, 446.0, "aaa ", x, true, 'a', static_cast<void*>(0));
+  apply(&voidfun10, 78, 3.0f, 77L, 446.0, "aaa ", x, true, 'a', static_cast<void*>(0), true_type());
 }
 
 struct Func0
@@ -2233,6 +2237,41 @@ struct Func8
   codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g, input_type_7 h) const { return fun2(a, b); }
 };
 
+struct Func9
+{
+  typedef Func9 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  typedef long input_type_6;
+  typedef char const* input_type_7;
+  typedef void* input_type_8;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g, input_type_7 h, input_type_8 i) const { return fun2(a, b); }
+};
+
+struct Func10
+{
+  typedef Func10 type;
+  typedef true_type IntrospectionEnabled;
+  typedef int codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  typedef long input_type_6;
+  typedef char const* input_type_7;
+  typedef void* input_type_8;
+  typedef true_type input_type_9;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g, input_type_7 h, input_type_8 i, input_type_9 j) const { return fun2(a, b); }
+};
+
 void test_apply_functor_non_void_return()
 {
   TEST(0 == apply(Func0()));
@@ -2245,6 +2284,8 @@ void test_apply_functor_non_void_return()
   TEST(78 == apply(Func6(), 78, 3.0f, 7.5, 'a', true, x));
   TEST(78 == apply(Func7(), 78, 3.0f, 7.5, 'a', true, x, 55L));
   TEST(78 == apply(Func8(), 78, 3.0f, 7.5, 'a', true, x, 55L, "aaa"));
+  TEST(78 == apply(Func9(), 78, 3.0f, 7.5, 'a', true, x, 55L, "aaa", static_cast<void*>(0)));
+  TEST(78 == apply(Func10(), 78, 3.0f, 7.5, 'a', true, x, 55L, "aaa", static_cast<void*>(0), true_type()));
 }
 
 struct VoidFunc0
@@ -2355,6 +2396,40 @@ struct VoidFunc8
   codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g, input_type_7 h) const {}
 };
 
+struct VoidFunc9
+{
+  typedef VoidFunc9 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  typedef long input_type_6;
+  typedef char const* input_type_7;
+  typedef void* input_type_8;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g, input_type_7 h, input_type_8 i) const {}
+};
+
+struct VoidFunc10
+{
+  typedef VoidFunc10 type;
+  typedef true_type IntrospectionEnabled;
+  typedef void codomain_type;
+  typedef int input_type_0;
+  typedef float input_type_1;
+  typedef double input_type_2;
+  typedef char input_type_3;
+  typedef bool input_type_4;
+  typedef int& input_type_5;
+  typedef long input_type_6;
+  typedef char const* input_type_7;
+  typedef void* input_type_8;
+  typedef true_type input_type_9;
+  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g, input_type_7 h, input_type_8 i, input_type_9 j) const {}
+};
 
 void test_apply_functor_void_return()
 {
@@ -2368,6 +2443,8 @@ void test_apply_functor_void_return()
   apply(VoidFunc6(), 1, 3.0f, 7.5, 'a', true, x);
   apply(VoidFunc7(), 1, 3.0f, 7.5, 'a', true, x, 55L);
   apply(VoidFunc8(), 1, 3.0f, 7.5, 'a', true, x, 55L, "  ");
+  apply(VoidFunc9(), 1, 3.0f, 7.5, 'a', true, x, 55L, "  ", static_cast<void*>(0));
+  apply(VoidFunc10(), 1, 3.0f, 7.5, 'a', true, x, 55L, "  ", static_cast<void*>(0), true_type());
 }
 
 extern double UNKNOWN_LENGTH_DOUBLE_ARRAY[];
@@ -2394,6 +2471,8 @@ void test_member_function_pointer_non_void_return()
   TEST(0 == apply(&MemberFunctionTest::intFun7, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f));
 
   TEST(0 == apply(&MemberFunctionTest::intFun8, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true));
+
+  TEST(0 == apply(&MemberFunctionTest::intFun9, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true, 44));
 }
 
 void test_member_function_pointer_void_return()
@@ -2418,6 +2497,8 @@ void test_member_function_pointer_void_return()
   apply(&MemberFunctionTest::voidFun7, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f);
 
   apply(&MemberFunctionTest::voidFun8, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true);
+
+  apply(&MemberFunctionTest::voidFun9, &tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true, 42);
 }
 
 void test_function_apply()
@@ -2445,6 +2526,7 @@ void test_curry_function_pointer_non_void_return()
    TEST(99 == perform_curry(&fun7, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true));
    TEST(99 == perform_curry(&fun8, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a'));
    TEST(99 == perform_curry(&fun9, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a', static_cast<void*>(0)));
+   TEST(99 == perform_curry(&fun10, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a', static_cast<void*>(0), true_type()));
 }
 
 void test_curry_function_pointer_void_return()
@@ -2460,6 +2542,7 @@ void test_curry_function_pointer_void_return()
    perform_curry(&fun7, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true);
    perform_curry(&fun8, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a');
    perform_curry(&fun9, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a', static_cast<void*>(0));
+   perform_curry(&fun10, Integer<-1>())(99, 3.1f, 4343L, 3458354.3, "asasasa", x, true, 'a', static_cast<void*>(0), true_type());
 }
 
 void test_perform_curry_functor_non_void_return()
@@ -2474,6 +2557,8 @@ void test_perform_curry_functor_non_void_return()
   TEST(78 == curry_function(Func6())( 78, 3.0f, 7.5, 'a', true, x));
   TEST(78 == curry_function(Func7())( 78, 3.0f, 7.5, 'a', true, x, 55L));
   TEST(78 == curry_function(Func8())( 78, 3.0f, 7.5, 'a', true, x, 55L, "aaa"));
+  TEST(78 == curry_function(Func9())( 78, 3.0f, 7.5, 'a', true, x, 55L, "aaa", static_cast<void*>(0)));
+  TEST(78 == curry_function(Func10())( 78, 3.0f, 7.5, 'a', true, x, 55L, "aaa", static_cast<void*>(0), true_type()));
 }
 
 void test_perform_curry_functor_void_return()
@@ -2488,6 +2573,8 @@ void test_perform_curry_functor_void_return()
   curry_function(VoidFunc6())(1, 3.0f, 7.5, 'a', true, x);
   curry_function(VoidFunc7())(1, 3.0f, 7.5, 'a', true, x, 55L);
   curry_function(VoidFunc8())(1, 3.0f, 7.5, 'a', true, x, 55L, "  ");
+  curry_function(VoidFunc9())(1, 3.0f, 7.5, 'a', true, x, 55L, "  ", static_cast<void*>(0));
+  curry_function(VoidFunc10())(1, 3.0f, 7.5, 'a', true, x, 55L, "  ", static_cast<void*>(0), true_type());
 }
 
 void test_curry_member_function_pointer_non_void_return()
@@ -2512,6 +2599,8 @@ void test_curry_member_function_pointer_non_void_return()
   TEST(0 == curry_function(&MemberFunctionTest::intFun7)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f));
 
   TEST(0 == curry_function(&MemberFunctionTest::intFun8)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true));
+
+  TEST(0 == curry_function(&MemberFunctionTest::intFun9)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true, 42));
 }
 
 void test_curry_member_function_pointer_void_return()
@@ -2536,6 +2625,8 @@ void test_curry_member_function_pointer_void_return()
   curry_function(&MemberFunctionTest::voidFun7)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f);
 
   curry_function(&MemberFunctionTest::voidFun8)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true);
+
+  curry_function(&MemberFunctionTest::voidFun9)(&tmp, 3, tmp2, UNKNOWN_LENGTH_DOUBLE_ARRAY, arr, func, 44L, 8.0f, true, 45);
 }
 
 void test_function_curry()
@@ -2547,23 +2638,6 @@ void test_function_curry()
   test_curry_member_function_pointer_non_void_return();
   test_curry_member_function_pointer_void_return();
 }
-
-struct Func9
-{
-  typedef Func9 type;
-  typedef true_type IntrospectionEnabled;
-  typedef int codomain_type;
-  typedef int input_type_0;
-  typedef float input_type_1;
-  typedef double input_type_2;
-  typedef char input_type_3;
-  typedef bool input_type_4;
-  typedef int& input_type_5;
-  typedef long input_type_6;
-  typedef char const* input_type_7;
-  typedef void* input_type_8;
-  codomain_type operator()(input_type_0 a, input_type_1 b, input_type_2 c, input_type_3 d, input_type_4 e, input_type_5 f, input_type_6 g, input_type_7 h, input_type_8 i) const { return fun2(a, b); }
-};
 
 void test_function_parameter_non_void_curry()
 {
@@ -2631,18 +2705,30 @@ void test_function_parameter_non_void_curry()
   TEST(5 == perform_curry(c8, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x), "aaa"));
   TEST(5 == perform_curry(c8, "aaa", Integer<7>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L));
 
-  /*
   Curry<Func9, Func9, Integer<-1> > c9 = curry_function(Func9());
-  TEST(5 == c9(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa"));
-  TEST(5 == perform_curry(c9, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa"));
-  TEST(5 == perform_curry(c9, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x), 66L, "aaa"));
-  TEST(5 == perform_curry(c9, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x), 66L, "aaa"));
-  TEST(5 == perform_curry(c9, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x), 66L, "aaa"));
-  TEST(5 == perform_curry(c9, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x), 66L, "aaa"));
-  TEST(5 == perform_curry(c9, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L, "aaa"));
-  TEST(5 == perform_curry(c9, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x), "aaa"));
-  TEST(5 == perform_curry(c9, "aaa", Integer<7>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L));
-  */
+  TEST(5 == c9(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0)));
+  TEST(5 == perform_curry(c9, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0)));
+  TEST(5 == perform_curry(c9, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0)));
+  TEST(5 == perform_curry(c9, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0)));
+  TEST(5 == perform_curry(c9, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x), 66L, "aaa", static_cast<void*>(0)));
+  TEST(5 == perform_curry(c9, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x), 66L, "aaa", static_cast<void*>(0)));
+  TEST(5 == perform_curry(c9, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L, "aaa", static_cast<void*>(0)));
+  TEST(5 == perform_curry(c9, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x), "aaa", static_cast<void*>(0)));
+  TEST(5 == perform_curry(c9, "aaa", Integer<7>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, static_cast<void*>(0)));
+  TEST(5 == perform_curry(c9, static_cast<void*>(0), Integer<8>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa"));
+
+  Curry<Func10, Func10, Integer<-1> > c10 = curry_function(Func10());
+  TEST(5 == c10(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type()));
+  TEST(5 == perform_curry(c10, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type()));
+  TEST(5 == perform_curry(c10, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type()));
+  TEST(5 == perform_curry(c10, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type()));
+  TEST(5 == perform_curry(c10, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type()));
+  TEST(5 == perform_curry(c10, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type()));
+  TEST(5 == perform_curry(c10, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L, "aaa", static_cast<void*>(0), true_type()));
+  TEST(5 == perform_curry(c10, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x), "aaa", static_cast<void*>(0), true_type()));
+  TEST(5 == perform_curry(c10, "aaa", Integer<7>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, static_cast<void*>(0), true_type()));
+  TEST(5 == perform_curry(c10, static_cast<void*>(0), Integer<8>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", true_type()));
+  TEST(5 == perform_curry(c10, true_type(), Integer<9>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0)));
 }
 
 void test_function_parameter_void_curry()
@@ -2710,6 +2796,31 @@ void test_function_parameter_void_curry()
   perform_curry(c8, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L, "aaa");
   perform_curry(c8, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x), "aaa");
   perform_curry(c8, "aaa", Integer<7>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L);
+
+  Curry<VoidFunc9, VoidFunc9, Integer<-1> > c9 = curry_function(VoidFunc9());
+  c9(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0));
+  perform_curry(c9, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0));
+  perform_curry(c9, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0));
+  perform_curry(c9, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0));
+  perform_curry(c9, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x), 66L, "aaa", static_cast<void*>(0));
+  perform_curry(c9, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x), 66L, "aaa", static_cast<void*>(0));
+  perform_curry(c9, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L, "aaa", static_cast<void*>(0));
+  perform_curry(c9, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x), "aaa", static_cast<void*>(0));
+  perform_curry(c9, "aaa", Integer<7>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, static_cast<void*>(0));
+  perform_curry(c9, static_cast<void*>(0), Integer<8>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa");
+
+  Curry<VoidFunc10, VoidFunc10, Integer<-1> > c10 = curry_function(VoidFunc10());
+  c10(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type());
+  perform_curry(c10, 5, Integer<0>())(4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type());
+  perform_curry(c10, 4.5f, Integer<1>())(5, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type());
+  perform_curry(c10, 7.5, Integer<2>())(5, 4.5f, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type());
+  perform_curry(c10, 'a', Integer<3>())(5, 4.5f, 7.5, true, make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type());
+  perform_curry(c10, true, Integer<4>())(5, 4.5f, 7.5, 'a', make_ref(x), 66L, "aaa", static_cast<void*>(0), true_type());
+  perform_curry(c10, make_ref(x), Integer<5>())(5, 4.5f, 7.5, 'a', true, 66L, "aaa", static_cast<void*>(0), true_type());
+  perform_curry(c10, 66L, Integer<6>())(5, 4.5f, 7.5, 'a', true, make_ref(x), "aaa", static_cast<void*>(0), true_type());
+  perform_curry(c10, "aaa", Integer<7>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, static_cast<void*>(0), true_type());
+  perform_curry(c10, static_cast<void*>(0), Integer<8>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", true_type());
+  perform_curry(c10, true_type(), Integer<9>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0));
 }
 
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS

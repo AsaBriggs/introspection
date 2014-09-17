@@ -353,7 +353,7 @@ struct TYPE_HIDDEN_VISIBILITY GetApplyObj : ApplyObj<typename ResolveFunctionSig
 template<typename Func, typename Arity>
 struct TYPE_HIDDEN_VISIBILITY EnableApplyIfVoid :
     enable_if<and_<is_same<Arity, typename GetFunctionArity<Func>::type>,
-                   is_same<void, typename GetCodomainType<Func>::type > >,
+                   is_same<void, typename GetCodomainType<Func>::type> >,
               void>
 {
     METAPROGRAMMING_ONLY(EnableApplyIfVoid)
@@ -367,6 +367,90 @@ struct TYPE_HIDDEN_VISIBILITY EnableApplyIfNotVoid :
 {
     METAPROGRAMMING_ONLY(EnableApplyIfNotVoid)
 };
+
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY IsFunctionPointer_impl : false_type {METAPROGRAMMING_ONLY(IsFunctionPointer_impl)};
+
+template<typename CodomainType, typename InputType>
+struct TYPE_HIDDEN_VISIBILITY IsFunctionPointer_impl<function_pointer_specialisations::function_wrapper<CodomainType, InputType, false_type> > : true_type {METAPROGRAMMING_ONLY(IsFunctionPointer_impl)};
+
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY IsFunctionPointer : IsFunctionPointer_impl<typename ResolveFunctionSignatureType<Func>::type> {METAPROGRAMMING_ONLY(IsFunctionPointer)};
+
+
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY IsMemberFunctionPointer_impl : false_type {METAPROGRAMMING_ONLY(IsMemberFunctionPointer_impl)};
+
+template<typename CodomainType, typename InputType>
+  struct TYPE_HIDDEN_VISIBILITY IsMemberFunctionPointer_impl<function_pointer_specialisations::function_wrapper<CodomainType, InputType, true_type> > : true_type {METAPROGRAMMING_ONLY(IsMemberFunctionPointer_impl)};
+
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY IsMemberFunctionPointer : IsMemberFunctionPointer_impl<typename ResolveFunctionSignatureType<Func>::type> {METAPROGRAMMING_ONLY(IsMemberFunctionPointer)};
+
+
+
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY EnableApplyIfArity10VoidFunctionPointer :
+    enable_if<and_<is_same<Integer<10>, typename GetFunctionArity<Func>::type>,
+                   is_same<void, typename GetCodomainType<Func>::type>,
+                   IsFunctionPointer<Func> >,
+              void>
+{
+    METAPROGRAMMING_ONLY(EnableApplyIfArity10VoidFunctionPointer)
+};
+
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY EnableApplyIfArity10NonVoidFunctionPointer :
+    enable_if<and_<is_same<Integer<10>, typename GetFunctionArity<Func>::type>,
+                   not_<is_same<void, typename GetCodomainType<Func>::type> >,
+                   IsFunctionPointer<Func> >,
+              typename GetCodomainType<Func>::type>
+{
+    METAPROGRAMMING_ONLY(EnableApplyIfArity10NonVoidFunctionPointer)
+};
+
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY EnableApplyIfArity10VoidMemberFunctionPointer :
+    enable_if<and_<is_same<Integer<10>, typename GetFunctionArity<Func>::type>,
+                   is_same<void, typename GetCodomainType<Func>::type>,
+                   IsMemberFunctionPointer<Func> >,
+              void>
+{
+    METAPROGRAMMING_ONLY(EnableApplyIfArity10VoidMemberFunctionPointer)
+};
+
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY EnableApplyIfArity10NonVoidMemberFunctionPointer :
+    enable_if<and_<is_same<Integer<10>, typename GetFunctionArity<Func>::type>,
+                   not_<is_same<void, typename GetCodomainType<Func>::type> >,
+                   IsMemberFunctionPointer<Func> >,
+              typename GetCodomainType<Func>::type>
+{
+    METAPROGRAMMING_ONLY(EnableApplyIfArity10NonVoidMemberFunctionPointer)
+};
+
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY EnableApplyIfArity10VoidFunctor :
+    enable_if<and_<is_same<Integer<10>, typename GetFunctionArity<Func>::type>,
+                   is_same<void, typename GetCodomainType<Func>::type>,
+                   and_<not_<IsFunctionPointer<Func> >,
+                        not_<IsMemberFunctionPointer<Func> > > >,
+              void>
+{
+    METAPROGRAMMING_ONLY(EnableApplyIfArity10VoidFunctor)
+};
+
+template<typename Func>
+struct TYPE_HIDDEN_VISIBILITY EnableApplyIfArity10NonVoidFunctor :
+    enable_if<and_<is_same<Integer<10>, typename GetFunctionArity<Func>::type>,
+                   not_<is_same<void, typename GetCodomainType<Func>::type> >,
+                   and_<not_<IsFunctionPointer<Func> >,
+                        not_<IsMemberFunctionPointer<Func> > > >,
+              typename GetCodomainType<Func>::type>
+{
+    METAPROGRAMMING_ONLY(EnableApplyIfArity10NonVoidFunctor)
+};
+
 
 } // namespace function_apply
 
@@ -625,6 +709,117 @@ apply(Func func,
       typename function_apply::GetParam<Func, Integer<8> >::type p8)
 {
     typename function_apply::GetApplyObj<Func>::type()(func, p0, p1, p2, p3, p4, p5, p6, p7, p8);
+}
+
+// Warning :- the following apply were added as a hack and a bodge to increase the range of function_curry
+// Using the Apply object scheme limits the Arity of functions to be 10 - #objects to create the function call
+// = 8 for member function pointers, 9 for function pointers and for functors.
+template<typename Func>
+ALWAYS_INLINE_HIDDEN
+typename function_apply::EnableApplyIfArity10NonVoidFunctionPointer<Func>::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6,
+      typename function_apply::GetParam<Func, Integer<7> >::type p7,
+      typename function_apply::GetParam<Func, Integer<8> >::type p8,
+      typename function_apply::GetParam<Func, Integer<9> >::type p9)
+{
+    return (*func)(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
+}
+
+template<typename Func>
+ALWAYS_INLINE_HIDDEN
+typename function_apply::EnableApplyIfArity10VoidFunctionPointer<Func>::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6,
+      typename function_apply::GetParam<Func, Integer<7> >::type p7,
+      typename function_apply::GetParam<Func, Integer<8> >::type p8,
+      typename function_apply::GetParam<Func, Integer<9> >::type p9)
+{
+    (*func)(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
+}
+
+template<typename Func>
+ALWAYS_INLINE_HIDDEN
+typename function_apply::EnableApplyIfArity10NonVoidMemberFunctionPointer<Func>::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6,
+      typename function_apply::GetParam<Func, Integer<7> >::type p7,
+      typename function_apply::GetParam<Func, Integer<8> >::type p8,
+      typename function_apply::GetParam<Func, Integer<9> >::type p9)
+{
+    return (p0->*func)(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+}
+
+template<typename Func>
+ALWAYS_INLINE_HIDDEN
+typename function_apply::EnableApplyIfArity10VoidMemberFunctionPointer<Func>::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6,
+      typename function_apply::GetParam<Func, Integer<7> >::type p7,
+      typename function_apply::GetParam<Func, Integer<8> >::type p8,
+      typename function_apply::GetParam<Func, Integer<9> >::type p9)
+{
+    (p0->*func)(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+}
+
+template<typename Func>
+ALWAYS_INLINE_HIDDEN
+typename function_apply::EnableApplyIfArity10NonVoidFunctor<Func>::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6,
+      typename function_apply::GetParam<Func, Integer<7> >::type p7,
+      typename function_apply::GetParam<Func, Integer<8> >::type p8,
+      typename function_apply::GetParam<Func, Integer<9> >::type p9)
+{
+    return func(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
+}
+
+template<typename Func>
+ALWAYS_INLINE_HIDDEN
+typename function_apply::EnableApplyIfArity10VoidFunctor<Func>::type
+apply(Func func,
+      typename function_apply::GetParam<Func, Integer<0> >::type p0,
+      typename function_apply::GetParam<Func, Integer<1> >::type p1,
+      typename function_apply::GetParam<Func, Integer<2> >::type p2,
+      typename function_apply::GetParam<Func, Integer<3> >::type p3,
+      typename function_apply::GetParam<Func, Integer<4> >::type p4,
+      typename function_apply::GetParam<Func, Integer<5> >::type p5,
+      typename function_apply::GetParam<Func, Integer<6> >::type p6,
+      typename function_apply::GetParam<Func, Integer<7> >::type p7,
+      typename function_apply::GetParam<Func, Integer<8> >::type p8,
+      typename function_apply::GetParam<Func, Integer<9> >::type p9)
+{
+    func(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 }
 
 } // namespace intro
