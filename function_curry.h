@@ -29,7 +29,7 @@ struct GetParamFromArray : parameter_type<typename ArrayIndex<T, Index>::type>{M
 } // namespace Curry_impl
 
 template<typename Func, typename P, typename Index, typename Enable=void>
-struct Curry;
+struct TYPE_DEFAULT_VISIBILITY Curry;
 
 #define RETURN_STATEMENT() return
 #define ENABLE_NOT_VOID_MF() Curry_impl::enable_if_not_void_codomain
@@ -39,7 +39,7 @@ struct Curry;
 
 #define GENERATE_BIND_0(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<0>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -166,7 +166,7 @@ GENERATE_BIND_0(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_1(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<1>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -286,7 +286,7 @@ GENERATE_BIND_1(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_2(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<2>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -399,7 +399,7 @@ GENERATE_BIND_2(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_3(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<3>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -504,7 +504,7 @@ GENERATE_BIND_3(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_4(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<4>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -600,7 +600,7 @@ GENERATE_BIND_4(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_5(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Curry<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<5>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -686,7 +686,7 @@ GENERATE_BIND_5(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_6(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Curry<Func, P, Integer<6>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<6>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -761,7 +761,7 @@ GENERATE_BIND_6(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_7(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Curry<Func, P, Integer<7>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<7>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -824,7 +824,7 @@ GENERATE_BIND_7(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_8(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Curry<Func, P, Integer<8>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<8>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -874,7 +874,7 @@ GENERATE_BIND_8(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_9(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename P> \
-struct Curry<Func, P, Integer<9>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, P, Integer<9>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -910,7 +910,7 @@ GENERATE_BIND_9(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 
 #define GENERATE_BIND_FUNC(ReturnStatement, EnableMetafunction) \
 template<typename Func, typename Func2>						\
-struct Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::type> \
+struct TYPE_DEFAULT_VISIBILITY Curry<Func, Func2, Integer<-1>, typename EnableMetafunction() <Func>::type> \
 { \
     typedef Curry type; \
     typedef true_type IntrospectionEnabled; \
@@ -1056,12 +1056,55 @@ GENERATE_BIND_FUNC(NO_RETURN_STATEMENT, ENABLE_VOID_MF)
 #undef ENABLE_NOT_VOID_MF
 #undef ENABLE_VOID_MF
 
+
+
 template<typename Func, typename Obj, typename Index>
 ALWAYS_INLINE_HIDDEN Curry<typename ResolveFunctionSignatureType<Func>::type, Obj, Index>
 perform_curry(Func func, Obj obj, Index)
 {
     Curry<typename ResolveFunctionSignatureType<Func>::type, Obj, Index> tmp = {func, obj};
     return tmp;
+}
+
+// The first object to curry has the higher index, ensuring that the indices remain stable and so don't need decrementing.
+template<typename Func, typename Obj0, typename Index0, typename Obj1, typename Index1, typename Enable=void>
+struct TYPE_HIDDEN_VISIBILITY DoubleCurryType;
+
+template<typename Func, typename Obj0, IntegerValueType i0, typename Obj1, IntegerValueType i1>
+struct TYPE_HIDDEN_VISIBILITY DoubleCurryType<Func, Obj0, Integer<i0>, Obj1, Integer<i1>, typename enable_if<ValueToTrueFalse<(i0<i1)>, void>::type> :
+    Curry<Curry<typename ResolveFunctionSignatureType<Func>::type, Obj1, Integer<i1> >, Obj0, Integer<i0> >
+{
+    static ALWAYS_INLINE_HIDDEN typename DoubleCurryType::type
+    curry(Func func, Obj0 obj0, Obj1 obj1)
+    {
+        return perform_curry(perform_curry(func, obj1, Integer<i1>()), obj0, Integer<i0>());
+    }
+
+    INTROSPECTION_STATIC_ASSERT(( not_<is_same<Integer<-1>, Integer<i0> > >));
+    INTROSPECTION_STATIC_ASSERT(( not_<is_same<Integer<-1>, Integer<i1> > >));
+    METAPROGRAMMING_ONLY(DoubleCurryType)
+};
+
+template<typename Func, typename Obj0, IntegerValueType i0, typename Obj1, IntegerValueType i1>
+struct TYPE_HIDDEN_VISIBILITY DoubleCurryType<Func, Obj0, Integer<i0>, Obj1, Integer<i1>, typename enable_if<ValueToTrueFalse<(i0>i1)>, void>::type> :
+    Curry<Curry<typename ResolveFunctionSignatureType<Func>::type, Obj0, Integer<i0> >, Obj1, Integer<i1> >
+{
+    static ALWAYS_INLINE_HIDDEN typename DoubleCurryType::type
+    curry(Func func, Obj0 obj0, Obj1 obj1)
+    {
+        return perform_curry(perform_curry(func, obj0, Integer<i0>()), obj1, Integer<i1>());
+    }
+
+    INTROSPECTION_STATIC_ASSERT(( not_<is_same<Integer<-1>, Integer<i0> > >));
+    INTROSPECTION_STATIC_ASSERT(( not_<is_same<Integer<-1>, Integer<i1> > >));
+    METAPROGRAMMING_ONLY(DoubleCurryType)
+};
+
+template<typename Func, typename Obj0, typename Index0, typename Obj1, typename Index1>
+ALWAYS_INLINE_HIDDEN typename DoubleCurryType<Func, Obj0, Index0, Obj1, Index1>::type
+perform_curry(Func func, Obj0 obj0, Index0, Obj1 obj1, Index1)
+{
+    return DoubleCurryType<Func, Obj0, Index0, Obj1, Index1>::curry(func, obj0, obj1);
 }
 
 template<typename Func>

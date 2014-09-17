@@ -2829,6 +2829,12 @@ void test_function_parameter_void_curry()
   perform_curry(c10, true_type(), Integer<9>())(5, 4.5f, 7.5, 'a', true, make_ref(x), 66L, "aaa", static_cast<void*>(0));
 }
 
+void test_double_curry()
+{
+  TEST(5 == perform_curry(curry_function(Func2()), 5, Integer<0>(), 4.5f, Integer<1>())());
+  TEST(6 == perform_curry(curry_function(Func2()), 5.4, Integer<1>(), 6, Integer<0>())());
+}
+
 #ifdef INTROSPECTION_COMPILATION_FAILURE_TESTS
 INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(*)(int, int, int, int, int, int, int, int, int, int, int)> ));
 INTROSPECTION_STATIC_ASSERT2(( FunctionSignatureEnabled<void(MemberFunctionTest::*)(int, int, int, int, int, int, int, int, int, int)> ));
@@ -2908,4 +2914,5 @@ int main()
     test_function_curry();
     test_function_parameter_non_void_curry();
     test_function_parameter_void_curry();
+    test_double_curry();
 }
